@@ -538,35 +538,101 @@
   z-index: 13;
 }
 
-/* SOL pile inside shaft (left side, next to elevator entry) */
+/* SOL crystal pile inside shaft (left side, next to elevator entry).
+   Scales dynamically with accumulated ore via --pile (0..1+). */
 .sol-pile {
-  position: absolute; bottom: 18px; left: 16px;
+  position: absolute; bottom: 22px; left: 18px;
   width: 90px; height: 70px;
-  transition: transform 0.35s cubic-bezier(0.5, 0, 0.5, 1.2), opacity 0.35s;
+  transform: scale(calc(0.25 + var(--pile, 0) * 0.85));
+  transition: transform 0.28s cubic-bezier(0.34, 1.4, 0.5, 1), opacity 0.3s;
   transform-origin: center bottom;
   z-index: 4;
+  opacity: 1;
 }
-.sol-pile.pickup { transform: scale(0.4); opacity: 0.4; }
+.sol-pile.pickup {
+  transform: scale(0) translateY(6px);
+  opacity: 0;
+}
 .sol-pile .coin {
   position: absolute;
-  width: 26px; height: 26px; border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, oklch(0.96 0.18 85), oklch(0.65 0.2 75) 70%, oklch(0.4 0.12 65));
-  border: 2px solid oklch(0.25 0.06 60);
-  box-shadow: 0 0 10px oklch(0.85 0.22 80 / 0.7), 0 2px 4px rgba(0,0,0,0.5);
+  width: 24px; height: 24px;
+  /* Solana crystal shard, not a coin */
+  background: linear-gradient(140deg, oklch(0.82 0.28 320) 0%, oklch(0.55 0.3 305) 60%, oklch(0.28 0.18 290) 100%);
+  clip-path: polygon(50% 0%, 100% 35%, 82% 100%, 18% 100%, 0% 35%);
+  border: none;
+  box-shadow:
+    0 0 12px oklch(0.7 0.3 320 / 0.85),
+    0 0 22px oklch(0.6 0.28 305 / 0.5),
+    0 2px 4px rgba(0,0,0,0.55);
+  filter: drop-shadow(0 1px 0 oklch(0.35 0.15 300));
 }
 .sol-pile .coin::after {
-  content: "◎";
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; font-weight: 900;
-  color: oklch(0.28 0.08 60);
-  text-shadow: 0 1px 0 oklch(0.95 0.18 85);
+  content: "";
+  position: absolute; left: 22%; top: 18%;
+  width: 22%; height: 38%;
+  background: oklch(0.98 0.06 320 / 0.75);
+  clip-path: polygon(0 0, 100% 0, 70% 100%, 0 80%);
+  border-radius: 1px;
 }
 
-/* Ore wall on right side of shaft (purple Solana crystal) */
+/* Loader miner (smaller silhouette near pile, pushes cart on pickup) */
+.loader-mini {
+  position: absolute; bottom: 22px; z-index: 5;
+  width: 42px; height: 70px;
+  transition: left 0.5s cubic-bezier(0.5, 0, 0.5, 1);
+}
+.loader-mini .lm-body {
+  position: absolute; bottom: 0; left: 6px;
+  width: 30px; height: 44px;
+  background: linear-gradient(180deg, oklch(0.45 0.16 235), oklch(0.25 0.12 235));
+  border: 2px solid oklch(0.10 0.04 235);
+  border-radius: 4px 4px 2px 2px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.5);
+}
+.loader-mini .lm-head {
+  position: absolute; top: 0; left: 10px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: oklch(0.78 0.06 60);
+  border: 2px solid oklch(0.10 0.04 235);
+  box-shadow: inset 0 -8px 0 oklch(0.92 0.18 80);
+}
+.loader-mini.walking .lm-body { animation: walk-bob 0.4s ease-in-out infinite; }
+/* tiny mine cart */
+.loader-cart {
+  position: absolute; bottom: 22px;
+  width: 46px; height: 28px;
+  z-index: 5;
+  transition: left 0.55s cubic-bezier(0.5, 0, 0.5, 1), opacity 0.3s;
+}
+.loader-cart .lc-box {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, oklch(0.40 0.05 60), oklch(0.20 0.04 60));
+  border: 2px solid oklch(0.10 0.02 40);
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.55);
+}
+.loader-cart .lc-load {
+  position: absolute; left: 4px; right: 4px; top: -8px; height: 12px;
+  background:
+    radial-gradient(circle at 25% 70%, oklch(0.72 0.28 320) 0 4px, transparent 5px),
+    radial-gradient(circle at 55% 60%, oklch(0.78 0.3 305) 0 5px, transparent 6px),
+    radial-gradient(circle at 80% 70%, oklch(0.7 0.28 320) 0 4px, transparent 5px);
+  filter: drop-shadow(0 0 6px oklch(0.7 0.3 320 / 0.8));
+}
+.loader-cart .lc-wheel {
+  position: absolute; bottom: -6px; width: 8px; height: 8px;
+  border-radius: 50%;
+  background: oklch(0.15 0.02 40);
+  border: 1px solid oklch(0.45 0.04 40);
+}
+.loader-cart .lc-wheel.l { left: 6px; }
+.loader-cart .lc-wheel.r { right: 6px; }
+.loader-cart.hidden { opacity: 0; }
+
+/* Ore wall on right side of shaft (purple Solana crystal) — wider, closer to miner */
 .ore-wall {
   position: absolute; top: 14px; bottom: 18px; right: 0;
-  width: 38%;
+  width: 56%;
   background:
     radial-gradient(circle at 30% 30%, oklch(0.55 0.28 305 / 0.5) 0 8px, transparent 9px),
     radial-gradient(circle at 70% 60%, oklch(0.65 0.3 320 / 0.6) 0 6px, transparent 7px),
