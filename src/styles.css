@@ -383,16 +383,16 @@
   white-space: nowrap;
 }
 
-/* ============ PULLEY / HEADFRAME above elevator opening ============ */
+/* ============ HEADFRAME SHACK above elevator opening ============ */
 .pulley-frame {
-  position: absolute; left: 10px; top: 26px;
-  width: 130px; height: 188px;
+  position: absolute; left: -8px; top: -22px;
+  width: 168px; height: 240px;
   pointer-events: none;
   z-index: 6;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.45));
 }
 .pulley-frame svg { width: 100%; height: 100%; overflow: visible; }
-.pulley-wheel { transform-origin: 60px 22px; transform-box: fill-box; animation: pulley-spin 3.2s linear infinite; }
-@keyframes pulley-spin { to { transform: rotate(360deg); } }
+
 
 /* ============ CARTOON MINER NPC (shared look across .transporter / .loader-mini / .hut-person) ============ */
 /* Surface transporter character (mini sprite, slides between elevator and terminal) */
