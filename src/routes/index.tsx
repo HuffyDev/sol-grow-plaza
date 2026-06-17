@@ -352,9 +352,24 @@ function FarmRow({
 
 
 
+  const theme = bush.id >= 10 ? 5 : bush.id >= 7 ? 4 : bush.id >= 5 ? 3 : bush.id >= 3 ? 2 : 1;
+  const berryGlow = [
+    "oklch(0.78 0.22 145 / 0.65)", // green
+    "oklch(0.78 0.22 145 / 0.65)",
+    "oklch(0.8 0.2 60 / 0.65)",   // amber
+    "oklch(0.8 0.2 60 / 0.65)",
+    "oklch(0.78 0.22 200 / 0.65)", // cyan
+    "oklch(0.78 0.22 200 / 0.65)",
+    "oklch(0.78 0.25 320 / 0.7)",  // magenta
+    "oklch(0.78 0.25 320 / 0.7)",
+    "oklch(0.78 0.25 320 / 0.7)",
+    "oklch(0.85 0.22 80 / 0.8)",   // gold
+  ][bush.id - 1];
+
   return (
-    <section className={`relative overflow-hidden ${unlocked ? "row-active" : ""}`}>
+    <section className={`relative overflow-hidden theme-${theme} ${unlocked ? "row-active" : ""}`}>
       <div className="relative h-[380px] room-stage">
+
         {/* 3D structural shell */}
         <div className="room-3d">
           <div className="wall-back" />
