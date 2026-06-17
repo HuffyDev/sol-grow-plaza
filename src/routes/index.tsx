@@ -265,7 +265,7 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
   return (
     <div className="min-h-screen relative">
       {/* HUD */}
-      <header className="sticky top-0 z-40" style={{ background: "rgba(10,8,14,0.55)", backdropFilter: "blur(10px) saturate(140%)", borderBottom: "1px solid oklch(0.7 0.18 175 / 0.35)", boxShadow: "0 0 24px oklch(0.6 0.2 175 / 0.25)" }}>
+      <header className="sticky top-0 z-40" style={{ background: "linear-gradient(180deg, oklch(0.82 0.14 220) 0%, oklch(0.86 0.10 220) 100%)", borderBottom: "2px solid oklch(0.20 0.05 40)", boxShadow: "0 4px 12px rgba(0,0,0,0.2)" }}>
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-2 mr-2">
             <span className="text-2xl">⛏</span>
@@ -309,7 +309,11 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
           <div className={`elevator-cart ${cartLoaded ? "loaded" : ""}`} style={{ top: cartTop }}>
             <div className="cable" />
             <div className="car-box">
-              <div className="car-window" />
+              <div className="car-rider">
+                <div className="cr-zzz">z<span>z</span><span>z</span></div>
+                <div className="cr-head" />
+                <div className="cr-body" />
+              </div>
               <div className="car-coins" />
             </div>
           </div>
