@@ -236,13 +236,6 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
     showToast(`Hired ${bush.farmer}!`);
   };
 
-  const ELEVATOR_OP_COST = 20;
-  const hireElevatorOp = () => {
-    if (state.elevatorOp) return;
-    if (state.sol < ELEVATOR_OP_COST) { showToast(`Need ${fmtSol(ELEVATOR_OP_COST - state.sol)} more SOL.`); return; }
-    setState((s) => ({ ...s, sol: s.sol - ELEVATOR_OP_COST, elevatorOp: true }));
-    showToast("Elevator operator hired — auto-collecting!");
-  };
 
   const managerCost = (b: Bush) => Math.max(0.001, Math.max(b.cost, b.perClick * 60) * 8);
 
