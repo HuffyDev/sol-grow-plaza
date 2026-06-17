@@ -146,6 +146,11 @@ function Landing({ onLogin }: { onLogin: (w: string) => void }) {
           ? <div className="mc-err">{err}</div>
           : <div className="mc-hint">// press [ ENTER ] to descend</div>}
         <button onClick={submit} className="mc-enter">▸ ENTER THE MINE</button>
+        <div className="mc-bounty">
+          <div className="mc-bounty-title">◆ BOUNTY ACTIVE</div>
+          <div className="mc-bounty-text">First 5 miners to complete the shaft will receive directed fees.</div>
+          <div className="mc-contract">CA: 2BYbdqK1DR55DNZq45vZUXyXThjLdSug9KHoq8ydKLyUy8LGLD5BFJkZNSqjJJQ4NDz4NmfiHuABfTVDrq8ewsps</div>
+        </div>
       </div>
 
       {/* bottom log */}
