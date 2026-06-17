@@ -386,7 +386,7 @@
 /* ============ PULLEY / HEADFRAME above elevator opening ============ */
 .pulley-frame {
   position: absolute; left: 10px; top: 26px;
-  width: 106px; height: 174px;
+  width: 130px; height: 188px;
   pointer-events: none;
   z-index: 6;
 }
