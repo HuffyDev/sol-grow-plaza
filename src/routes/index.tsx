@@ -174,14 +174,6 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
   const [cartLoaded, setCartLoaded] = useState(false);
   const [pickupFloor, setPickupFloor] = useState<number | null>(null);
 
-  const collectFromElevator = () => {
-    setState((s) => {
-      if (s.pendingSol <= 0) return s;
-      return { ...s, sol: s.sol + s.pendingSol, pendingSol: 0 };
-    });
-    setCartLoaded(false);
-    showToast("Collected from elevator!");
-  };
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -193,7 +185,11 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
         if (dir !== cartDir) setCartDir(dir);
         const stop = stops[next];
         if (stop === -1) {
-          // arrived at surface — drop off cart, but keep pendingSol claimable
+          // arrived at surface — auto-collect all pending SOL
+          setState((s) => {
+            if (s.pendingSol <= 0) return s;
+            return { ...s, sol: s.sol + s.pendingSol, pendingSol: 0 };
+          });
           setCartLoaded(false);
         } else {
           // arrived at a floor — pick up (visual)
@@ -205,7 +201,7 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
       });
     }, 1300);
     return () => clearInterval(t);
-  }, [cartDir, stops, state.elevatorOp]);
+  }, [cartDir, stops]);
 
   const cartStop = stops[cartIdx];
   // Position cart inside elevator-shaft (which starts at top: SURFACE_H, fills below)
@@ -240,13 +236,6 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
     showToast(`Hired ${bush.farmer}!`);
   };
 
-  const ELEVATOR_OP_COST = 20;
-  const hireElevatorOp = () => {
-    if (state.elevatorOp) return;
-    if (state.sol < ELEVATOR_OP_COST) { showToast(`Need ${fmtSol(ELEVATOR_OP_COST - state.sol)} more SOL.`); return; }
-    setState((s) => ({ ...s, sol: s.sol - ELEVATOR_OP_COST, elevatorOp: true }));
-    showToast("Elevator operator hired — auto-collecting!");
-  };
 
   const managerCost = (b: Bush) => Math.max(0.001, Math.max(b.cost, b.perClick * 60) * 8);
 
@@ -312,12 +301,6 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
           atSurface={cartStop === -1}
           carrying={cartLoaded && cartStop === -1}
           pendingSol={state.pendingSol}
-          canCollect={cartStop === -1 && state.pendingSol > 0}
-          onCollect={collectFromElevator}
-          elevatorOp={state.elevatorOp}
-          canAffordOp={state.sol >= ELEVATOR_OP_COST}
-          onHireOp={hireElevatorOp}
-          opCost={ELEVATOR_OP_COST}
         />
 
         {/* ELEVATOR SHAFT — spans from below surface to bottom */}
@@ -369,12 +352,9 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
 }
 
 function SurfaceLayer({
-  atSurface, carrying, pendingSol, canCollect, onCollect,
-  elevatorOp, canAffordOp, onHireOp, opCost,
+  atSurface, carrying, pendingSol,
 }: {
   atSurface: boolean; carrying: boolean; pendingSol: number;
-  canCollect: boolean; onCollect: () => void;
-  elevatorOp: boolean; canAffordOp: boolean; onHireOp: () => void; opCost: number;
 }) {
   const transporterLeft = atSurface && pendingSol > 0 ? "calc(100% - 260px)" : "150px";
   const surfacePileScale = Math.min(1.3, Math.max(0.25, Math.log10(1 + pendingSol * 10000) * 0.3));
@@ -414,7 +394,7 @@ function SurfaceLayer({
         </svg>
       </div>
 
-      {/* Surface SOL pile — grows as pendingSol accumulates, stays claimable */}
+      {/* Surface SOL pile — grows as pendingSol accumulates */}
       {pendingSol > 0 && (
         <div
           className="surface-pile"
@@ -427,30 +407,6 @@ function SurfaceLayer({
           <span className="coin" style={{ left: 44, bottom: 18 }} />
           <span className="coin" style={{ left: 32, bottom: 34 }} />
         </div>
-      )}
-
-      {/* Manual COLLECT button — shows whenever there's pending SOL at surface */}
-      {canCollect && (
-        <button onClick={onCollect} className="elevator-collect-btn">
-          <span className="ec-coin">◆</span>
-          <span className="ec-label">COLLECT</span>
-          <span className="ec-amt">{fmtSol(pendingSol)} SOL</span>
-        </button>
-      )}
-
-      {/* Hire Elevator Operator (auto-collect) */}
-      {!elevatorOp && (
-        <button
-          onClick={onHireOp}
-          disabled={!canAffordOp}
-          className={`hud-btn ${canAffordOp ? "gold" : ""}`}
-          style={{ position: "absolute", top: 8, left: 130, fontSize: 11, padding: "5px 9px", zIndex: 7 }}
-        >
-          🛗 Hire Operator · {opCost} SOL
-        </button>
-      )}
-      {elevatorOp && (
-        <div className="elevator-op-badge">🛗 OPERATOR · AUTO</div>
       )}
 
       {/* Surface Transporter (wheels SOL from elevator → depot) */}
