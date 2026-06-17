@@ -391,7 +391,7 @@
   z-index: 6;
 }
 .pulley-frame svg { width: 100%; height: 100%; overflow: visible; }
-.pulley-wheel { transform-origin: 53px 24px; animation: pulley-spin 3.2s linear infinite; }
+.pulley-wheel { transform-origin: 60px 22px; transform-box: fill-box; animation: pulley-spin 3.2s linear infinite; }
 @keyframes pulley-spin { to { transform: rotate(360deg); } }
 
 /* ============ CARTOON MINER NPC (shared look across .transporter / .loader-mini / .hut-person) ============ */
