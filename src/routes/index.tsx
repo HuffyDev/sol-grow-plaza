@@ -241,101 +241,144 @@ function FarmRow({
   bush: Bush; index: number; unlocked: boolean; affordable: boolean; picking: boolean;
   floaters: Floater[]; onHarvest: (b: Bush, e: React.MouseEvent) => void; onUnlock: (b: Bush) => void;
 }) {
-  // 4 bushes per row visually
-  const bushCount = 4;
-  const lightColors = ["#ffcc66", "#ff66aa", "#66ddff", "#aaff66", "#ff9966"];
+  const bushCount = 3;
+  const lightColors = ["#ffd166", "#ff6fb5", "#5cd9ff", "#9bff6a", "#ff8a5b"];
   const tone = lightColors[index % lightColors.length];
 
+  const [hitBush, setHitBush] = useState<number | null>(null);
+  const [chips, setChips] = useState<{ id: number; x: number; y: number; cx: string; cy: string; cr: string }[]>([]);
+  const chipId = useRef(0);
+
+  const handleClick = (e: React.MouseEvent, i: number) => {
+    onHarvest(bush, e);
+    setHitBush(i);
+    setTimeout(() => setHitBush((h) => (h === i ? null : h)), 380);
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const cx = e.clientX - rect.left;
+    const cy = e.clientY - rect.top;
+    const burst = Array.from({ length: 6 }).map(() => {
+      const ang = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI;
+      const dist = 30 + Math.random() * 40;
+      return {
+        id: ++chipId.current,
+        x: cx, y: cy,
+        cx: `${Math.cos(ang) * dist}px`,
+        cy: `${Math.sin(ang) * dist}px`,
+        cr: `${(Math.random() - 0.5) * 540}deg`,
+      };
+    });
+    setChips((c) => [...c, ...burst]);
+    setTimeout(() => setChips((c) => c.filter((p) => !burst.some((b) => b.id === p.id))), 650);
+  };
+
   return (
-    <section className={`relative rounded-2xl overflow-hidden border border-border ${unlocked ? "row-active" : ""}`}>
-      {/* Sky/back wall */}
-      <div className="relative h-[260px]" style={{ background: "linear-gradient(180deg, oklch(0.18 0.08 290) 0%, oklch(0.22 0.10 295) 60%, oklch(0.16 0.06 145) 100%)" }}>
-        {/* String lights */}
-        <svg viewBox="0 0 1000 60" preserveAspectRatio="none" className="absolute inset-x-0 top-0 w-full h-12 pointer-events-none">
-          <path d="M0 10 Q 250 50 500 20 T 1000 15" stroke="oklch(0.4 0.05 60)" strokeWidth="1.5" fill="none" />
-          {Array.from({ length: 14 }).map((_, i) => {
-            const x = (i + 0.5) * (1000 / 14);
-            // approximate y on the curve
+    <section className={`relative rounded-2xl overflow-hidden border-2 border-border ${unlocked ? "row-active" : ""}`}>
+      <div className="relative h-[310px] grow-room overflow-hidden">
+        <div className="brick-wall" />
+        <div className="tile-floor" />
+
+        {/* string lights */}
+        <svg viewBox="0 0 1000 60" preserveAspectRatio="none" className="absolute inset-x-0 top-0 w-full h-14 pointer-events-none z-10">
+          <path d="M0 10 Q 250 50 500 20 T 1000 15" stroke="oklch(0.35 0.05 60)" strokeWidth="1.5" fill="none" />
+          {Array.from({ length: 16 }).map((_, i) => {
+            const x = (i + 0.5) * (1000 / 16);
             const t = x / 1000;
             const y = 10 + Math.sin(t * Math.PI * 2) * 18 + 8;
             return (
-              <g key={i} className="bulb" style={{ color: tone, animationDelay: `${i * 0.13}s` }}>
-                <line x1={x} y1={y - 4} x2={x} y2={y} stroke="oklch(0.4 0.05 60)" strokeWidth="1" />
-                <circle cx={x} cy={y + 4} r="4.5" fill={tone} />
+              <g key={i} className="bulb" style={{ color: tone, animationDelay: `${i * 0.11}s` }}>
+                <line x1={x} y1={y - 4} x2={x} y2={y} stroke="oklch(0.35 0.05 60)" strokeWidth="1" />
+                <circle cx={x} cy={y + 4} r="5" fill={tone} />
               </g>
             );
           })}
         </svg>
 
-        {/* Row label */}
-        <div className="absolute top-4 left-4 z-10 flex items-center gap-3">
-          <div className="bg-background/70 backdrop-blur px-3 py-1 rounded-md border border-border font-mono text-xs">
-            ROW {String(bush.id).padStart(2, "0")} · <span className="text-accent">{bush.rarity}</span>
+        {/* grow-light cones */}
+        {Array.from({ length: bushCount }).map((_, i) => (
+          <div key={i} className="ceiling-cone" style={{ left: `${28 + i * 22}%`, color: tone }} />
+        ))}
+
+        <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
+          <div className="bg-background/80 backdrop-blur px-3 py-1 rounded-md border border-border font-mono text-xs">
+            LV {String(bush.id).padStart(2, "0")} · <span className="text-accent">{bush.rarity}</span>
           </div>
           <div className="text-sm font-bold text-glow">{bush.name}</div>
         </div>
+        <div className="absolute top-3 right-3 z-20 text-xs font-mono bg-background/80 border border-border px-3 py-1 rounded-md">
+          <span className="text-accent">{fmtSol(bush.perClick)}</span> SOL / hit
+        </div>
 
-        {/* Farmer(s) on the left */}
-        <div className="absolute left-6 bottom-12 z-10 flex items-end gap-2">
-          {bush.portraits.map((src, i) => (
-            <div
-              key={i}
-              className={`farmer-wrap ${picking ? "farmer-pick" : ""}`}
-              style={{ animationDelay: `${i * 0.08}s` }}
-            >
-              <div className="relative">
-                <img
-                  src={src}
-                  alt={bush.farmer}
-                  className="w-24 h-24 md:w-28 md:h-28 rounded-full object-cover border-4 border-primary bush-glow"
-                  draggable={false}
-                />
-                {/* Name plate */}
-                <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-mono bg-background/80 border border-border px-2 py-0.5 rounded">
-                  {bush.farmer.split(" × ")[i] ?? bush.farmer}
+        <div className={`absolute inset-x-0 bottom-2 flex items-end justify-around px-4 z-10 ${!unlocked ? "row-locked" : ""}`}>
+          {Array.from({ length: bushCount }).map((_, i) => {
+            const portrait = bush.portraits[i % bush.portraits.length];
+            const farmerName = bush.farmer.split(" × ")[i % bush.portraits.length] ?? bush.farmer;
+            const swinging = picking && hitBush === i;
+            const hit = hitBush === i;
+            const hue = (index * 47 + i * 13) % 360;
+            return (
+              <div key={i} className="relative flex items-end gap-0" style={{ height: 240 }}>
+                <div className={`farmer-stage ${swinging ? "farmer-swing" : ""}`}>
+                  <img src={portrait} alt={farmerName} className="farmer-head" draggable={false} />
+                  <svg className="farmer-body" viewBox="0 0 100 130" width="96" height="120">
+                    <path d="M50 6 C 22 6 14 38 14 70 L 14 110 L 86 110 L 86 70 C 86 38 78 6 50 6 Z"
+                          fill={`hsl(${hue} 55% 35%)`} stroke="rgba(0,0,0,0.4)" strokeWidth="2" />
+                    <path d="M30 8 Q 50 22 70 8 L 70 18 Q 50 30 30 18 Z" fill="#f4ecdc" opacity="0.85" />
+                    <rect x="14" y="90" width="72" height="8" fill="#2a1d12" />
+                    <rect x="46" y="89" width="8" height="10" fill="#e0b94a" />
+                    <rect x="6" y="42" width="14" height="60" rx="7" fill={`hsl(${hue} 55% 28%)`} />
+                    <rect x="22" y="108" width="22" height="22" fill="#2a3148" />
+                    <rect x="56" y="108" width="22" height="22" fill="#2a3148" />
+                    <rect x="20" y="126" width="26" height="6" rx="2" fill="#111" />
+                    <rect x="54" y="126" width="26" height="6" rx="2" fill="#111" />
+                  </svg>
+                  <div className="farmer-arm-front" style={{ background: `hsl(${hue} 40% 60%)` }} />
+                  <svg className="pickaxe" viewBox="0 0 80 80">
+                    <line x1="10" y1="68" x2="62" y2="16" stroke="#6b4226" strokeWidth="6" strokeLinecap="round" />
+                    <path d="M50 4 L 78 22 L 70 30 L 60 24 L 56 32 L 44 20 Z" fill="#8a93a8" stroke="#111" strokeWidth="1.5" />
+                    <circle cx="36" cy="42" r="3" fill="#e0b94a" />
+                  </svg>
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-mono bg-background/85 border border-border px-2 py-0.5 rounded z-10">
+                    {farmerName}
+                  </div>
+                </div>
+
+                <div className="relative flex flex-col items-center cursor-pointer select-none" onClick={(e) => unlocked && handleClick(e, i)}>
+                  <div className={`bush-shape ${hit ? "hit" : ""}`}>
+                    <span className="berry" style={{ top: 22, left: 30 }} />
+                    <span className="berry" style={{ top: 34, right: 24 }} />
+                    <span className="berry" style={{ top: 62, left: 56 }} />
+                    <span className="berry" style={{ top: 18, right: 44 }} />
+                  </div>
+                  <div className="pot -mt-3" />
+                  {chips.map((c) => (
+                    <span
+                      key={c.id}
+                      className="chip"
+                      style={{
+                        left: c.x, top: c.y,
+                        ["--cx" as never]: c.cx,
+                        ["--cy" as never]: c.cy,
+                        ["--cr" as never]: c.cr,
+                      } as React.CSSProperties}
+                    />
+                  ))}
+                  {floaters.map((f) => (
+                    <div key={f.id} className="floater absolute pointer-events-none font-extrabold text-accent text-glow-gold text-base" style={{ left: f.x, top: f.y }}>
+                      {f.text}
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {/* Bushes */}
-        <div className={`absolute right-6 bottom-6 z-10 flex items-end gap-4 ${!unlocked ? "row-locked" : ""}`}>
-          {Array.from({ length: bushCount }).map((_, i) => (
-            <div key={i} className="relative" onClick={(e) => onHarvest(bush, e)}>
-              <div className="bush-shape">
-                {/* berries */}
-                <span className="berry" style={{ top: 18, left: 30 }} />
-                <span className="berry" style={{ top: 28, right: 24 }} />
-                <span className="berry" style={{ top: 48, left: 56 }} />
-              </div>
-              {/* floaters */}
-              {floaters.filter((f) => i === 0).map((f) => (
-                <div key={f.id} className="floater absolute pointer-events-none font-bold text-accent text-glow-gold text-sm" style={{ left: f.x, top: f.y }}>
-                  {f.text}
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-
-        {/* Ground/dirt */}
-        <div className="absolute inset-x-0 bottom-0 h-12" style={{
-          background: "linear-gradient(180deg, oklch(0.28 0.08 60) 0%, oklch(0.18 0.05 55) 100%)",
-          boxShadow: "inset 0 6px 12px oklch(0 0 0 / 0.5)",
-        }}>
-          <div className="absolute inset-0 opacity-40" style={{
-            backgroundImage: "radial-gradient(circle at 10% 50%, oklch(0 0 0 / 0.4) 2px, transparent 3px), radial-gradient(circle at 30% 70%, oklch(0 0 0 / 0.3) 2px, transparent 3px), radial-gradient(circle at 60% 40%, oklch(0 0 0 / 0.4) 2px, transparent 3px), radial-gradient(circle at 85% 60%, oklch(0 0 0 / 0.3) 2px, transparent 3px)",
-          }} />
-        </div>
-
-        {/* Lock overlay CTA */}
         {!unlocked && (
-          <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/40 backdrop-blur-sm">
+          <div className="absolute inset-0 z-30 flex items-center justify-center bg-background/55 backdrop-blur-sm">
             <button
               onClick={() => onUnlock(bush)}
               disabled={!affordable}
-              className={`px-6 py-3 rounded-xl font-bold font-mono ${affordable ? "bg-primary text-primary-foreground hover:brightness-110" : "bg-secondary text-muted-foreground cursor-not-allowed"} border border-border`}
+              className={`px-6 py-3 rounded-xl font-bold font-mono ${affordable ? "bg-primary text-primary-foreground hover:brightness-110" : "bg-secondary text-muted-foreground cursor-not-allowed"} border border-border shadow-2xl`}
             >
               🔓 Hire {bush.farmer} · {fmtSol(bush.cost)} SOL
             </button>
@@ -343,8 +386,7 @@ function FarmRow({
         )}
       </div>
 
-      {/* Row footer info */}
-      <div className="px-4 py-2 bg-background/60 border-t border-border flex items-center justify-between text-xs font-mono">
+      <div className="px-4 py-2 bg-background/70 border-t border-border flex items-center justify-between text-xs font-mono">
         <span className="text-muted-foreground italic">"{bush.tagline}"</span>
         <span className="text-accent">{fmtSol(bush.perClick)} SOL / click</span>
       </div>
