@@ -262,39 +262,110 @@
   pointer-events: none;
 }
 
-/* Exchange terminal kiosk on far right of surface */
-.exchange-terminal {
-  position: absolute; right: 24px; top: 24px;
-  width: 110px; height: 100px;
-  border-radius: 10px;
-  background: linear-gradient(180deg, oklch(0.22 0.04 295), oklch(0.10 0.03 295));
-  border: 2px solid oklch(0.78 0.22 320 / 0.8);
-  box-shadow:
-    0 0 22px oklch(0.7 0.25 320 / 0.55),
-    inset 0 0 14px oklch(0.6 0.22 320 / 0.3),
-    0 8px 14px rgba(0,0,0,0.5);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  font-family: ui-monospace, "JetBrains Mono", monospace;
-  color: oklch(0.95 0.16 320);
+/* ============ EXCHANGE DEPOT (cyberpunk trading outpost) ============ */
+.exchange-depot {
+  position: absolute; right: 28px; bottom: 4px;
+  width: 180px; height: 116px;
   z-index: 4;
+  font-family: ui-monospace, "JetBrains Mono", monospace;
 }
-.exchange-terminal .et-screen {
-  width: 86px; height: 40px;
+/* main building block (low-poly slab) */
+.exchange-depot .ed-base {
+  position: absolute; left: 16px; right: 16px; bottom: 0; height: 86px;
+  background:
+    linear-gradient(180deg, oklch(0.22 0.06 295) 0%, oklch(0.12 0.04 295) 70%, oklch(0.08 0.03 295) 100%);
+  border: 2px solid oklch(0.78 0.22 320 / 0.85);
   border-radius: 4px;
-  background: linear-gradient(180deg, oklch(0.4 0.18 145), oklch(0.2 0.1 145));
-  border: 1px solid oklch(0.55 0.2 145);
-  box-shadow: inset 0 0 8px oklch(0.7 0.25 145 / 0.4), 0 0 10px oklch(0.6 0.22 145 / 0.5);
+  box-shadow:
+    0 0 26px oklch(0.7 0.25 320 / 0.55),
+    inset 0 0 18px oklch(0.55 0.22 320 / 0.35),
+    0 8px 14px rgba(0,0,0,0.55);
+  clip-path: polygon(0 18%, 12% 0, 88% 0, 100% 18%, 100% 100%, 0 100%);
+}
+/* angled neon roof */
+.exchange-depot .ed-roof {
+  position: absolute; left: 0; right: 0; top: 4px; height: 30px;
+  background:
+    linear-gradient(180deg, oklch(0.65 0.28 320), oklch(0.35 0.2 305));
+  clip-path: polygon(10% 100%, 28% 0, 72% 0, 90% 100%);
+  box-shadow: 0 0 18px oklch(0.78 0.28 320 / 0.7);
+}
+/* glowing screen */
+.exchange-depot .ed-screen {
+  position: absolute; left: 32px; right: 32px; top: 40px; height: 26px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, oklch(0.45 0.22 145), oklch(0.22 0.12 145));
+  border: 1px solid oklch(0.6 0.22 145);
+  box-shadow:
+    inset 0 0 8px oklch(0.75 0.25 145 / 0.6),
+    0 0 12px oklch(0.6 0.22 145 / 0.6);
   display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 800; color: oklch(0.92 0.22 145);
+  font-size: 10px; font-weight: 800; color: oklch(0.95 0.22 145);
   text-shadow: 0 0 8px oklch(0.8 0.25 145 / 0.9);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
+  animation: ed-flicker 2.4s ease-in-out infinite;
 }
-.exchange-terminal .et-label {
-  margin-top: 6px;
-  font-size: 9px; letter-spacing: 0.18em;
-  color: oklch(0.85 0.12 320);
-  text-shadow: 0 0 6px oklch(0.7 0.22 320 / 0.7);
+@keyframes ed-flicker {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.25); }
 }
+/* door slot */
+.exchange-depot .ed-door {
+  position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
+  width: 22px; height: 30px;
+  background: linear-gradient(180deg, oklch(0.18 0.08 295), oklch(0.06 0.04 295));
+  border: 1px solid oklch(0.65 0.22 320 / 0.7);
+  border-bottom: none;
+  border-radius: 11px 11px 0 0;
+  box-shadow: inset 0 0 6px oklch(0.55 0.22 320 / 0.6);
+}
+/* antenna */
+.exchange-depot .ed-antenna {
+  position: absolute; left: 50%; top: -14px;
+  width: 2px; height: 22px;
+  background: oklch(0.6 0.04 295);
+  transform: translateX(-50%);
+}
+.exchange-depot .ed-antenna::after {
+  content: ""; position: absolute; left: 50%; top: -6px; transform: translateX(-50%);
+  width: 8px; height: 8px; border-radius: 50%;
+  background: oklch(0.85 0.28 25);
+  box-shadow: 0 0 10px oklch(0.85 0.28 25 / 0.95);
+  animation: live-blink 1.4s ease-in-out infinite;
+}
+/* solar panel side */
+.exchange-depot .ed-panel {
+  position: absolute; right: 4px; top: 28px;
+  width: 18px; height: 30px;
+  background:
+    repeating-linear-gradient(0deg, oklch(0.4 0.18 240) 0 4px, oklch(0.22 0.12 240) 4px 5px);
+  border: 1px solid oklch(0.55 0.18 240);
+  transform: skewY(-12deg);
+  box-shadow: 0 0 8px oklch(0.6 0.2 240 / 0.5);
+}
+.exchange-depot .ed-tag {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  bottom: -16px;
+  padding: 2px 8px;
+  font-size: 9px; letter-spacing: 0.22em;
+  color: oklch(0.92 0.18 320);
+  background: rgba(10,8,14,0.7);
+  border: 1px solid oklch(0.75 0.22 320 / 0.7);
+  border-radius: 4px;
+  text-shadow: 0 0 6px oklch(0.78 0.22 320 / 0.8);
+  white-space: nowrap;
+}
+
+/* ============ PULLEY / HEADFRAME above elevator opening ============ */
+.pulley-frame {
+  position: absolute; left: 10px; top: -34px;
+  width: 106px; height: 174px;
+  pointer-events: none;
+  z-index: 6;
+}
+.pulley-frame svg { width: 100%; height: 100%; overflow: visible; }
+.pulley-wheel { transform-origin: 53px 24px; animation: pulley-spin 3.2s linear infinite; }
+@keyframes pulley-spin { to { transform: rotate(360deg); } }
 
 /* Surface transporter character (mini sprite, slides between elevator and terminal) */
 .transporter {
