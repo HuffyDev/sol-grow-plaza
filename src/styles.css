@@ -491,7 +491,7 @@
 /* ============ MINE SHAFT (per level) ============ */
 .mine-shaft {
   position: relative;
-  height: 200px;
+  height: 240px;
   /* The shaft is a carved opening inside the cave; pull left to start past elevator */
   padding-left: 130px;  /* clear the elevator column + frame */
   padding-right: 24px;
