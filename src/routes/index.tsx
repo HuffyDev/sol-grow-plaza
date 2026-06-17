@@ -55,12 +55,14 @@ function fmtSol(n: number) {
 
 type SaveState = {
   sol: number;
+  pendingSol: number;
   totalEarned: number;
   totalClicks: number;
   unlocked: number[];
   managers: number[];
+  elevatorOp: boolean;
 };
-const defaultState = (): SaveState => ({ sol: 0, totalEarned: 0, totalClicks: 0, unlocked: [1], managers: [] });
+const defaultState = (): SaveState => ({ sol: 0, pendingSol: 0, totalEarned: 0, totalClicks: 0, unlocked: [1], managers: [], elevatorOp: false });
 
 function loadState(wallet: string): SaveState {
   try {
