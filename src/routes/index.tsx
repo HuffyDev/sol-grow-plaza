@@ -138,6 +138,23 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
 
   useEffect(() => { saveState(wallet, state); }, [wallet, state]);
 
+  // Auto-harvest from hired managers (1 click/sec each)
+  useEffect(() => {
+    if (state.managers.length === 0) return;
+    const t = setInterval(() => {
+      setState((s) => {
+        let gained = 0;
+        for (const id of s.managers) {
+          const b = BUSHES.find((x) => x.id === id);
+          if (b && s.unlocked.includes(id)) gained += b.perClick;
+        }
+        if (gained === 0) return s;
+        return { ...s, sol: s.sol + gained, totalEarned: s.totalEarned + gained };
+      });
+    }, 1000);
+    return () => clearInterval(t);
+  }, [state.managers]);
+
   const showToast = (m: string) => {
     setToast(m);
     setTimeout(() => setToast(null), 2400);
@@ -165,10 +182,22 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
     showToast(`Hired ${bush.farmer}!`);
   };
 
+  const managerCost = (b: Bush) => Math.max(0.001, Math.max(b.cost, b.perClick * 60) * 8);
+
+  const hireManager = (bush: Bush) => {
+    if (state.managers.includes(bush.id)) return;
+    if (!state.unlocked.includes(bush.id)) { showToast("Unlock this level first."); return; }
+    const cost = managerCost(bush);
+    if (state.sol < cost) { showToast(`Need ${fmtSol(cost - state.sol)} more SOL for manager.`); return; }
+    setState((s) => ({ ...s, sol: s.sol - cost, managers: [...s.managers, bush.id] }));
+    showToast(`Manager hired for ${bush.name}! Auto-farming…`);
+  };
+
   const reset = () => {
     if (!confirm("Burn this farm and start over?")) return;
     setState(defaultState());
   };
+
 
   const nextLocked = useMemo(() => BUSHES.find((b) => !state.unlocked.includes(b.id)), [state.unlocked]);
 
