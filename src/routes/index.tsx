@@ -411,24 +411,39 @@ function MineShaft({
   const [autoPops, setAutoPops] = useState<{ id: number; text: string }[]>([]);
   const [autoSwing, setAutoSwing] = useState(false);
   const [shattering, setShattering] = useState(false);
+  const [pileLevel, setPileLevel] = useState(0); // 0..1+, scales the crystal pile
+  const [loaderWalking, setLoaderWalking] = useState(false);
 
   const chipId = useRef(0);
   const popId = useRef(0);
   const portrait = bush.portraits[0];
 
-  // Auto-mine visual tick — pickaxe swing + popup
+  const bumpPile = () => setPileLevel((p) => Math.min(1.3, p + 0.18));
+
+  // Auto-mine visual tick — pickaxe swing + popup + pile grows
   useEffect(() => {
     if (!hasManager || !unlocked || autoTick === 0) return;
     const id = ++popId.current;
     setAutoPops((p) => [...p, { id, text: `+${fmtSol(bush.perClick)}` }]);
     setAutoSwing(true);
+    bumpPile();
     setTimeout(() => setAutoPops((p) => p.filter((x) => x.id !== id)), 850);
     setTimeout(() => setAutoSwing(false), 450);
   }, [autoTick, hasManager, unlocked, bush.perClick]);
 
+  // Elevator arrives → loader runs the pile to the cart, pile resets
+  useEffect(() => {
+    if (!pickup || pileLevel === 0) return;
+    setLoaderWalking(true);
+    const t1 = setTimeout(() => setPileLevel(0), 280);
+    const t2 = setTimeout(() => setLoaderWalking(false), 900);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [pickup, pileLevel]);
+
   const handleClick = (e: React.MouseEvent) => {
     if (!unlocked) return;
     onHarvest(bush, e);
+    bumpPile();
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const cx = e.clientX - rect.left;
     const cy = e.clientY - rect.top;
@@ -450,22 +465,52 @@ function MineShaft({
   const swinging = (picking || autoSwing) && unlocked;
   const hue = (index * 47) % 360;
 
+  // Layout anchors (px from left edge of shaft cavity)
+  const pileLeft = 28;       // SOL crystal pile
+  const loaderRest = 90;     // loader stands next to pile
+  const loaderToCart = 6;    // loader pushes cart to elevator entry
+  const cartRest = 130;      // mini cart sits next to pile
+  const cartToElevator = 8;  // cart docks at left edge for pickup
+
   return (
     <div className="mine-shaft" style={{ height: SHAFT_H }}>
       <div className="tunnel-link" />
       <div className="shaft-cavity">
 
-        {/* SOL pile (left, by elevator entry) */}
-        <div className={`sol-pile ${pickup ? "pickup" : ""}`}>
+        {/* SOL crystal pile (purple, scales with --pile) */}
+        <div
+          className={`sol-pile ${pickup ? "pickup" : ""}`}
+          style={{ left: pileLeft, ["--pile" as never]: pileLevel } as React.CSSProperties}
+        >
           <span className="coin" style={{ left: 8,  bottom: 0 }} />
-          <span className="coin" style={{ left: 30, bottom: 0 }} />
-          <span className="coin" style={{ left: 52, bottom: 0 }} />
-          <span className="coin" style={{ left: 18, bottom: 18 }} />
-          <span className="coin" style={{ left: 40, bottom: 18 }} />
-          <span className="coin" style={{ left: 28, bottom: 34 }} />
+          <span className="coin" style={{ left: 32, bottom: 0 }} />
+          <span className="coin" style={{ left: 56, bottom: 0 }} />
+          <span className="coin" style={{ left: 20, bottom: 18 }} />
+          <span className="coin" style={{ left: 44, bottom: 18 }} />
+          <span className="coin" style={{ left: 32, bottom: 34 }} />
         </div>
 
-        {/* Ore wall (right) — also the click target */}
+        {/* Loader miner (walks pile→elevator on pickup) */}
+        <div
+          className={`loader-mini ${loaderWalking ? "walking" : ""}`}
+          style={{ left: loaderWalking ? loaderToCart : loaderRest }}
+        >
+          <div className="lm-body" />
+          <div className="lm-head" />
+        </div>
+
+        {/* Mini hauler cart next to pile */}
+        <div
+          className={`loader-cart ${pickup && loaderWalking ? "" : pileLevel < 0.05 ? "hidden" : ""}`}
+          style={{ left: loaderWalking ? cartToElevator : cartRest }}
+        >
+          <div className="lc-box" />
+          <div className="lc-load" />
+          <div className="lc-wheel l" />
+          <div className="lc-wheel r" />
+        </div>
+
+        {/* Ore wall (right) — click target */}
         <div className="ore-wall" onClick={handleClick} style={{ cursor: unlocked ? "pointer" : "default" }}>
           {chips.map((c) => (
             <span
@@ -491,8 +536,8 @@ function MineShaft({
           ))}
         </div>
 
-        {/* Miner sprite (center, facing ore wall) */}
-        <div className="absolute flex flex-col items-center" style={{ left: "42%", bottom: 18, transform: "translateX(-50%)", zIndex: 5 }}>
+        {/* Miner sprite — pressed up against the ore wall */}
+        <div className="absolute flex flex-col items-center" style={{ right: "57%", bottom: 18, zIndex: 5 }}>
           <div className={`farmer-stage char-sprite ${swinging ? "farmer-swing" : ""}`}>
             <div className="floor-shadow" />
             <img src={portrait} alt={bush.farmer} className="farmer-head" draggable={false} />
@@ -517,6 +562,7 @@ function MineShaft({
           </div>
           <span className="name-tag">{bush.farmer}{hasManager ? " · 👔" : ""}</span>
         </div>
+
 
         {/* Control panel (right edge) */}
         <div className="shaft-panel">
