@@ -101,7 +101,7 @@ function Landing({ onLogin }: { onLogin: (w: string) => void }) {
   };
   return (
     <div className="mine-console">
-      <div className="mc-rock" />
+      <div className="mc-rock" style={{ backgroundImage: `url(${mineBg.url})` }} />
       <div className="mc-grid" />
       <div className="mc-vignette" />
       <div className="mc-scanlines" />
