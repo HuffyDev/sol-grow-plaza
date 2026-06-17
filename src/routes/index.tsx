@@ -134,6 +134,7 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
   const [floaters, setFloaters] = useState<Floater[]>([]);
   const [pickingRow, setPickingRow] = useState<number | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [autoTick, setAutoTick] = useState(0);
   const flId = useRef(0);
 
   useEffect(() => { saveState(wallet, state); }, [wallet, state]);
@@ -151,9 +152,11 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
         if (gained === 0) return s;
         return { ...s, sol: s.sol + gained, totalEarned: s.totalEarned + gained };
       });
+      setAutoTick((n) => n + 1);
     }, 1000);
     return () => clearInterval(t);
   }, [state.managers]);
+
 
   const showToast = (m: string) => {
     setToast(m);
@@ -209,29 +212,29 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
   return (
     <div className="min-h-screen relative" style={{ background: "oklch(0.18 0.02 40)" }}>
       {/* HUD */}
-      <header className="sticky top-0 z-30 backdrop-blur bg-background/70 border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4 flex-wrap">
-          <div className="flex items-center gap-2">
+      <header className="sticky top-0 z-30" style={{ background: "rgba(10,8,14,0.55)", backdropFilter: "blur(10px) saturate(140%)", borderBottom: "1px solid oklch(0.7 0.18 175 / 0.35)", boxShadow: "0 0 24px oklch(0.6 0.2 175 / 0.25)" }}>
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 mr-2">
             <span className="text-2xl">🌱</span>
-            <span className="font-black text-glow text-lg">SolFarm</span>
-            <span className="text-[10px] font-mono text-muted-foreground ml-1 px-2 py-0.5 border border-border rounded">WAREHOUSE</span>
+            <span className="font-black text-glow text-lg tracking-widest">SOL<span className="text-accent">FARM</span></span>
+            <span className="hud-pill">WAREHOUSE</span>
           </div>
-          <div className="flex-1 flex items-center gap-4 flex-wrap text-sm font-mono">
-            <Stat label="BALANCE" value={`${fmtSol(state.sol)} SOL`} accent />
-            <Stat label="EARNED" value={`${fmtSol(state.totalEarned)} SOL`} />
-            <Stat label="CLICKS" value={state.totalClicks.toLocaleString()} />
-            <Stat label="FARMERS" value={`${state.unlocked.length}/10`} />
-            <Stat label="AUTO" value={`${fmtSol(autoPerSec)} SOL/s`} />
+          <div className="flex-1 flex items-center gap-2 flex-wrap">
+            <span className="hud-pill gold"><span className="lbl">BAL</span><span className="val">{fmtSol(state.sol)}</span>SOL</span>
+            <span className="hud-pill"><span className="lbl">EARNED</span><span className="val">{fmtSol(state.totalEarned)}</span></span>
+            <span className="hud-pill"><span className="lbl">CLICKS</span><span className="val">{state.totalClicks.toLocaleString()}</span></span>
+            <span className="hud-pill magenta"><span className="lbl">FARMERS</span><span className="val">{state.unlocked.length}/10</span></span>
+            <span className="hud-pill"><span className="lbl">AUTO</span><span className="val">{fmtSol(autoPerSec)}</span>SOL/s</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-muted-foreground hidden md:inline">{wallet.slice(0,4)}…{wallet.slice(-4)}</span>
-            <button onClick={reset} className="text-xs px-3 py-1.5 rounded-md border border-border hover:bg-secondary">Reset</button>
-            <button onClick={onLogout} className="text-xs px-3 py-1.5 rounded-md border border-border hover:bg-secondary">Logout</button>
+            <span className="hud-pill"><span className="lbl">WALLET</span><span className="val">{wallet.slice(0,4)}…{wallet.slice(-4)}</span></span>
+            <button onClick={reset} className="hud-btn">Reset</button>
+            <button onClick={onLogout} className="hud-btn">Logout</button>
           </div>
         </div>
         {nextLocked && (
-          <div className="max-w-7xl mx-auto px-4 pb-3 text-xs font-mono text-muted-foreground">
-            Next farmer: <span className="text-accent">{nextLocked.farmer}</span> — costs {fmtSol(nextLocked.cost)} SOL
+          <div className="max-w-7xl mx-auto px-4 pb-3">
+            <span className="hud-pill magenta"><span className="lbl">NEXT</span>{nextLocked.farmer} · <span className="val">{fmtSol(nextLocked.cost)}</span> SOL</span>
           </div>
         )}
       </header>
@@ -240,24 +243,29 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
       <main className="w-full px-0 py-0 relative">
         <div className="flex flex-col gap-0 w-full">
           {BUSHES.map((bush, idx) => (
-            <FarmRow
-              key={bush.id}
-              bush={bush}
-              index={idx}
-              unlocked={state.unlocked.includes(bush.id)}
-              affordable={state.sol >= bush.cost}
-              picking={pickingRow === bush.id}
-              floaters={floaters}
-              onHarvest={harvest}
-              onUnlock={unlock}
-              hasManager={state.managers.includes(bush.id)}
-              managerCost={managerCost(bush)}
-              canAffordManager={state.sol >= managerCost(bush)}
-              onHireManager={hireManager}
-              isLast={idx === BUSHES.length - 1}
-            />
+            <div key={bush.id}>
+              {idx > 0 && <div className="floor-beam" />}
+              <FarmRow
+                bush={bush}
+                index={idx}
+                unlocked={state.unlocked.includes(bush.id)}
+                affordable={state.sol >= bush.cost}
+                picking={pickingRow === bush.id}
+                floaters={floaters}
+                onHarvest={harvest}
+                onUnlock={unlock}
+                hasManager={state.managers.includes(bush.id)}
+                managerCost={managerCost(bush)}
+                canAffordManager={state.sol >= managerCost(bush)}
+                onHireManager={hireManager}
+                isLast={idx === BUSHES.length - 1}
+                autoTick={autoTick}
+              />
+            </div>
           ))}
         </div>
+
+
 
 
 
@@ -287,12 +295,12 @@ function Stat({ label, value, accent = false }: { label: string; value: string; 
 
 function FarmRow({
   bush, index, unlocked, affordable, picking, floaters, onHarvest, onUnlock,
-  hasManager, managerCost, canAffordManager, onHireManager, isLast,
+  hasManager, managerCost, canAffordManager, onHireManager, isLast, autoTick,
 }: {
   bush: Bush; index: number; unlocked: boolean; affordable: boolean; picking: boolean;
   floaters: Floater[]; onHarvest: (b: Bush, e: React.MouseEvent) => void; onUnlock: (b: Bush) => void;
   hasManager: boolean; managerCost: number; canAffordManager: boolean;
-  onHireManager: (b: Bush) => void; isLast: boolean;
+  onHireManager: (b: Bush) => void; isLast: boolean; autoTick: number;
 }) {
 
   const lightColors = ["#ffd166", "#ff6fb5", "#5cd9ff", "#9bff6a", "#ff8a5b"];
@@ -300,7 +308,25 @@ function FarmRow({
 
   const [hitBush, setHitBush] = useState<number | null>(null);
   const [chips, setChips] = useState<{ id: number; x: number; y: number; cx: string; cy: string; cr: string }[]>([]);
+  const [autoPops, setAutoPops] = useState<{ id: number; i: number; text: string }[]>([]);
+  const [autoSwingI, setAutoSwingI] = useState<number | null>(null);
   const chipId = useRef(0);
+  const popId = useRef(0);
+
+  const bushPositions = [22, 50, 78]; // % across floor
+
+  // Auto-farmer visual tick — fire a floater + bounce on each managed bush
+  useEffect(() => {
+    if (!hasManager || !unlocked || autoTick === 0) return;
+    const i = autoTick % bushPositions.length;
+    const id = ++popId.current;
+    setAutoPops((p) => [...p, { id, i, text: `+${fmtSol(bush.perClick)}` }]);
+    setAutoSwingI(i);
+    setTimeout(() => setAutoPops((p) => p.filter((x) => x.id !== id)), 850);
+    setTimeout(() => setAutoSwingI((s) => (s === i ? null : s)), 450);
+    setHitBush(i);
+    setTimeout(() => setHitBush((h) => (h === i ? null : h)), 380);
+  }, [autoTick, hasManager, unlocked, bush.perClick]);
 
   const handleClick = (e: React.MouseEvent, i: number) => {
     onHarvest(bush, e);
@@ -324,7 +350,7 @@ function FarmRow({
     setTimeout(() => setChips((c) => c.filter((p) => !burst.some((b) => b.id === p.id))), 650);
   };
 
-  const bushPositions = [22, 50, 78]; // % across floor
+
 
   return (
     <section className={`relative overflow-hidden ${unlocked ? "row-active" : ""}`}>
@@ -369,15 +395,14 @@ function FarmRow({
         <div className="crate" style={{ bottom: 32, right: 36, transform: "scale(0.85)" }} />
         <div className="crate" style={{ bottom: 70, left: 18, transform: "scale(0.7)" }} />
 
-        {/* Row header chips */}
+        {/* Row header chips — HUD */}
         <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
-          <div className="bg-background/85 backdrop-blur px-3 py-1 rounded-md border border-border font-mono text-xs">
-            LV {String(bush.id).padStart(2, "0")} · <span className="text-accent">{bush.rarity}</span>
-          </div>
-          <div className="text-sm font-bold text-glow">{bush.name}</div>
+          <span className="hud-pill"><span className="lbl">LV</span><span className="val">{String(bush.id).padStart(2, "0")}</span></span>
+          <span className="hud-pill magenta">{bush.rarity}</span>
+          <span className="hud-pill gold">{bush.name}</span>
         </div>
-        <div className="absolute top-3 right-3 z-20 text-xs font-mono bg-background/85 border border-border px-3 py-1 rounded-md">
-          <span className="text-accent">{fmtSol(bush.perClick)}</span> SOL / hit
+        <div className="absolute top-3 right-3 z-20">
+          <span className="hud-pill gold"><span className="lbl">RATE</span><span className="val">{fmtSol(bush.perClick)}</span>SOL/hit</span>
         </div>
 
         {/* Actors on the floor */}
@@ -385,85 +410,90 @@ function FarmRow({
           {bushPositions.map((x, i) => {
             const portrait = bush.portraits[i % bush.portraits.length];
             const farmerName = bush.farmer.split(" × ")[i % bush.portraits.length] ?? bush.farmer;
-            const swinging = picking && hitBush === i;
+            const swinging = (picking && hitBush === i) || autoSwingI === i;
             const hit = hitBush === i;
             const hue = (index * 47 + i * 23) % 360;
-            // Scale actors based on depth (center = larger illusion not needed; keep uniform)
+            const popsHere = autoPops.filter((p) => p.i === i);
             return (
               <div
                 key={i}
-                className="absolute flex items-end gap-1"
-                style={{ left: `${x}%`, bottom: 24, transform: "translateX(-50%)" }}
+                className="absolute flex flex-col items-center"
+                style={{ left: `${x}%`, bottom: 12, transform: "translateX(-50%)" }}
               >
-                {/* Farmer */}
-                <div className={`farmer-stage ${swinging ? "farmer-swing" : ""}`} style={{ marginRight: -8 }}>
-                  <div className="floor-shadow" />
-                  <img src={portrait} alt={farmerName} className="farmer-head" draggable={false} />
-                  <svg className="farmer-body" viewBox="0 0 100 130" width="92" height="118">
-                    <path d="M50 6 C 22 6 14 38 14 70 L 14 110 L 86 110 L 86 70 C 86 38 78 6 50 6 Z"
-                          fill={`hsl(${hue} 58% 38%)`} stroke="rgba(0,0,0,0.45)" strokeWidth="2" />
-                    <path d="M30 8 Q 50 22 70 8 L 70 18 Q 50 30 30 18 Z" fill="#f4ecdc" opacity="0.9" />
-                    <rect x="14" y="90" width="72" height="8" fill="#2a1d12" />
-                    <rect x="46" y="89" width="8" height="10" fill="#e0b94a" />
-                    <rect x="6" y="42" width="14" height="60" rx="7" fill={`hsl(${hue} 58% 30%)`} />
-                    <rect x="22" y="108" width="22" height="22" fill="#2a3148" />
-                    <rect x="56" y="108" width="22" height="22" fill="#2a3148" />
-                    <rect x="20" y="126" width="26" height="6" rx="2" fill="#111" />
-                    <rect x="54" y="126" width="26" height="6" rx="2" fill="#111" />
-                  </svg>
-                  <div className="farmer-arm-front" style={{ background: `hsl(${hue} 40% 62%)` }} />
-                  <svg className="pickaxe" viewBox="0 0 80 80">
-                    <line x1="10" y1="68" x2="62" y2="16" stroke="#6b4226" strokeWidth="6" strokeLinecap="round" />
-                    <path d="M50 4 L 78 22 L 70 30 L 60 24 L 56 32 L 44 20 Z" fill="#8a93a8" stroke="#111" strokeWidth="1.5" />
-                    <circle cx="36" cy="42" r="3" fill="#e0b94a" />
-                  </svg>
-                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-mono bg-background/90 border border-border px-2 py-0.5 rounded z-10">
-                    {farmerName}
+                <div className="flex items-end gap-1">
+                  {/* Unified character sprite */}
+                  <div className={`farmer-stage char-sprite ${swinging ? "farmer-swing" : ""}`} style={{ marginRight: -8 }}>
+                    <div className="floor-shadow" />
+                    <img src={portrait} alt={farmerName} className="farmer-head" draggable={false} />
+                    <svg className="farmer-body" viewBox="0 0 100 130" width="92" height="118">
+                      <path d="M50 6 C 22 6 14 38 14 70 L 14 110 L 86 110 L 86 70 C 86 38 78 6 50 6 Z"
+                            fill={`hsl(${hue} 58% 38%)`} stroke="rgba(0,0,0,0.45)" strokeWidth="2" />
+                      <path d="M30 8 Q 50 22 70 8 L 70 18 Q 50 30 30 18 Z" fill="#f4ecdc" opacity="0.9" />
+                      <rect x="14" y="90" width="72" height="8" fill="#2a1d12" />
+                      <rect x="46" y="89" width="8" height="10" fill="#e0b94a" />
+                      <rect x="6" y="42" width="14" height="60" rx="7" fill={`hsl(${hue} 58% 30%)`} />
+                      <rect x="22" y="108" width="22" height="22" fill="#2a3148" />
+                      <rect x="56" y="108" width="22" height="22" fill="#2a3148" />
+                      <rect x="20" y="126" width="26" height="6" rx="2" fill="#111" />
+                      <rect x="54" y="126" width="26" height="6" rx="2" fill="#111" />
+                    </svg>
+                    <div className="farmer-arm-front" style={{ background: `hsl(${hue} 40% 62%)` }} />
+                    <svg className="pickaxe" viewBox="0 0 80 80">
+                      <line x1="10" y1="68" x2="62" y2="16" stroke="#6b4226" strokeWidth="6" strokeLinecap="round" />
+                      <path d="M50 4 L 78 22 L 70 30 L 60 24 L 56 32 L 44 20 Z" fill="#8a93a8" stroke="#111" strokeWidth="1.5" />
+                      <circle cx="36" cy="42" r="3" fill="#e0b94a" />
+                    </svg>
+                  </div>
+
+                  {/* Bush */}
+                  <div className="relative flex flex-col items-center cursor-pointer select-none" onClick={(e) => unlocked && handleClick(e, i)}>
+                    <div className="floor-shadow" style={{ bottom: -2 }} />
+                    <div className={`bush-shape ${hit ? "hit" : ""}`}>
+                      <span className="berry" style={{ top: 22, left: 30 }} />
+                      <span className="berry" style={{ top: 34, right: 24 }} />
+                      <span className="berry" style={{ top: 62, left: 56 }} />
+                      <span className="berry" style={{ top: 18, right: 44 }} />
+                    </div>
+                    <div className="pot -mt-3" />
+                    {chips.map((c) => (
+                      <span
+                        key={c.id}
+                        className="chip"
+                        style={{
+                          left: c.x, top: c.y,
+                          ["--cx" as never]: c.cx,
+                          ["--cy" as never]: c.cy,
+                          ["--cr" as never]: c.cr,
+                        } as React.CSSProperties}
+                      />
+                    ))}
+                    {floaters.map((f) => (
+                      <div key={f.id} className="floater absolute text-base" style={{ left: f.x, top: f.y }}>
+                        {f.text}
+                      </div>
+                    ))}
+                    {popsHere.map((p) => (
+                      <div key={p.id} className="floater auto absolute text-sm" style={{ left: "50%", top: 30 }}>
+                        {p.text}
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                {/* Bush */}
-                <div className="relative flex flex-col items-center cursor-pointer select-none" onClick={(e) => unlocked && handleClick(e, i)}>
-                  <div className="floor-shadow" style={{ bottom: -2 }} />
-                  <div className={`bush-shape ${hit ? "hit" : ""}`}>
-                    <span className="berry" style={{ top: 22, left: 30 }} />
-                    <span className="berry" style={{ top: 34, right: 24 }} />
-                    <span className="berry" style={{ top: 62, left: 56 }} />
-                    <span className="berry" style={{ top: 18, right: 44 }} />
-                  </div>
-                  <div className="pot -mt-3" />
-                  {chips.map((c) => (
-                    <span
-                      key={c.id}
-                      className="chip"
-                      style={{
-                        left: c.x, top: c.y,
-                        ["--cx" as never]: c.cx,
-                        ["--cy" as never]: c.cy,
-                        ["--cr" as never]: c.cr,
-                      } as React.CSSProperties}
-                    />
-                  ))}
-                  {floaters.map((f) => (
-                    <div key={f.id} className="floater absolute pointer-events-none font-extrabold text-accent text-glow-gold text-base" style={{ left: f.x, top: f.y }}>
-                      {f.text}
-                    </div>
-                  ))}
-                </div>
+                {/* Name tag — floats cleanly underneath sprite */}
+                <span className="name-tag">{farmerName}{hasManager ? " · 👔" : ""}</span>
               </div>
             );
           })}
         </div>
 
-
-
-
         {!unlocked && (
-          <div className="absolute inset-0 z-30 flex items-center justify-center bg-background/55 backdrop-blur-sm">
+          <div className="absolute inset-0 z-30 flex items-center justify-center" style={{ background: "rgba(8,6,12,0.5)", backdropFilter: "blur(6px)" }}>
             <button
               onClick={() => onUnlock(bush)}
               disabled={!affordable}
-              className={`px-6 py-3 rounded-xl font-bold font-mono ${affordable ? "bg-primary text-primary-foreground hover:brightness-110" : "bg-secondary text-muted-foreground cursor-not-allowed"} border border-border shadow-2xl`}
+              className={`hud-btn ${affordable ? "gold" : ""}`}
+              style={{ padding: "0.7rem 1.2rem", fontSize: 13 }}
             >
               🔓 Hire {bush.farmer} · {fmtSol(bush.cost)} SOL
             </button>
@@ -471,29 +501,31 @@ function FarmRow({
         )}
       </div>
 
-
-      <div className="px-4 py-2 bg-background/80 border-t border-border flex items-center justify-between gap-3 text-xs font-mono flex-wrap">
-        <span className="text-muted-foreground italic truncate">"{bush.tagline}"</span>
+      <div className="px-4 py-2 flex items-center justify-between gap-3 flex-wrap" style={{ background: "rgba(8,6,12,0.55)", backdropFilter: "blur(8px)", borderTop: "1px solid oklch(0.6 0.18 175 / 0.25)" }}>
+        <span className="hud-pill" style={{ textTransform: "none", letterSpacing: 0 }}>
+          <span style={{ fontStyle: "italic", color: "oklch(0.75 0.04 175)" }}>"{bush.tagline}"</span>
+        </span>
         <div className="flex items-center gap-2">
-          <span className="text-accent">{fmtSol(bush.perClick)} SOL / click</span>
+          <span className="hud-pill gold"><span className="lbl">PER HIT</span><span className="val">{fmtSol(bush.perClick)}</span>SOL</span>
           {unlocked && (
             hasManager ? (
-              <span className="px-2 py-1 rounded border border-primary text-primary bg-primary/10">
-                👔 MANAGER · auto +{fmtSol(bush.perClick)}/s
+              <span className="hud-pill" style={{ borderColor: "oklch(0.8 0.22 145 / 0.7)", boxShadow: "0 0 14px oklch(0.7 0.22 145 / 0.5)" }}>
+                👔 <span className="val" style={{ color: "oklch(0.92 0.22 145)" }}>AUTO +{fmtSol(bush.perClick)}/s</span>
               </span>
             ) : (
               <button
                 onClick={() => onHireManager(bush)}
                 disabled={!canAffordManager}
-                className={`px-2 py-1 rounded border ${canAffordManager ? "border-accent text-accent hover:bg-accent/10" : "border-border text-muted-foreground cursor-not-allowed"}`}
+                className={`hud-btn ${canAffordManager ? "success" : ""}`}
                 title="Hires a manager who auto-clicks this bush once per second."
               >
-                👔 Hire manager · {fmtSol(managerCost)} SOL
+                👔 Hire Manager · {fmtSol(managerCost)} SOL
               </button>
             )
           )}
         </div>
       </div>
+
 
     </section>
   );
