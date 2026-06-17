@@ -58,17 +58,25 @@ type SaveState = {
   totalEarned: number;
   totalClicks: number;
   unlocked: number[];
+  managers: number[];
 };
-const defaultState = (): SaveState => ({ sol: 0, totalEarned: 0, totalClicks: 0, unlocked: [1] });
+const defaultState = (): SaveState => ({ sol: 0, totalEarned: 0, totalClicks: 0, unlocked: [1], managers: [] });
+
 
 function loadState(wallet: string): SaveState {
   try {
     const raw = localStorage.getItem(STORAGE_PREFIX + wallet);
     if (!raw) return defaultState();
     const p = JSON.parse(raw) as Partial<SaveState>;
-    return { ...defaultState(), ...p, unlocked: p.unlocked && p.unlocked.length ? p.unlocked : [1] };
+    return {
+      ...defaultState(),
+      ...p,
+      unlocked: p.unlocked && p.unlocked.length ? p.unlocked : [1],
+      managers: p.managers ?? [],
+    };
   } catch { return defaultState(); }
 }
+
 function saveState(wallet: string, s: SaveState) {
   localStorage.setItem(STORAGE_PREFIX + wallet, JSON.stringify(s));
 }
@@ -130,6 +138,23 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
 
   useEffect(() => { saveState(wallet, state); }, [wallet, state]);
 
+  // Auto-harvest from hired managers (1 click/sec each)
+  useEffect(() => {
+    if (state.managers.length === 0) return;
+    const t = setInterval(() => {
+      setState((s) => {
+        let gained = 0;
+        for (const id of s.managers) {
+          const b = BUSHES.find((x) => x.id === id);
+          if (b && s.unlocked.includes(id)) gained += b.perClick;
+        }
+        if (gained === 0) return s;
+        return { ...s, sol: s.sol + gained, totalEarned: s.totalEarned + gained };
+      });
+    }, 1000);
+    return () => clearInterval(t);
+  }, [state.managers]);
+
   const showToast = (m: string) => {
     setToast(m);
     setTimeout(() => setToast(null), 2400);
@@ -157,29 +182,46 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
     showToast(`Hired ${bush.farmer}!`);
   };
 
+  const managerCost = (b: Bush) => Math.max(0.001, Math.max(b.cost, b.perClick * 60) * 8);
+
+  const hireManager = (bush: Bush) => {
+    if (state.managers.includes(bush.id)) return;
+    if (!state.unlocked.includes(bush.id)) { showToast("Unlock this level first."); return; }
+    const cost = managerCost(bush);
+    if (state.sol < cost) { showToast(`Need ${fmtSol(cost - state.sol)} more SOL for manager.`); return; }
+    setState((s) => ({ ...s, sol: s.sol - cost, managers: [...s.managers, bush.id] }));
+    showToast(`Manager hired for ${bush.name}! Auto-farming…`);
+  };
+
   const reset = () => {
     if (!confirm("Burn this farm and start over?")) return;
     setState(defaultState());
   };
 
+
   const nextLocked = useMemo(() => BUSHES.find((b) => !state.unlocked.includes(b.id)), [state.unlocked]);
 
-  return (
-    <div className="min-h-screen farm-sky relative">
-      <div className="stars absolute inset-0 h-[60vh]" />
+  const autoPerSec = state.managers.reduce((acc, id) => {
+    const b = BUSHES.find((x) => x.id === id);
+    return acc + (b ? b.perClick : 0);
+  }, 0);
 
+  return (
+    <div className="min-h-screen relative" style={{ background: "oklch(0.08 0.01 60)" }}>
       {/* HUD */}
-      <header className="sticky top-0 z-30 backdrop-blur bg-background/60 border-b border-border">
+      <header className="sticky top-0 z-30 backdrop-blur bg-background/70 border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4 flex-wrap">
           <div className="flex items-center gap-2">
             <span className="text-2xl">🌱</span>
             <span className="font-black text-glow text-lg">SolFarm</span>
+            <span className="text-[10px] font-mono text-muted-foreground ml-1 px-2 py-0.5 border border-border rounded">WAREHOUSE</span>
           </div>
           <div className="flex-1 flex items-center gap-4 flex-wrap text-sm font-mono">
             <Stat label="BALANCE" value={`${fmtSol(state.sol)} SOL`} accent />
             <Stat label="EARNED" value={`${fmtSol(state.totalEarned)} SOL`} />
             <Stat label="CLICKS" value={state.totalClicks.toLocaleString()} />
             <Stat label="FARMERS" value={`${state.unlocked.length}/10`} />
+            <Stat label="AUTO" value={`${fmtSol(autoPerSec)} SOL/s`} />
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-mono text-muted-foreground hidden md:inline">{wallet.slice(0,4)}…{wallet.slice(-4)}</span>
@@ -194,9 +236,9 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
         )}
       </header>
 
-      {/* Farm */}
-      <main className="max-w-7xl mx-auto px-4 py-6 relative">
-        <div className="flex flex-col gap-6">
+      {/* Farm — continuous warehouse */}
+      <main className="max-w-7xl mx-auto px-0 sm:px-4 py-6 relative">
+        <div className="flex flex-col gap-0 border-2 border-border rounded-none sm:rounded-2xl overflow-hidden">
           {BUSHES.map((bush, idx) => (
             <FarmRow
               key={bush.id}
@@ -208,6 +250,11 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
               floaters={floaters}
               onHarvest={harvest}
               onUnlock={unlock}
+              hasManager={state.managers.includes(bush.id)}
+              managerCost={managerCost(bush)}
+              canAffordManager={state.sol >= managerCost(bush)}
+              onHireManager={hireManager}
+              isLast={idx === BUSHES.length - 1}
             />
           ))}
         </div>
@@ -216,6 +263,7 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
           Not financial advice. Bushes are not real. SOL is real. Trump is final boss.
         </footer>
       </main>
+
 
       {toast && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-card border border-primary px-5 py-3 rounded-lg neon-border font-mono text-sm">
@@ -237,10 +285,14 @@ function Stat({ label, value, accent = false }: { label: string; value: string; 
 
 function FarmRow({
   bush, index, unlocked, affordable, picking, floaters, onHarvest, onUnlock,
+  hasManager, managerCost, canAffordManager, onHireManager, isLast,
 }: {
   bush: Bush; index: number; unlocked: boolean; affordable: boolean; picking: boolean;
   floaters: Floater[]; onHarvest: (b: Bush, e: React.MouseEvent) => void; onUnlock: (b: Bush) => void;
+  hasManager: boolean; managerCost: number; canAffordManager: boolean;
+  onHireManager: (b: Bush) => void; isLast: boolean;
 }) {
+
   const lightColors = ["#ffd166", "#ff6fb5", "#5cd9ff", "#9bff6a", "#ff8a5b"];
   const tone = lightColors[index % lightColors.length];
 
@@ -273,7 +325,7 @@ function FarmRow({
   const bushPositions = [22, 50, 78]; // % across floor
 
   return (
-    <section className={`relative rounded-2xl overflow-hidden border-2 border-border ${unlocked ? "row-active" : ""}`}>
+    <section className={`relative overflow-hidden ${!isLast ? "border-b-2 border-border" : ""} ${unlocked ? "row-active" : ""}`}>
       <div className="relative h-[380px] room-stage">
         {/* 3D structural shell */}
         <div className="room-3d">
@@ -421,10 +473,29 @@ function FarmRow({
       </div>
 
 
-      <div className="px-4 py-2 bg-background/70 border-t border-border flex items-center justify-between text-xs font-mono">
-        <span className="text-muted-foreground italic">"{bush.tagline}"</span>
-        <span className="text-accent">{fmtSol(bush.perClick)} SOL / click</span>
+      <div className="px-4 py-2 bg-background/80 border-t border-border flex items-center justify-between gap-3 text-xs font-mono flex-wrap">
+        <span className="text-muted-foreground italic truncate">"{bush.tagline}"</span>
+        <div className="flex items-center gap-2">
+          <span className="text-accent">{fmtSol(bush.perClick)} SOL / click</span>
+          {unlocked && (
+            hasManager ? (
+              <span className="px-2 py-1 rounded border border-primary text-primary bg-primary/10">
+                👔 MANAGER · auto +{fmtSol(bush.perClick)}/s
+              </span>
+            ) : (
+              <button
+                onClick={() => onHireManager(bush)}
+                disabled={!canAffordManager}
+                className={`px-2 py-1 rounded border ${canAffordManager ? "border-accent text-accent hover:bg-accent/10" : "border-border text-muted-foreground cursor-not-allowed"}`}
+                title="Hires a manager who auto-clicks this bush once per second."
+              >
+                👔 Hire manager · {fmtSol(managerCost)} SOL
+              </button>
+            )
+          )}
+        </div>
       </div>
+
     </section>
   );
 }
