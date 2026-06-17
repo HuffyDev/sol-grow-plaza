@@ -58,8 +58,10 @@ type SaveState = {
   totalEarned: number;
   totalClicks: number;
   unlocked: number[];
+  managers: number[];
 };
-const defaultState = (): SaveState => ({ sol: 0, totalEarned: 0, totalClicks: 0, unlocked: [1] });
+const defaultState = (): SaveState => ({ sol: 0, totalEarned: 0, totalClicks: 0, unlocked: [1], managers: [] });
+
 
 function loadState(wallet: string): SaveState {
   try {
