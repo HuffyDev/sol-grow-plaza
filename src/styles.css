@@ -267,7 +267,7 @@
 /* ============ EXCHANGE DEPOT (cyberpunk trading outpost) ============ */
 .exchange-depot {
   position: absolute; right: 28px; bottom: 4px;
-  width: 180px; height: 116px;
+  width: 220px; height: 156px;
   z-index: 4;
   font-family: ui-monospace, "JetBrains Mono", monospace;
 }
