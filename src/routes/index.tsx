@@ -174,14 +174,6 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
   const [cartLoaded, setCartLoaded] = useState(false);
   const [pickupFloor, setPickupFloor] = useState<number | null>(null);
 
-  const collectFromElevator = () => {
-    setState((s) => {
-      if (s.pendingSol <= 0) return s;
-      return { ...s, sol: s.sol + s.pendingSol, pendingSol: 0 };
-    });
-    setCartLoaded(false);
-    showToast("Collected from elevator!");
-  };
 
   useEffect(() => {
     const t = setInterval(() => {
