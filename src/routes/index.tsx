@@ -134,6 +134,7 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
   const [floaters, setFloaters] = useState<Floater[]>([]);
   const [pickingRow, setPickingRow] = useState<number | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [autoTick, setAutoTick] = useState(0);
   const flId = useRef(0);
 
   useEffect(() => { saveState(wallet, state); }, [wallet, state]);
@@ -151,9 +152,11 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
         if (gained === 0) return s;
         return { ...s, sol: s.sol + gained, totalEarned: s.totalEarned + gained };
       });
+      setAutoTick((n) => n + 1);
     }, 1000);
     return () => clearInterval(t);
   }, [state.managers]);
+
 
   const showToast = (m: string) => {
     setToast(m);
