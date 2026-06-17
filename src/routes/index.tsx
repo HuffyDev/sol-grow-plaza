@@ -230,16 +230,24 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
     setTimeout(() => setFloaters((f) => f.filter((p) => p.id !== id)), 1100);
     setPickingRow(bush.id);
     setTimeout(() => setPickingRow((p) => (p === bush.id ? null : p)), 450);
-    setState((s) => ({ ...s, sol: s.sol + bush.perClick, totalEarned: s.totalEarned + bush.perClick, totalClicks: s.totalClicks + 1 }));
+    setState((s) => ({ ...s, pendingSol: s.pendingSol + bush.perClick, totalEarned: s.totalEarned + bush.perClick, totalClicks: s.totalClicks + 1 }));
   };
 
   const unlock = (bush: Bush) => {
     if (state.unlocked.includes(bush.id)) return;
     const prev = BUSHES.find((b) => b.id === bush.id - 1);
     if (prev && !state.unlocked.includes(prev.id)) { showToast(`Unlock ${prev.name} first.`); return; }
-    if (state.sol < bush.cost) { showToast(`Need ${fmtSol(bush.cost - state.sol)} more SOL.`); return; }
+    if (state.sol < bush.cost) { showToast(`Need ${fmtSol(bush.cost - state.sol)} more SOL (collect from elevator first).`); return; }
     setState((s) => ({ ...s, sol: s.sol - bush.cost, unlocked: [...s.unlocked, bush.id] }));
     showToast(`Hired ${bush.farmer}!`);
+  };
+
+  const ELEVATOR_OP_COST = 20;
+  const hireElevatorOp = () => {
+    if (state.elevatorOp) return;
+    if (state.sol < ELEVATOR_OP_COST) { showToast(`Need ${fmtSol(ELEVATOR_OP_COST - state.sol)} more SOL.`); return; }
+    setState((s) => ({ ...s, sol: s.sol - ELEVATOR_OP_COST, elevatorOp: true }));
+    showToast("Elevator operator hired — auto-collecting!");
   };
 
   const managerCost = (b: Bush) => Math.max(0.001, Math.max(b.cost, b.perClick * 60) * 8);
