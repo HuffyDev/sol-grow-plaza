@@ -455,11 +455,8 @@ function FarmRow({
           })}
         </div>
 
-        {/* Vignette */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: "radial-gradient(ellipse at 50% 60%, transparent 40%, rgba(0,0,0,0.55) 100%)",
-          zIndex: 9,
-        }} />
+
+
 
         {!unlocked && (
           <div className="absolute inset-0 z-30 flex items-center justify-center bg-background/55 backdrop-blur-sm">
