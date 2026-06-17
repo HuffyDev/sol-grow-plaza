@@ -466,57 +466,89 @@
 /* The elevator cart sliding inside the shaft */
 .elevator-cart {
   position: absolute;
-  left: 8px; right: 8px;
-  height: 64px;
+  left: 4px; right: 4px;
+  height: 92px;
   transition: top 0.9s cubic-bezier(0.45, 0.05, 0.55, 0.95);
   z-index: 2;
 }
 .elevator-cart .car-box {
   position: absolute; inset: 0;
-  border-radius: 14px;
+  /* octagonal capsule outline, light blue-grey interior, dark outer ring */
   background:
-    linear-gradient(180deg,
-      #cdd2da 0 6px,
-      #0a0a14 6px 9px,
-      #b7bdc7 9px 18%,
-      #9aa0aa 18% 82%,
-      #8a909a 82% calc(100% - 9px),
-      #0a0a14 calc(100% - 9px) calc(100% - 6px),
-      #cdd2da calc(100% - 6px) 100%);
+    /* inner highlight */
+    radial-gradient(ellipse at 50% 30%, rgba(255,255,255,0.18) 0%, transparent 60%),
+    linear-gradient(180deg, #8c98a8 0%, #6b7787 60%, #4d5868 100%);
   border: 3px solid #0a0a14;
   box-shadow:
-    inset 2px 0 0 rgba(255,255,255,0.25),
-    inset -3px 0 6px rgba(0,0,0,0.4),
-    0 4px 10px rgba(0,0,0,0.7);
+    inset 0 0 0 3px #b7c1cf,
+    inset 0 0 14px rgba(0,0,0,0.45),
+    0 6px 12px rgba(0,0,0,0.7);
+  clip-path: polygon(
+    14% 0, 86% 0,
+    100% 12%, 100% 88%,
+    86% 100%, 14% 100%,
+    0 88%, 0 12%
+  );
 }
-
-.elevator-cart .car-window {
-  /* porthole window in middle of cab */
-  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  width: 36px; height: 30px;
-  border-radius: 6px;
+/* tiny sleeping miner inside the cab */
+.elevator-cart .car-rider {
+  position: absolute; left: 50%; bottom: 12px;
+  transform: translateX(-50%);
+  width: 34px; height: 50px;
+  z-index: 3;
+}
+.elevator-cart .cr-body {
+  position: absolute; left: 4px; right: 4px; bottom: 0; height: 26px;
+  background: linear-gradient(180deg, #4a86d6 0%, #2f5fa8 100%);
+  border: 2px solid #0a0a14;
+  border-radius: 4px 4px 3px 3px;
+}
+.elevator-cart .cr-head {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  bottom: 22px;
+  width: 22px; height: 22px;
+  border-radius: 50%;
   background:
-    radial-gradient(circle at 35% 35%, oklch(0.95 0.05 220) 0 2px, transparent 3px),
-    linear-gradient(180deg, oklch(0.50 0.10 240) 0%, oklch(0.18 0.06 240) 100%);
-  border: 2.5px solid oklch(0.08 0.04 240);
-  box-shadow:
-    inset 0 0 6px oklch(0 0 0 / 0.7),
-    0 0 0 2px oklch(0.78 0.04 240 / 0.45);
+    radial-gradient(circle at 35% 60%, #1a0e08 0 1.4px, transparent 2px),
+    radial-gradient(circle at 65% 60%, #1a0e08 0 1.4px, transparent 2px),
+    #f0b890;
+  border: 2px solid #0a0a14;
+}
+/* blue hard hat */
+.elevator-cart .cr-head::before {
+  content: ""; position: absolute; left: -3px; right: -3px; top: -8px; height: 12px;
+  background: linear-gradient(180deg, #4a86d6, #2f5fa8);
+  border: 2px solid #0a0a14;
+  border-radius: 14px 14px 3px 3px / 12px 12px 3px 3px;
+}
+/* sleepy Zzz cloud */
+.elevator-cart .cr-zzz {
+  position: absolute; left: 22px; bottom: 30px;
+  font-family: ui-monospace, monospace;
+  font-weight: 900; font-size: 9px; color: #0a0a14;
+  letter-spacing: 1px;
+  animation: cr-zzz 2.4s ease-in-out infinite;
+}
+.elevator-cart .cr-zzz span { font-size: 11px; margin-left: 1px; }
+.elevator-cart .cr-zzz span:last-child { font-size: 13px; }
+@keyframes cr-zzz {
+  0%, 100% { transform: translate(0,0); opacity: 0.85; }
+  50%      { transform: translate(4px,-6px); opacity: 1; }
 }
 .elevator-cart .car-coins {
-  position: absolute; left: 8px; right: 8px; bottom: 14px; height: 12px;
+  position: absolute; left: 8px; right: 8px; bottom: 4px; height: 10px;
   background:
     radial-gradient(circle at 20% 60%, oklch(0.72 0.28 320) 0 4px, transparent 5px),
     radial-gradient(circle at 50% 70%, oklch(0.80 0.30 305) 0 5px, transparent 6px),
-    radial-gradient(circle at 80% 60%, oklch(0.72 0.28 320) 0 4px, transparent 5px),
-    radial-gradient(circle at 35% 40%, oklch(0.78 0.28 320) 0 3px, transparent 4px),
-    radial-gradient(circle at 65% 40%, oklch(0.78 0.28 320) 0 3px, transparent 4px);
+    radial-gradient(circle at 80% 60%, oklch(0.72 0.28 320) 0 4px, transparent 5px);
   filter: drop-shadow(0 0 6px oklch(0.7 0.30 320 / 0.85));
   opacity: 0;
   transition: opacity 0.4s;
-  z-index: 2;
+  z-index: 4;
 }
 .elevator-cart.loaded .car-coins { opacity: 1; }
+.elevator-cart.loaded .cr-zzz { opacity: 0; }
+
 .elevator-cart .cable {
   position: absolute; left: 50%; top: -2000px; bottom: 100%;
   width: 4px; transform: translateX(-50%);
