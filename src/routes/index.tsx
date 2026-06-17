@@ -376,7 +376,8 @@ function SurfaceLayer({
   canCollect: boolean; onCollect: () => void;
   elevatorOp: boolean; canAffordOp: boolean; onHireOp: () => void; opCost: number;
 }) {
-  const transporterLeft = atSurface && carrying ? "calc(100% - 260px)" : "150px";
+  const transporterLeft = atSurface && pendingSol > 0 ? "calc(100% - 260px)" : "150px";
+  const surfacePileScale = Math.min(1.3, Math.max(0.25, Math.log10(1 + pendingSol * 10000) * 0.3));
   return (
     <div className="surface-strip">
       {/* Steel headframe over the elevator opening — yellow-and-grey cartoon style */}
@@ -413,7 +414,22 @@ function SurfaceLayer({
         </svg>
       </div>
 
-      {/* Manual COLLECT button — floats near the pulley when cart is loaded at surface */}
+      {/* Surface SOL pile — grows as pendingSol accumulates, stays claimable */}
+      {pendingSol > 0 && (
+        <div
+          className="surface-pile"
+          style={{ ["--pile" as never]: surfacePileScale } as React.CSSProperties}
+        >
+          <span className="coin" style={{ left: 8, bottom: 0 }} />
+          <span className="coin" style={{ left: 32, bottom: 0 }} />
+          <span className="coin" style={{ left: 56, bottom: 0 }} />
+          <span className="coin" style={{ left: 20, bottom: 18 }} />
+          <span className="coin" style={{ left: 44, bottom: 18 }} />
+          <span className="coin" style={{ left: 32, bottom: 34 }} />
+        </div>
+      )}
+
+      {/* Manual COLLECT button — shows whenever there's pending SOL at surface */}
       {canCollect && (
         <button onClick={onCollect} className="elevator-collect-btn">
           <span className="ec-coin">◆</span>
@@ -438,7 +454,7 @@ function SurfaceLayer({
       )}
 
       {/* Surface Transporter (wheels SOL from elevator → depot) */}
-      <div className={`transporter ${carrying ? "carrying walking" : "empty"}`} style={{ left: transporterLeft }}>
+      <div className={`transporter ${pendingSol > 0 ? "carrying walking" : "empty"}`} style={{ left: transporterLeft }}>
         <div className="cart" />
         <div className="body" />
         <div className="head" />
