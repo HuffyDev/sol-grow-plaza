@@ -152,56 +152,161 @@
   opacity:0.6; pointer-events:none;
 }
 
-/* ===== GROW ROOM ===== */
-.grow-room {
+/* ===== 3D GROW ROOM ===== */
+.room-stage {
   position: relative;
-  background:
-    /* far wall */
-    linear-gradient(180deg, oklch(0.22 0.04 280) 0%, oklch(0.18 0.04 280) 55%, transparent 55%),
-    /* floor */
-    linear-gradient(180deg, transparent 55%, oklch(0.25 0.03 60) 55%, oklch(0.15 0.02 55) 100%);
+  perspective: 1100px;
+  perspective-origin: 50% 38%;
+  background: linear-gradient(180deg, oklch(0.10 0.04 280), oklch(0.06 0.02 280));
+  overflow: hidden;
 }
-.brick-wall {
-  position:absolute; left:0; right:0; top:0; height:55%;
+.room-3d {
+  position: absolute; inset: 0;
+  transform-style: preserve-3d;
+}
+
+/* Back wall: brick, set into depth */
+.wall-back {
+  position: absolute; left: 0; right: 0; top: 0; height: 70%;
+  transform: translateZ(-220px);
   background-image:
-    /* horizontal grout */
-    linear-gradient(0deg, transparent 22px, oklch(0 0 0 / 0.45) 22px, oklch(0 0 0 / 0.45) 24px, transparent 24px),
-    /* vertical grout offset */
-    repeating-linear-gradient(90deg,
-      transparent 0 60px,
-      oklch(0 0 0 / 0.45) 60px 62px),
-    linear-gradient(180deg, oklch(0.28 0.06 25), oklch(0.20 0.04 20));
+    linear-gradient(0deg, transparent 22px, rgba(0,0,0,0.45) 22px 24px, transparent 24px),
+    repeating-linear-gradient(90deg, transparent 0 60px, rgba(0,0,0,0.45) 60px 62px),
+    linear-gradient(180deg, oklch(0.30 0.07 25), oklch(0.18 0.04 20));
   background-size: 100% 24px, 120px 48px, 100% 100%;
-  box-shadow: inset 0 -20px 40px oklch(0 0 0 / 0.6);
+  box-shadow: inset 0 -40px 80px rgba(0,0,0,0.7), inset 0 0 120px rgba(0,0,0,0.35);
 }
-.tile-floor {
-  position:absolute; left:0; right:0; bottom:0; height:48%;
+
+/* Side walls — angled inward toward vanishing point */
+.wall-left, .wall-right {
+  position: absolute; top: 0; height: 70%;
+  width: 280px;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.7)),
+    repeating-linear-gradient(0deg, transparent 0 22px, rgba(0,0,0,0.4) 22px 24px),
+    linear-gradient(180deg, oklch(0.26 0.06 25), oklch(0.16 0.04 20));
+}
+.wall-left  { left: 0;   transform-origin: left center;  transform: translateZ(-220px) rotateY(48deg); }
+.wall-right { right: 0;  transform-origin: right center; transform: translateZ(-220px) rotateY(-48deg); }
+
+/* Floor — tilted back to ground plane */
+.iso-floor {
+  position: absolute; left: -10%; right: -10%; bottom: 0; height: 70%;
+  transform-origin: top center;
+  transform: rotateX(62deg) translateY(-10%);
   background-image:
-    repeating-linear-gradient(0deg,
-      oklch(0 0 0 / 0.3) 0 1px,
-      transparent 1px 36px),
-    repeating-linear-gradient(90deg,
-      oklch(0 0 0 / 0.3) 0 1px,
-      transparent 1px 48px),
-    linear-gradient(180deg, oklch(0.32 0.02 60), oklch(0.18 0.02 55));
-  transform-origin: center top;
-  /* fake perspective */
-  perspective: 600px;
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.55) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(90deg, rgba(0,0,0,0.55) 0 1px, transparent 1px 64px),
+    linear-gradient(180deg, oklch(0.36 0.03 60), oklch(0.18 0.02 55));
+  box-shadow: inset 0 0 140px rgba(0,0,0,0.7);
 }
-.tile-floor::before {
+.iso-floor::after {
   content:""; position:absolute; inset:0;
-  background: linear-gradient(180deg, transparent 0%, oklch(0 0 0 / 0.5) 100%);
+  background:
+    radial-gradient(circle at 30% 50%, rgba(0,0,0,0.0), rgba(0,0,0,0.5) 80%);
+  pointer-events:none;
 }
-.ceiling-light {
-  filter: drop-shadow(0 0 8px currentColor) drop-shadow(0 0 22px currentColor);
+
+/* Ceiling beam with hanging grow-lights */
+.ceiling-beam {
+  position:absolute; left:0; right:0; top:0; height:48px;
+  background: linear-gradient(180deg, oklch(0.18 0.02 250), oklch(0.10 0.01 250));
+  border-bottom: 2px solid rgba(0,0,0,0.6);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+  z-index: 6;
 }
+.pipe {
+  position:absolute; height:8px;
+  background: linear-gradient(180deg, oklch(0.55 0.02 240), oklch(0.30 0.02 240));
+  border-radius: 4px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.5);
+}
+
+/* Hanging grow-lamp */
+.lamp-rod { position:absolute; top:48px; width:2px; height:46px; background: oklch(0.3 0 0); z-index: 6; }
+.lamp-hood {
+  position:absolute; top:90px; width:120px; height:30px;
+  background: linear-gradient(180deg, oklch(0.55 0.02 240), oklch(0.30 0.02 240));
+  border-radius: 6px 6px 22px 22px;
+  transform: translateX(-50%);
+  box-shadow: 0 6px 10px rgba(0,0,0,0.5), inset 0 -4px 0 rgba(0,0,0,0.4);
+  z-index: 6;
+}
+.lamp-glow {
+  position:absolute; top:118px; width:240px; height:240px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at top, currentColor 0%, transparent 65%);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  pointer-events:none;
+  filter: blur(2px);
+  z-index: 5;
+}
+
+/* Wall-mounted AC unit */
+.ac-unit {
+  position:absolute; width:90px; height:34px; border-radius: 4px;
+  background: linear-gradient(180deg, oklch(0.92 0.01 200), oklch(0.78 0.01 200));
+  border: 1px solid rgba(0,0,0,0.3);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.6);
+  z-index: 7;
+}
+.ac-unit::before {
+  content:""; position:absolute; inset: 6px 8px;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,0.4) 0 2px, transparent 2px 4px);
+  border-radius: 2px;
+}
+
+/* Crate prop */
+.crate {
+  position:absolute; width:54px; height:54px;
+  background:
+    linear-gradient(135deg, oklch(0.45 0.10 60), oklch(0.28 0.07 55));
+  border: 2px solid rgba(0,0,0,0.5);
+  box-shadow: 0 8px 14px rgba(0,0,0,0.55);
+  z-index: 7;
+}
+.crate::before, .crate::after {
+  content:""; position:absolute; background: rgba(0,0,0,0.4);
+}
+.crate::before { left:50%; top:0; bottom:0; width:2px; transform:translateX(-50%); }
+.crate::after  { top:50%; left:0; right:0; height:2px; transform:translateY(-50%); }
+
+/* Ceiling fan */
+.fan-wrap { position:absolute; top:48px; width:80px; height:80px; transform: translateX(-50%); z-index: 7; }
+.fan-rod { position:absolute; left:50%; top:0; width:2px; height:18px; background:#000; transform:translateX(-50%); }
+.fan-hub { position:absolute; left:50%; top:14px; width:14px; height:14px; border-radius:50%; background: oklch(0.2 0 0); transform:translateX(-50%); z-index:2; }
+.fan-blades { position:absolute; left:50%; top:20px; width:70px; height:70px; transform: translateX(-50%); animation: spin 1.4s linear infinite; }
+.fan-blades::before, .fan-blades::after {
+  content:""; position:absolute; left:50%; top:50%; width:70px; height:8px;
+  background: linear-gradient(90deg, oklch(0.65 0.02 240), oklch(0.35 0.02 240));
+  border-radius: 4px;
+  transform-origin: center;
+}
+.fan-blades::before { transform: translate(-50%, -50%) rotate(0deg); }
+.fan-blades::after  { transform: translate(-50%, -50%) rotate(90deg); }
+@keyframes spin { to { transform: translateX(-50%) rotate(360deg); } }
+
+/* Floor shadow under actor */
+.floor-shadow {
+  position:absolute; bottom: -6px; left:50%;
+  width: 120px; height: 18px; transform: translateX(-50%);
+  background: radial-gradient(ellipse, rgba(0,0,0,0.55), transparent 70%);
+  pointer-events:none;
+  z-index: 1;
+}
+
 .ceiling-cone {
-  position:absolute; top:32px; width:140px; height:160px;
-  background: radial-gradient(ellipse at top, oklch(0.9 0.18 90 / 0.35), transparent 70%);
+  position:absolute; top:110px; width:160px; height:180px;
+  background: radial-gradient(ellipse at top, currentColor 0%, transparent 70%);
   transform: translateX(-50%);
   pointer-events:none;
   mix-blend-mode: screen;
+  opacity: 0.35;
+  filter: blur(3px);
+  z-index: 4;
 }
+
 
 .bulb {
   filter: drop-shadow(0 0 6px currentColor) drop-shadow(0 0 14px currentColor);
