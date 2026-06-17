@@ -419,7 +419,7 @@
 .elevator-shaft {
   position: absolute;
   left: 24px;
-  top: 140px;  /* below surface */
+  top: 200px;  /* below surface */
   bottom: 0;
   width: 78px;
   background:
