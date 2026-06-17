@@ -212,29 +212,29 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
   return (
     <div className="min-h-screen relative" style={{ background: "oklch(0.18 0.02 40)" }}>
       {/* HUD */}
-      <header className="sticky top-0 z-30 backdrop-blur bg-background/70 border-b border-border">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4 flex-wrap">
-          <div className="flex items-center gap-2">
+      <header className="sticky top-0 z-30" style={{ background: "rgba(10,8,14,0.55)", backdropFilter: "blur(10px) saturate(140%)", borderBottom: "1px solid oklch(0.7 0.18 175 / 0.35)", boxShadow: "0 0 24px oklch(0.6 0.2 175 / 0.25)" }}>
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 mr-2">
             <span className="text-2xl">🌱</span>
-            <span className="font-black text-glow text-lg">SolFarm</span>
-            <span className="text-[10px] font-mono text-muted-foreground ml-1 px-2 py-0.5 border border-border rounded">WAREHOUSE</span>
+            <span className="font-black text-glow text-lg tracking-widest">SOL<span className="text-accent">FARM</span></span>
+            <span className="hud-pill">WAREHOUSE</span>
           </div>
-          <div className="flex-1 flex items-center gap-4 flex-wrap text-sm font-mono">
-            <Stat label="BALANCE" value={`${fmtSol(state.sol)} SOL`} accent />
-            <Stat label="EARNED" value={`${fmtSol(state.totalEarned)} SOL`} />
-            <Stat label="CLICKS" value={state.totalClicks.toLocaleString()} />
-            <Stat label="FARMERS" value={`${state.unlocked.length}/10`} />
-            <Stat label="AUTO" value={`${fmtSol(autoPerSec)} SOL/s`} />
+          <div className="flex-1 flex items-center gap-2 flex-wrap">
+            <span className="hud-pill gold"><span className="lbl">BAL</span><span className="val">{fmtSol(state.sol)}</span>SOL</span>
+            <span className="hud-pill"><span className="lbl">EARNED</span><span className="val">{fmtSol(state.totalEarned)}</span></span>
+            <span className="hud-pill"><span className="lbl">CLICKS</span><span className="val">{state.totalClicks.toLocaleString()}</span></span>
+            <span className="hud-pill magenta"><span className="lbl">FARMERS</span><span className="val">{state.unlocked.length}/10</span></span>
+            <span className="hud-pill"><span className="lbl">AUTO</span><span className="val">{fmtSol(autoPerSec)}</span>SOL/s</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-muted-foreground hidden md:inline">{wallet.slice(0,4)}…{wallet.slice(-4)}</span>
-            <button onClick={reset} className="text-xs px-3 py-1.5 rounded-md border border-border hover:bg-secondary">Reset</button>
-            <button onClick={onLogout} className="text-xs px-3 py-1.5 rounded-md border border-border hover:bg-secondary">Logout</button>
+            <span className="hud-pill"><span className="lbl">WALLET</span><span className="val">{wallet.slice(0,4)}…{wallet.slice(-4)}</span></span>
+            <button onClick={reset} className="hud-btn">Reset</button>
+            <button onClick={onLogout} className="hud-btn">Logout</button>
           </div>
         </div>
         {nextLocked && (
-          <div className="max-w-7xl mx-auto px-4 pb-3 text-xs font-mono text-muted-foreground">
-            Next farmer: <span className="text-accent">{nextLocked.farmer}</span> — costs {fmtSol(nextLocked.cost)} SOL
+          <div className="max-w-7xl mx-auto px-4 pb-3">
+            <span className="hud-pill magenta"><span className="lbl">NEXT</span>{nextLocked.farmer} · <span className="val">{fmtSol(nextLocked.cost)}</span> SOL</span>
           </div>
         )}
       </header>
@@ -243,24 +243,29 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
       <main className="w-full px-0 py-0 relative">
         <div className="flex flex-col gap-0 w-full">
           {BUSHES.map((bush, idx) => (
-            <FarmRow
-              key={bush.id}
-              bush={bush}
-              index={idx}
-              unlocked={state.unlocked.includes(bush.id)}
-              affordable={state.sol >= bush.cost}
-              picking={pickingRow === bush.id}
-              floaters={floaters}
-              onHarvest={harvest}
-              onUnlock={unlock}
-              hasManager={state.managers.includes(bush.id)}
-              managerCost={managerCost(bush)}
-              canAffordManager={state.sol >= managerCost(bush)}
-              onHireManager={hireManager}
-              isLast={idx === BUSHES.length - 1}
-            />
+            <div key={bush.id}>
+              {idx > 0 && <div className="floor-beam" />}
+              <FarmRow
+                bush={bush}
+                index={idx}
+                unlocked={state.unlocked.includes(bush.id)}
+                affordable={state.sol >= bush.cost}
+                picking={pickingRow === bush.id}
+                floaters={floaters}
+                onHarvest={harvest}
+                onUnlock={unlock}
+                hasManager={state.managers.includes(bush.id)}
+                managerCost={managerCost(bush)}
+                canAffordManager={state.sol >= managerCost(bush)}
+                onHireManager={hireManager}
+                isLast={idx === BUSHES.length - 1}
+                autoTick={autoTick}
+              />
+            </div>
           ))}
         </div>
+
+
 
 
 
