@@ -128,36 +128,24 @@
 }
 .drift { animation: drift 4s ease-in-out infinite; }
 
-/* ===== FARM SCENE ===== */
+/* ===== WAREHOUSE BACKDROP ===== */
 .farm-sky {
   background:
-    radial-gradient(ellipse 80% 50% at 50% 0%, oklch(0.35 0.18 305 / 0.6), transparent 70%),
+    radial-gradient(ellipse 90% 60% at 50% 0%, oklch(0.22 0.01 60 / 0.8), transparent 70%),
     linear-gradient(180deg,
-      oklch(0.14 0.08 290) 0%,
-      oklch(0.18 0.10 295) 35%,
-      oklch(0.22 0.08 160) 75%,
-      oklch(0.28 0.12 145) 100%);
+      oklch(0.12 0.01 60) 0%,
+      oklch(0.10 0.01 60) 50%,
+      oklch(0.08 0.01 60) 100%);
 }
-.stars::before {
-  content:""; position:absolute; inset:0;
-  background-image:
-    radial-gradient(1px 1px at 12% 18%, #fff 50%, transparent),
-    radial-gradient(1px 1px at 28% 8%, #fff 50%, transparent),
-    radial-gradient(1.5px 1.5px at 45% 25%, #fff 50%, transparent),
-    radial-gradient(1px 1px at 62% 12%, #fff 50%, transparent),
-    radial-gradient(1px 1px at 78% 22%, #fff 50%, transparent),
-    radial-gradient(1.5px 1.5px at 88% 6%, #fff 50%, transparent),
-    radial-gradient(1px 1px at 35% 60%, #fff 50%, transparent),
-    radial-gradient(1px 1px at 5% 35%, #fff 50%, transparent);
-  opacity:0.6; pointer-events:none;
-}
+.stars::before { content: none; }
 
 /* ===== 3D GROW ROOM ===== */
 .room-stage {
   position: relative;
   perspective: 1100px;
   perspective-origin: 50% 38%;
-  background: linear-gradient(180deg, oklch(0.10 0.04 280), oklch(0.06 0.02 280));
+  background: linear-gradient(180deg, oklch(0.11 0.01 60), oklch(0.07 0.01 60));
+
   overflow: hidden;
 }
 .room-3d {
