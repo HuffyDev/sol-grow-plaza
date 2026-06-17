@@ -207,7 +207,7 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
   }, 0);
 
   return (
-    <div className="min-h-screen relative" style={{ background: "oklch(0.08 0.01 60)" }}>
+    <div className="min-h-screen relative" style={{ background: "oklch(0.18 0.02 40)" }}>
       {/* HUD */}
       <header className="sticky top-0 z-30 backdrop-blur bg-background/70 border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4 flex-wrap">
