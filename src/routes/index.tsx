@@ -129,8 +129,8 @@ function Landing({ onLogin }: { onLogin: (w: string) => void }) {
 
 type Floater = { id: number; x: number; y: number; text: string };
 
-const SURFACE_H = 140;
-const SHAFT_H = 200;
+const SURFACE_H = 200;
+const SHAFT_H = 240;
 const CART_H = 64;
 
 function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
