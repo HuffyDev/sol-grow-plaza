@@ -207,7 +207,7 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
   }, 0);
 
   return (
-    <div className="min-h-screen relative" style={{ background: "oklch(0.08 0.01 60)" }}>
+    <div className="min-h-screen relative" style={{ background: "oklch(0.18 0.02 40)" }}>
       {/* HUD */}
       <header className="sticky top-0 z-30 backdrop-blur bg-background/70 border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4 flex-wrap">
@@ -236,9 +236,9 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
         )}
       </header>
 
-      {/* Farm — continuous warehouse */}
-      <main className="max-w-7xl mx-auto px-0 sm:px-4 py-6 relative">
-        <div className="flex flex-col gap-0 border-2 border-border rounded-none sm:rounded-2xl overflow-hidden">
+      {/* Farm — one continuous warehouse, full-bleed */}
+      <main className="w-full px-0 py-0 relative">
+        <div className="flex flex-col gap-0 w-full">
           {BUSHES.map((bush, idx) => (
             <FarmRow
               key={bush.id}
@@ -258,6 +258,8 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
             />
           ))}
         </div>
+
+
 
         <footer className="mt-10 text-center text-xs text-muted-foreground font-mono">
           Not financial advice. Bushes are not real. SOL is real. Trump is final boss.
@@ -325,7 +327,7 @@ function FarmRow({
   const bushPositions = [22, 50, 78]; // % across floor
 
   return (
-    <section className={`relative overflow-hidden ${!isLast ? "border-b-2 border-border" : ""} ${unlocked ? "row-active" : ""}`}>
+    <section className={`relative overflow-hidden ${unlocked ? "row-active" : ""}`}>
       <div className="relative h-[380px] room-stage">
         {/* 3D structural shell */}
         <div className="room-3d">
@@ -453,11 +455,8 @@ function FarmRow({
           })}
         </div>
 
-        {/* Vignette */}
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: "radial-gradient(ellipse at 50% 60%, transparent 40%, rgba(0,0,0,0.55) 100%)",
-          zIndex: 9,
-        }} />
+
+
 
         {!unlocked && (
           <div className="absolute inset-0 z-30 flex items-center justify-center bg-background/55 backdrop-blur-sm">
