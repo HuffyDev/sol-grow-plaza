@@ -1266,7 +1266,7 @@
   margin-bottom: 8px;
 }
 .mc-contract {
-  font-size: 10px; letter-spacing: 0.5px;
+  font-size: 13px; letter-spacing: 0.5px;
   color: oklch(0.6 0.04 80);
   word-break: break-all;
   font-family: ui-monospace, "JetBrains Mono", monospace;
