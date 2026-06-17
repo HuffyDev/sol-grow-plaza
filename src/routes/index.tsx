@@ -94,34 +94,62 @@ function SolFarm() {
 function Landing({ onLogin }: { onLogin: (w: string) => void }) {
   const [v, setV] = useState("");
   const [err, setErr] = useState("");
+  const submit = () => {
+    if (!isValidSolAddress(v)) { setErr("INVALID SIGNATURE :: address rejected by mineshaft authority."); return; }
+    onLogin(v.trim());
+  };
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden farm-sky">
-      <div className="relative max-w-xl w-full neon-border rounded-2xl p-8 bg-card/70 backdrop-blur">
-        <div className="text-xs font-mono text-accent uppercase tracking-widest mb-2">$SOLFARM · mineconomy v2</div>
-        <h1 className="text-5xl font-black text-glow mb-3">Sol<span className="text-accent">Mine</span> ⛏</h1>
-        <p className="text-muted-foreground mb-6">Plug in your wallet. Sink shafts. Swing pickaxes. Stack SOL ore. Beat Trump.</p>
-        <label className="block text-xs font-mono text-muted-foreground mb-2">SOLANA WALLET</label>
-        <input
-          value={v}
-          onChange={(e) => setV(e.target.value)}
-          placeholder="paste your sol address…"
-          className="w-full bg-input border border-border rounded-lg px-4 py-3 font-mono text-sm outline-none focus:ring-2 focus:ring-primary"
-        />
-        {err && <div className="text-destructive text-sm mt-2">{err}</div>}
-        <button
-          onClick={() => {
-            if (!isValidSolAddress(v)) { setErr("That doesn't look like a valid SOL address."); return; }
-            onLogin(v.trim());
-          }}
-          className="w-full mt-4 bg-primary text-primary-foreground font-bold py-3 rounded-lg hover:brightness-110 transition"
-        >
-          ENTER THE MINE →
-        </button>
-        <div className="grid grid-cols-3 gap-3 mt-6 text-center text-xs">
-          <div className="bg-secondary/50 rounded-lg p-3"><div className="text-lg">⛏</div>10 miners</div>
-          <div className="bg-secondary/50 rounded-lg p-3"><div className="text-lg">⚡</div>Click to chip ore</div>
-          <div className="bg-secondary/50 rounded-lg p-3"><div className="text-lg">👑</div>Beat Trump</div>
+    <div className="mine-console">
+      <div className="mc-rock" />
+      <div className="mc-grid" />
+      <div className="mc-vignette" />
+      <div className="mc-scanlines" />
+
+      {/* top-left boot log */}
+      <div className="mc-boot">
+        <div className="mc-boot-line">[ SYS ] booting subterranean uplink…</div>
+        <div className="mc-boot-line">[ NET ] handshake :: solana-mainnet OK</div>
+        <h1 className="mc-logo">
+          <span className="mc-bracket">[</span>
+          Sol<span className="mc-logo-accent">MINE</span>
+          <span className="mc-bracket">]</span>
+        </h1>
+        <div className="mc-sub">// deep-shaft mining terminal · v2.6 · clearance required</div>
+      </div>
+
+      {/* top-right status */}
+      <div className="mc-status">
+        <div><span className="mc-dot" /> NODE ONLINE</div>
+        <div className="mc-status-dim">SHAFT-07 · DEPTH 1.4km</div>
+      </div>
+
+      {/* centered terminal */}
+      <div className="mc-center">
+        <div className="mc-label">&gt; AUTHENTICATE WALLET</div>
+        <div className="mc-input-wrap">
+          <span className="mc-corner tl" />
+          <span className="mc-corner tr" />
+          <span className="mc-corner bl" />
+          <span className="mc-corner br" />
+          <input
+            value={v}
+            onChange={(e) => { setV(e.target.value); if (err) setErr(""); }}
+            onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
+            placeholder="paste sol address…"
+            className="mc-input"
+            spellCheck={false}
+          />
+          <span className="mc-caret" />
         </div>
+        {err
+          ? <div className="mc-err">{err}</div>
+          : <div className="mc-hint">// press [ ENTER ] to descend</div>}
+        <button onClick={submit} className="mc-enter">▸ ENTER THE MINE</button>
+      </div>
+
+      {/* bottom log */}
+      <div className="mc-footer-log">
+        <span>◇ ore.feed</span><span>◇ pickaxe.daemon</span><span>◇ elevator.svc</span><span className="mc-blink">◇ awaiting key…</span>
       </div>
     </div>
   );
