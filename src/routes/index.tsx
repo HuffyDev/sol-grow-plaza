@@ -503,17 +503,32 @@ function FarmRow({
         </div>
 
         {!unlocked && (
-          <div className="absolute inset-0 z-30 flex items-center justify-center" style={{ background: "rgba(8,6,12,0.5)", backdropFilter: "blur(6px)" }}>
-            <button
-              onClick={() => onUnlock(bush)}
-              disabled={!affordable}
-              className={`hud-btn ${affordable ? "gold" : ""}`}
-              style={{ padding: "0.7rem 1.2rem", fontSize: 13 }}
-            >
-              🔓 Hire {bush.farmer} · {fmtSol(bush.cost)} SOL
-            </button>
+          <div className={`locked-gate ${shattering ? "shattering" : ""}`} style={{ ["--gate-h" as never]: "380px" } as React.CSSProperties}>
+            <div className="scanline" />
+            <div className="holo-terminal">
+              <div className="lock-icon">🔒</div>
+              <div style={{ fontSize: 10, letterSpacing: "0.18em", opacity: 0.75, marginBottom: 4 }}>
+                SECTOR {String(bush.id).padStart(2, "0")} · {bush.rarity}
+              </div>
+              <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 10, textShadow: "0 0 8px oklch(0.78 0.22 175 / 0.8)" }}>
+                {bush.name}
+              </div>
+              <button
+                onClick={() => {
+                  if (!affordable) { onUnlock(bush); return; }
+                  setShattering(true);
+                  setTimeout(() => { onUnlock(bush); setShattering(false); }, 550);
+                }}
+                disabled={!affordable}
+                className={`hud-btn ${affordable ? "gold" : ""}`}
+                style={{ padding: "0.6rem 1.1rem", fontSize: 12 }}
+              >
+                🔓 HIRE {bush.farmer.toUpperCase()} · {fmtSol(bush.cost)} SOL
+              </button>
+            </div>
           </div>
         )}
+
       </div>
 
       <div className="px-4 py-2 flex items-center justify-between gap-3 flex-wrap" style={{ background: "rgba(8,6,12,0.55)", backdropFilter: "blur(8px)", borderTop: "1px solid oklch(0.6 0.18 175 / 0.25)" }}>
