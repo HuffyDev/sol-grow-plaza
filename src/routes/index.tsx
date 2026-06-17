@@ -295,12 +295,12 @@ function Stat({ label, value, accent = false }: { label: string; value: string; 
 
 function FarmRow({
   bush, index, unlocked, affordable, picking, floaters, onHarvest, onUnlock,
-  hasManager, managerCost, canAffordManager, onHireManager, isLast,
+  hasManager, managerCost, canAffordManager, onHireManager, isLast, autoTick,
 }: {
   bush: Bush; index: number; unlocked: boolean; affordable: boolean; picking: boolean;
   floaters: Floater[]; onHarvest: (b: Bush, e: React.MouseEvent) => void; onUnlock: (b: Bush) => void;
   hasManager: boolean; managerCost: number; canAffordManager: boolean;
-  onHireManager: (b: Bush) => void; isLast: boolean;
+  onHireManager: (b: Bush) => void; isLast: boolean; autoTick: number;
 }) {
 
   const lightColors = ["#ffd166", "#ff6fb5", "#5cd9ff", "#9bff6a", "#ff8a5b"];
@@ -308,7 +308,25 @@ function FarmRow({
 
   const [hitBush, setHitBush] = useState<number | null>(null);
   const [chips, setChips] = useState<{ id: number; x: number; y: number; cx: string; cy: string; cr: string }[]>([]);
+  const [autoPops, setAutoPops] = useState<{ id: number; i: number; text: string }[]>([]);
+  const [autoSwingI, setAutoSwingI] = useState<number | null>(null);
   const chipId = useRef(0);
+  const popId = useRef(0);
+
+  const bushPositions = [22, 50, 78]; // % across floor
+
+  // Auto-farmer visual tick — fire a floater + bounce on each managed bush
+  useEffect(() => {
+    if (!hasManager || !unlocked || autoTick === 0) return;
+    const i = autoTick % bushPositions.length;
+    const id = ++popId.current;
+    setAutoPops((p) => [...p, { id, i, text: `+${fmtSol(bush.perClick)}` }]);
+    setAutoSwingI(i);
+    setTimeout(() => setAutoPops((p) => p.filter((x) => x.id !== id)), 850);
+    setTimeout(() => setAutoSwingI((s) => (s === i ? null : s)), 450);
+    setHitBush(i);
+    setTimeout(() => setHitBush((h) => (h === i ? null : h)), 380);
+  }, [autoTick, hasManager, unlocked, bush.perClick]);
 
   const handleClick = (e: React.MouseEvent, i: number) => {
     onHarvest(bush, e);
@@ -331,6 +349,8 @@ function FarmRow({
     setChips((c) => [...c, ...burst]);
     setTimeout(() => setChips((c) => c.filter((p) => !burst.some((b) => b.id === p.id))), 650);
   };
+
+
 
   const bushPositions = [22, 50, 78]; // % across floor
 
