@@ -236,9 +236,9 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
         )}
       </header>
 
-      {/* Farm — continuous warehouse */}
-      <main className="max-w-7xl mx-auto px-0 sm:px-4 py-6 relative">
-        <div className="flex flex-col gap-0 border-2 border-border rounded-none sm:rounded-2xl overflow-hidden">
+      {/* Farm — one continuous warehouse, full-bleed */}
+      <main className="w-full px-0 py-0 relative">
+        <div className="flex flex-col gap-0 w-full">
           {BUSHES.map((bush, idx) => (
             <FarmRow
               key={bush.id}
@@ -258,6 +258,8 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
             />
           ))}
         </div>
+
+
 
         <footer className="mt-10 text-center text-xs text-muted-foreground font-mono">
           Not financial advice. Bushes are not real. SOL is real. Trump is final boss.
