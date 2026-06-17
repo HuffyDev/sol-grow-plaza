@@ -161,12 +161,14 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
     return () => clearInterval(t);
   }, [state.managers]);
 
-  // Elevator cart: ping-pong through stops. -1 = surface, 0..unlocked.length-1 = each shaft.
+  // Elevator cart: ping-pong between surface and highest unlocked floor only
   const stops = useMemo(() => {
     const arr: number[] = [-1];
-    for (let i = 0; i < BUSHES.length; i++) arr.push(i);
+    for (let i = 0; i < BUSHES.length; i++) {
+      if (state.unlocked.includes(BUSHES[i].id)) arr.push(i);
+    }
     return arr;
-  }, []);
+  }, [state.unlocked]);
   const [cartIdx, setCartIdx] = useState(0); // index into stops
   const [cartDir, setCartDir] = useState(1);
   const [cartLoaded, setCartLoaded] = useState(false);
