@@ -370,22 +370,25 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
   );
 }
 
-function SurfaceLayer({ atSurface, carrying }: { atSurface: boolean; carrying: boolean }) {
-  const transporterLeft = atSurface && carrying ? "calc(100% - 240px)" : "130px";
+function SurfaceLayer({
+  atSurface, carrying, pendingSol, canCollect, onCollect,
+  elevatorOp, canAffordOp, onHireOp, opCost,
+}: {
+  atSurface: boolean; carrying: boolean; pendingSol: number;
+  canCollect: boolean; onCollect: () => void;
+  elevatorOp: boolean; canAffordOp: boolean; onHireOp: () => void; opCost: number;
+}) {
+  const transporterLeft = atSurface && carrying ? "calc(100% - 260px)" : "150px";
   return (
     <div className="surface-strip">
       {/* Pulley/headframe over the elevator opening */}
       <div className="pulley-frame">
         <svg viewBox="0 0 106 174">
-          {/* legs */}
           <polygon points="12,170 46,30 60,30 24,170" fill="#5a3a22" stroke="#1a0e06" strokeWidth="2" />
           <polygon points="94,170 60,30 46,30 82,170" fill="#6b4528" stroke="#1a0e06" strokeWidth="2" />
-          {/* cross braces */}
           <line x1="20" y1="120" x2="86" y2="120" stroke="#3a2614" strokeWidth="4" />
           <line x1="24" y1="80"  x2="82" y2="80"  stroke="#3a2614" strokeWidth="4" />
-          {/* top platform */}
           <rect x="38" y="22" width="30" height="8" fill="#3a2614" stroke="#1a0e06" strokeWidth="1.5" />
-          {/* pulley wheel */}
           <g className="pulley-wheel">
             <circle cx="53" cy="24" r="14" fill="#2d2d35" stroke="#0a0a0e" strokeWidth="2" />
             <circle cx="53" cy="24" r="9"  fill="none" stroke="#6a6a78" strokeWidth="1.5" />
@@ -393,13 +396,35 @@ function SurfaceLayer({ atSurface, carrying }: { atSurface: boolean; carrying: b
             <line x1="39" y1="24" x2="67" y2="24" stroke="#6a6a78" strokeWidth="1.5" />
             <circle cx="53" cy="24" r="3"  fill="#e0b94a" />
           </g>
-          {/* cable to shaft */}
           <line x1="53" y1="38" x2="53" y2="174" stroke="#1a0e06" strokeWidth="2.5" />
-          {/* warning placard */}
           <rect x="32" y="44" width="42" height="14" rx="2" fill="#0a0a0e" stroke="#e0b94a" strokeWidth="1" />
           <text x="53" y="54" textAnchor="middle" fontFamily="ui-monospace,monospace" fontSize="8" fontWeight="800" fill="#e0b94a">⚠ LIFT</text>
         </svg>
       </div>
+
+      {/* Manual COLLECT button — floats near the pulley when cart is loaded at surface */}
+      {canCollect && (
+        <button onClick={onCollect} className="elevator-collect-btn">
+          <span className="ec-coin">◆</span>
+          <span className="ec-label">COLLECT</span>
+          <span className="ec-amt">{fmtSol(pendingSol)} SOL</span>
+        </button>
+      )}
+
+      {/* Hire Elevator Operator (auto-collect) */}
+      {!elevatorOp && (
+        <button
+          onClick={onHireOp}
+          disabled={!canAffordOp}
+          className={`hud-btn ${canAffordOp ? "gold" : ""}`}
+          style={{ position: "absolute", top: 8, left: 130, fontSize: 11, padding: "5px 9px", zIndex: 7 }}
+        >
+          🛗 Hire Operator · {opCost} SOL
+        </button>
+      )}
+      {elevatorOp && (
+        <div className="elevator-op-badge">🛗 OPERATOR · AUTO</div>
+      )}
 
       {/* Surface Transporter (wheels SOL from elevator → depot) */}
       <div className={`transporter ${carrying ? "carrying walking" : "empty"}`} style={{ left: transporterLeft }}>
@@ -414,11 +439,17 @@ function SurfaceLayer({ atSurface, carrying }: { atSurface: boolean; carrying: b
         <div className="ed-roof" />
         <div className="ed-base">
           <div className="ed-screen">SOL ⇄ $</div>
+          {/* Little person silhouette inside the hut window */}
+          <div className="hut-person">
+            <div className="hp-head" />
+            <div className="hp-body" />
+          </div>
           <div className="ed-door" />
           <div className="ed-panel" />
         </div>
         <div className="ed-tag">EXCHANGE</div>
       </div>
+
 
       {/* Surface label */}
       <div style={{
