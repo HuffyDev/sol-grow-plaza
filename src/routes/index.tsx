@@ -37,9 +37,9 @@ const BUSHES: Bush[] = [
   { id: 5,  name: "Krabby Cavern",     farmer: "Sponge Miner",          portraits: [farmer5.url], cost: 3,      perClick: 0.07,   rarity: "Uncommon",  tagline: "Spatula in one hand, SOL in the other." },
   { id: 6,  name: "Cented Lode",       farmer: "Cented",                portraits: [farmer6.url], cost: 15,     perClick: 0.28,   rarity: "Rare",      tagline: "Cented sniffs out the alpha vein." },
   { id: 7,  name: "Kimchi Quarry",     farmer: "Kimchi",                portraits: [farmer7.url], cost: 90,     perClick: 1.1,    rarity: "Rare",      tagline: "Jet-set mining, no jet lag." },
-  { id: 8,  name: "Cupsey Pit",        farmer: "Cupsey",                portraits: [farmer8.url], cost: 500,    perClick: 5,      rarity: "Epic",      tagline: "Salutes every bag he mines." },
-  { id: 9,  name: "Twin Towers Vein",  farmer: "Ansem × Fazebanks",     portraits: [farmer9a.url, farmer9b.url], cost: 3000, perClick: 22,  rarity: "Legendary", tagline: "Two whales, one shaft." },
-  { id: 10, name: "MAGA Mother Lode",  farmer: "DONALD TRUMP",          portraits: [trumpImg],    cost: 20000,  perClick: 120,    rarity: "FINAL BOSS", tagline: "The biggest, most tremendous SOL mine." },
+  { id: 8,  name: "Cupsey Pit",        farmer: "Cupsey",                portraits: [farmer8.url], cost: 1500,   perClick: 1.8,    rarity: "Epic",      tagline: "Salutes every bag he mines." },
+  { id: 9,  name: "Twin Towers Vein",  farmer: "Ansem × Fazebanks",     portraits: [farmer9a.url, farmer9b.url], cost: 14000, perClick: 7,  rarity: "Legendary", tagline: "Two whales, one shaft." },
+  { id: 10, name: "MAGA Mother Lode",  farmer: "DONALD TRUMP",          portraits: [trumpImg],    cost: 120000, perClick: 28,     rarity: "FINAL BOSS", tagline: "The biggest, most tremendous SOL mine." },
 ];
 
 const STORAGE_PREFIX = "solfarm:v1:";
@@ -173,7 +173,26 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
   const [pickingRow, setPickingRow] = useState<number | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [autoTick, setAutoTick] = useState(0);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const flId = useRef(0);
+
+  const leaderboard = useMemo(() => {
+    if (!showLeaderboard || typeof window === "undefined") return [];
+    const rows: { wallet: string; level: number; sol: number; earned: number }[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !k.startsWith(STORAGE_PREFIX)) continue;
+      try {
+        const s = JSON.parse(localStorage.getItem(k) || "{}") as Partial<SaveState>;
+        const w = k.slice(STORAGE_PREFIX.length);
+        const level = Math.max(...(s.unlocked && s.unlocked.length ? s.unlocked : [1]));
+        rows.push({ wallet: w, level, sol: s.sol ?? 0, earned: s.totalEarned ?? 0 });
+      } catch { /* skip */ }
+    }
+    rows.sort((a, b) => b.level - a.level || b.earned - a.earned);
+    return rows;
+  }, [showLeaderboard]);
+
 
   useEffect(() => { saveState(wallet, state); }, [wallet, state]);
 
@@ -317,6 +336,7 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
           </div>
           <div className="flex items-center gap-2">
             <span className="hud-pill"><span className="lbl">WALLET</span><span className="val">{wallet.slice(0,4)}…{wallet.slice(-4)}</span></span>
+            <button onClick={() => setShowLeaderboard(true)} className="hud-btn">🏆 Leaderboard</button>
             <button onClick={reset} className="hud-btn">Reset</button>
             <button onClick={onLogout} className="hud-btn">Logout</button>
           </div>
@@ -384,6 +404,57 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
       {toast && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-card border border-primary px-5 py-3 rounded-lg neon-border font-mono text-sm">
           {toast}
+        </div>
+      )}
+
+      {showLeaderboard && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)" }}
+          onClick={() => setShowLeaderboard(false)}
+        >
+          <div
+            className="relative w-full max-w-2xl rounded-lg neon-border bg-card font-mono"
+            style={{ border: "2px solid oklch(0.7 0.2 280)", maxHeight: "80vh", display: "flex", flexDirection: "column" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-5 py-3 border-b" style={{ borderColor: "oklch(0.4 0.1 280)" }}>
+              <div className="text-lg font-black tracking-widest text-glow">🏆 SHAFT LEADERBOARD</div>
+              <button onClick={() => setShowLeaderboard(false)} className="hud-btn">✕</button>
+            </div>
+            <div className="overflow-auto px-5 py-4">
+              {leaderboard.length === 0 ? (
+                <div className="text-center text-sm opacity-70 py-8">No miners on the board yet.</div>
+              ) : (
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr style={{ color: "oklch(0.75 0.15 220)", textAlign: "left" }}>
+                      <th className="py-2 pr-3">#</th>
+                      <th className="py-2 pr-3">WALLET</th>
+                      <th className="py-2 pr-3">LEVEL</th>
+                      <th className="py-2 pr-3">SHAFT</th>
+                      <th className="py-2 pr-3 text-right">EARNED</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {leaderboard.map((r, i) => {
+                      const b = BUSHES.find((x) => x.id === r.level);
+                      const me = r.wallet === wallet;
+                      return (
+                        <tr key={r.wallet} style={{ borderTop: "1px solid oklch(0.3 0.08 280)", color: me ? "oklch(0.85 0.2 145)" : undefined }}>
+                          <td className="py-2 pr-3">{i + 1}</td>
+                          <td className="py-2 pr-3" title={r.wallet}>{r.wallet.slice(0,4)}…{r.wallet.slice(-4)}{me && " (you)"}</td>
+                          <td className="py-2 pr-3">{r.level}/10</td>
+                          <td className="py-2 pr-3">{b?.name ?? "—"}</td>
+                          <td className="py-2 pr-3 text-right">{fmtSol(r.earned)} SOL</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>
