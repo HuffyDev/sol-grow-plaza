@@ -264,46 +264,61 @@
   pointer-events: none;
 }
 
-/* ============ EXCHANGE DEPOT (cyberpunk trading outpost) ============ */
+/* ============ EXCHANGE DEPOT (cartoon steel watch-tower shack) ============ */
 .exchange-depot {
-  position: absolute; right: 28px; bottom: 4px;
-  width: 220px; height: 156px;
+  position: absolute; right: 32px; bottom: -2px;
+  width: 140px; height: 178px;
   z-index: 4;
   font-family: ui-monospace, "JetBrains Mono", monospace;
 }
-/* main building block (low-poly slab) */
+/* main tall tower body (stacked steel blocks) */
 .exchange-depot .ed-base {
-  position: absolute; left: 16px; right: 16px; bottom: 0; height: 124px;
+  position: absolute; left: 14px; right: 14px; bottom: 0; height: 152px;
   background:
-    linear-gradient(180deg, oklch(0.22 0.06 295) 0%, oklch(0.12 0.04 295) 70%, oklch(0.08 0.03 295) 100%);
-  border: 2px solid oklch(0.78 0.22 320 / 0.85);
-  border-radius: 4px;
+    /* yellow band near top */
+    linear-gradient(180deg, transparent 0 18px, oklch(0.88 0.20 88) 18px 24px, transparent 24px 26px),
+    /* black bar under yellow */
+    linear-gradient(180deg, transparent 0 26px, oklch(0.08 0.04 240) 26px 30px, transparent 30px),
+    /* horizontal step lines */
+    linear-gradient(180deg,
+      oklch(0.78 0.02 240) 0 30px,
+      oklch(0.55 0.03 240) 30px 70px,
+      oklch(0.78 0.02 240) 70px 80px,
+      oklch(0.50 0.03 240) 80px 110px,
+      oklch(0.78 0.02 240) 110px 120px,
+      oklch(0.45 0.03 240) 120px 100%);
+  border: 3px solid oklch(0.08 0.04 240);
+  border-radius: 4px 4px 0 0;
   box-shadow:
-    0 0 26px oklch(0.7 0.25 320 / 0.55),
-    inset 0 0 18px oklch(0.55 0.22 320 / 0.35),
-    0 8px 14px rgba(0,0,0,0.55);
-  clip-path: polygon(0 18%, 12% 0, 88% 0, 100% 18%, 100% 100%, 0 100%);
+    inset 2px 0 0 oklch(0.92 0.02 240 / 0.5),
+    inset -3px 0 0 oklch(0 0 0 / 0.35),
+    0 6px 12px rgba(0,0,0,0.55);
 }
-/* angled neon roof */
+/* stacked top cap (slightly wider — the "crown" of the tower) */
 .exchange-depot .ed-roof {
-  position: absolute; left: 0; right: 0; top: 4px; height: 30px;
+  position: absolute; left: 0; right: 0; top: 0; height: 30px;
   background:
-    linear-gradient(180deg, oklch(0.65 0.28 320), oklch(0.35 0.2 305));
-  clip-path: polygon(10% 100%, 28% 0, 72% 0, 90% 100%);
-  box-shadow: 0 0 18px oklch(0.78 0.28 320 / 0.7);
+    linear-gradient(180deg,
+      oklch(0.78 0.02 240) 0 6px,
+      oklch(0.88 0.20 88) 6px 12px,         /* yellow stripe */
+      oklch(0.08 0.04 240) 12px 14px,
+      oklch(0.62 0.03 240) 14px 30px);
+  border: 3px solid oklch(0.08 0.04 240);
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
 }
-/* glowing screen */
+/* small LED screen above the door */
 .exchange-depot .ed-screen {
-  position: absolute; left: 32px; right: 32px; top: 40px; height: 26px;
-  border-radius: 3px;
-  background: linear-gradient(180deg, oklch(0.45 0.22 145), oklch(0.22 0.12 145));
-  border: 1px solid oklch(0.6 0.22 145);
+  position: absolute; left: 22px; right: 22px; top: 56px; height: 22px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, oklch(0.40 0.20 145), oklch(0.20 0.12 145));
+  border: 2px solid oklch(0.08 0.04 240);
   box-shadow:
-    inset 0 0 8px oklch(0.75 0.25 145 / 0.6),
-    0 0 12px oklch(0.6 0.22 145 / 0.6);
+    inset 0 0 6px oklch(0.75 0.25 145 / 0.55),
+    0 0 10px oklch(0.6 0.22 145 / 0.45);
   display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 800; color: oklch(0.95 0.22 145);
-  text-shadow: 0 0 8px oklch(0.8 0.25 145 / 0.9);
+  font-size: 10px; font-weight: 900; color: oklch(0.95 0.22 145);
+  text-shadow: 0 0 6px oklch(0.8 0.25 145 / 0.85);
   letter-spacing: 0.1em;
   animation: ed-flicker 2.4s ease-in-out infinite;
 }
@@ -311,21 +326,30 @@
   0%, 100% { filter: brightness(1); }
   50%      { filter: brightness(1.25); }
 }
-/* door slot */
+/* big dark doorway at the bottom (matches reference) */
 .exchange-depot .ed-door {
   position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
-  width: 22px; height: 30px;
-  background: linear-gradient(180deg, oklch(0.18 0.08 295), oklch(0.06 0.04 295));
-  border: 1px solid oklch(0.65 0.22 320 / 0.7);
+  width: 56px; height: 64px;
+  background: linear-gradient(180deg, oklch(0.12 0.03 240) 0%, oklch(0.04 0.02 240) 100%);
+  border: 3px solid oklch(0.08 0.04 240);
   border-bottom: none;
-  border-radius: 11px 11px 0 0;
-  box-shadow: inset 0 0 6px oklch(0.55 0.22 320 / 0.6);
+  border-radius: 3px 3px 0 0;
+  box-shadow:
+    inset 0 0 12px oklch(0 0 0 / 0.85),
+    inset 0 4px 0 oklch(0.30 0.03 240);
 }
-/* antenna */
+/* doorway frame trim */
+.exchange-depot .ed-door::before {
+  content: ""; position: absolute; left: -7px; right: -7px; bottom: -3px; height: 8px;
+  background: oklch(0.88 0.20 88);
+  border: 2.5px solid oklch(0.08 0.04 240);
+  border-radius: 2px;
+}
+/* antenna on the roof */
 .exchange-depot .ed-antenna {
-  position: absolute; left: 50%; top: -14px;
-  width: 2px; height: 22px;
-  background: oklch(0.6 0.04 295);
+  position: absolute; left: 50%; top: -16px;
+  width: 2.5px; height: 22px;
+  background: oklch(0.10 0.04 240);
   transform: translateX(-50%);
 }
 .exchange-depot .ed-antenna::after {
@@ -335,26 +359,27 @@
   box-shadow: 0 0 10px oklch(0.85 0.28 25 / 0.95);
   animation: live-blink 1.4s ease-in-out infinite;
 }
-/* solar panel side */
+/* side ladder/panel — small ladder rungs on right edge */
 .exchange-depot .ed-panel {
-  position: absolute; right: 4px; top: 28px;
-  width: 18px; height: 30px;
+  position: absolute; right: 3px; top: 44px;
+  width: 10px; height: 90px;
   background:
-    repeating-linear-gradient(0deg, oklch(0.4 0.18 240) 0 4px, oklch(0.22 0.12 240) 4px 5px);
-  border: 1px solid oklch(0.55 0.18 240);
-  transform: skewY(-12deg);
-  box-shadow: 0 0 8px oklch(0.6 0.2 240 / 0.5);
+    repeating-linear-gradient(0deg,
+      oklch(0.10 0.04 240) 0 2px,
+      transparent 2px 14px);
+  border-left: 2px solid oklch(0.10 0.04 240);
+  border-right: 2px solid oklch(0.10 0.04 240);
 }
 .exchange-depot .ed-tag {
   position: absolute; left: 50%; transform: translateX(-50%);
-  bottom: -16px;
+  bottom: -18px;
   padding: 2px 8px;
   font-size: 9px; letter-spacing: 0.22em;
-  color: oklch(0.92 0.18 320);
-  background: rgba(10,8,14,0.7);
-  border: 1px solid oklch(0.75 0.22 320 / 0.7);
-  border-radius: 4px;
-  text-shadow: 0 0 6px oklch(0.78 0.22 320 / 0.8);
+  color: oklch(0.10 0.04 240);
+  background: oklch(0.88 0.20 88);
+  border: 2px solid oklch(0.08 0.04 240);
+  border-radius: 3px;
+  font-weight: 900;
   white-space: nowrap;
 }
 
