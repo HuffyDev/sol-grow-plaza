@@ -432,16 +432,6 @@ function SurfaceLayer({
         </div>
         <div className="ed-tag">EXCHANGE</div>
       </div>
-
-
-      {/* Surface label */}
-      <div style={{
-        position: "absolute", top: 12, left: 180,
-        fontFamily: "ui-monospace, JetBrains Mono, monospace",
-        fontSize: 11, letterSpacing: "0.2em",
-        color: "oklch(0.20 0.05 220)",
-        fontWeight: 800,
-      }}>SURFACE · DEPOT</div>
     </div>
   );
 }
