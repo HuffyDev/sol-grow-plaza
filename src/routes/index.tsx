@@ -309,7 +309,11 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
           <div className={`elevator-cart ${cartLoaded ? "loaded" : ""}`} style={{ top: cartTop }}>
             <div className="cable" />
             <div className="car-box">
-              <div className="car-window" />
+              <div className="car-rider">
+                <div className="cr-zzz">z<span>z</span><span>z</span></div>
+                <div className="cr-head" />
+                <div className="cr-body" />
+              </div>
               <div className="car-coins" />
             </div>
           </div>
