@@ -327,7 +327,7 @@ function FarmRow({
   const bushPositions = [22, 50, 78]; // % across floor
 
   return (
-    <section className={`relative overflow-hidden ${!isLast ? "border-b-2 border-border" : ""} ${unlocked ? "row-active" : ""}`}>
+    <section className={`relative overflow-hidden ${unlocked ? "row-active" : ""}`}>
       <div className="relative h-[380px] room-stage">
         {/* 3D structural shell */}
         <div className="room-3d">
