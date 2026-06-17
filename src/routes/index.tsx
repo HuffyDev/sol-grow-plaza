@@ -201,22 +201,27 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
 
   const nextLocked = useMemo(() => BUSHES.find((b) => !state.unlocked.includes(b.id)), [state.unlocked]);
 
-  return (
-    <div className="min-h-screen farm-sky relative">
-      <div className="stars absolute inset-0 h-[60vh]" />
+  const autoPerSec = state.managers.reduce((acc, id) => {
+    const b = BUSHES.find((x) => x.id === id);
+    return acc + (b ? b.perClick : 0);
+  }, 0);
 
+  return (
+    <div className="min-h-screen relative" style={{ background: "oklch(0.08 0.01 60)" }}>
       {/* HUD */}
-      <header className="sticky top-0 z-30 backdrop-blur bg-background/60 border-b border-border">
+      <header className="sticky top-0 z-30 backdrop-blur bg-background/70 border-b border-border">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-4 flex-wrap">
           <div className="flex items-center gap-2">
             <span className="text-2xl">🌱</span>
             <span className="font-black text-glow text-lg">SolFarm</span>
+            <span className="text-[10px] font-mono text-muted-foreground ml-1 px-2 py-0.5 border border-border rounded">WAREHOUSE</span>
           </div>
           <div className="flex-1 flex items-center gap-4 flex-wrap text-sm font-mono">
             <Stat label="BALANCE" value={`${fmtSol(state.sol)} SOL`} accent />
             <Stat label="EARNED" value={`${fmtSol(state.totalEarned)} SOL`} />
             <Stat label="CLICKS" value={state.totalClicks.toLocaleString()} />
             <Stat label="FARMERS" value={`${state.unlocked.length}/10`} />
+            <Stat label="AUTO" value={`${fmtSol(autoPerSec)} SOL/s`} />
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-mono text-muted-foreground hidden md:inline">{wallet.slice(0,4)}…{wallet.slice(-4)}</span>
@@ -231,9 +236,9 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
         )}
       </header>
 
-      {/* Farm */}
-      <main className="max-w-7xl mx-auto px-4 py-6 relative">
-        <div className="flex flex-col gap-6">
+      {/* Farm — continuous warehouse */}
+      <main className="max-w-7xl mx-auto px-0 sm:px-4 py-6 relative">
+        <div className="flex flex-col gap-0 border-2 border-border rounded-none sm:rounded-2xl overflow-hidden">
           {BUSHES.map((bush, idx) => (
             <FarmRow
               key={bush.id}
@@ -245,6 +250,11 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
               floaters={floaters}
               onHarvest={harvest}
               onUnlock={unlock}
+              hasManager={state.managers.includes(bush.id)}
+              managerCost={managerCost(bush)}
+              canAffordManager={state.sol >= managerCost(bush)}
+              onHireManager={hireManager}
+              isLast={idx === BUSHES.length - 1}
             />
           ))}
         </div>
@@ -253,6 +263,7 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
           Not financial advice. Bushes are not real. SOL is real. Trump is final boss.
         </footer>
       </main>
+
 
       {toast && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-card border border-primary px-5 py-3 rounded-lg neon-border font-mono text-sm">
