@@ -193,12 +193,8 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
         if (dir !== cartDir) setCartDir(dir);
         const stop = stops[next];
         if (stop === -1) {
-          // arrived at surface — auto-collect ONLY if elevator operator hired
-          if (state.elevatorOp) {
-            setState((s) => s.pendingSol > 0 ? { ...s, sol: s.sol + s.pendingSol, pendingSol: 0 } : s);
-            setCartLoaded(false);
-          }
-          // otherwise: leave cart loaded; wait for manual COLLECT click
+          // arrived at surface — drop off cart, but keep pendingSol claimable
+          setCartLoaded(false);
         } else {
           // arrived at a floor — pick up (visual)
           setPickupFloor(stop);
