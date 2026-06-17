@@ -287,10 +287,12 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
           </div>
           <div className="flex-1 flex items-center gap-2 flex-wrap">
             <span className="bal-frame"><span className="live-dot" /><span className="lbl">BAL</span><span className="val">{fmtSol(state.sol)}</span><span className="unit">SOL</span></span>
+            <span className="hud-pill gold"><span className="live-dot" /><span className="lbl">PENDING</span><span className="val">{fmtSol(state.pendingSol)}</span></span>
             <span className="hud-pill"><span className="lbl">EARNED</span><span className="val">{fmtSol(state.totalEarned)}</span></span>
             <span className="hud-pill"><span className="lbl">SWINGS</span><span className="val">{state.totalClicks.toLocaleString()}</span></span>
             <span className="hud-pill magenta"><span className="lbl">MINERS</span><span className="val">{state.unlocked.length}/10</span></span>
             <span className="hud-pill"><span className="live-dot" /><span className="lbl">AUTO</span><span className="val">{fmtSol(autoPerSec)}</span>SOL/s</span>
+            {state.elevatorOp && <span className="hud-pill" style={{ borderColor: "oklch(0.8 0.22 145 / 0.7)" }}>🛗 OP</span>}
           </div>
           <div className="flex items-center gap-2">
             <span className="hud-pill"><span className="lbl">WALLET</span><span className="val">{wallet.slice(0,4)}…{wallet.slice(-4)}</span></span>
