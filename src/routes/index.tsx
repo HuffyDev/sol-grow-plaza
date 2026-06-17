@@ -463,7 +463,7 @@ function FarmRow({
                   {/* Bush */}
                   <div className="relative flex flex-col items-center cursor-pointer select-none" onClick={(e) => unlocked && handleClick(e, i)}>
                     <div className="floor-shadow" style={{ bottom: -2 }} />
-                    <div className={`bush-shape ${hit ? "hit" : ""}`}>
+                    <div className={`bush-shape ${hit ? "hit" : ""}`} style={{ ["--glow" as never]: berryGlow } as React.CSSProperties}>
                       <span className="berry" style={{ top: 22, left: 30 }} />
                       <span className="berry" style={{ top: 34, right: 24 }} />
                       <span className="berry" style={{ top: 62, left: 56 }} />
