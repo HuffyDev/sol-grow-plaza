@@ -220,7 +220,7 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
             <span className="hud-pill">WAREHOUSE</span>
           </div>
           <div className="flex-1 flex items-center gap-2 flex-wrap">
-            <span className="hud-pill gold"><span className="lbl">BAL</span><span className="val">{fmtSol(state.sol)}</span>SOL</span>
+            <span className="bal-frame"><span className="live-dot" /><span className="lbl">BAL</span><span className="val">{fmtSol(state.sol)}</span><span className="unit">SOL</span></span>
             <span className="hud-pill"><span className="lbl">EARNED</span><span className="val">{fmtSol(state.totalEarned)}</span></span>
             <span className="hud-pill"><span className="lbl">CLICKS</span><span className="val">{state.totalClicks.toLocaleString()}</span></span>
             <span className="hud-pill magenta"><span className="lbl">FARMERS</span><span className="val">{state.unlocked.length}/10</span></span>
