@@ -540,8 +540,8 @@ function MineShaft({
   const hue = (index * 47) % 360;
 
   // Two-position oscillation for the loader + its cart
-  const loaderLeft = loaderAtPile ? "14%" : "calc(43% - 30px)"; // at pile vs behind miner (miner is at right:57%)
-  const cartLeftPct = loaderAtPile ? "20%" : "calc(43% - 8px)";
+  const loaderLeft = loaderAtPile ? "10%" : "calc(43% - 80px)"; // at pile vs stopping BEFORE the miner
+  const cartLeftPct = loaderAtPile ? "18%" : "calc(43% - 60px)";
 
   return (
     <div className="mine-shaft" style={{ height: SHAFT_H }}>
