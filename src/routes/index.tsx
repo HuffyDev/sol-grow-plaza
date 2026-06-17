@@ -220,11 +220,11 @@ function Farm({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
             <span className="hud-pill">WAREHOUSE</span>
           </div>
           <div className="flex-1 flex items-center gap-2 flex-wrap">
-            <span className="hud-pill gold"><span className="lbl">BAL</span><span className="val">{fmtSol(state.sol)}</span>SOL</span>
+            <span className="bal-frame"><span className="live-dot" /><span className="lbl">BAL</span><span className="val">{fmtSol(state.sol)}</span><span className="unit">SOL</span></span>
             <span className="hud-pill"><span className="lbl">EARNED</span><span className="val">{fmtSol(state.totalEarned)}</span></span>
             <span className="hud-pill"><span className="lbl">CLICKS</span><span className="val">{state.totalClicks.toLocaleString()}</span></span>
             <span className="hud-pill magenta"><span className="lbl">FARMERS</span><span className="val">{state.unlocked.length}/10</span></span>
-            <span className="hud-pill"><span className="lbl">AUTO</span><span className="val">{fmtSol(autoPerSec)}</span>SOL/s</span>
+            <span className="hud-pill"><span className="live-dot" /><span className="lbl">AUTO</span><span className="val">{fmtSol(autoPerSec)}</span>SOL/s</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="hud-pill"><span className="lbl">WALLET</span><span className="val">{wallet.slice(0,4)}…{wallet.slice(-4)}</span></span>
@@ -310,6 +310,8 @@ function FarmRow({
   const [chips, setChips] = useState<{ id: number; x: number; y: number; cx: string; cy: string; cr: string }[]>([]);
   const [autoPops, setAutoPops] = useState<{ id: number; i: number; text: string }[]>([]);
   const [autoSwingI, setAutoSwingI] = useState<number | null>(null);
+  const [shattering, setShattering] = useState(false);
+
   const chipId = useRef(0);
   const popId = useRef(0);
 
@@ -352,9 +354,24 @@ function FarmRow({
 
 
 
+  const theme = bush.id >= 10 ? 5 : bush.id >= 7 ? 4 : bush.id >= 5 ? 3 : bush.id >= 3 ? 2 : 1;
+  const berryGlow = [
+    "oklch(0.78 0.22 145 / 0.65)", // green
+    "oklch(0.78 0.22 145 / 0.65)",
+    "oklch(0.8 0.2 60 / 0.65)",   // amber
+    "oklch(0.8 0.2 60 / 0.65)",
+    "oklch(0.78 0.22 200 / 0.65)", // cyan
+    "oklch(0.78 0.22 200 / 0.65)",
+    "oklch(0.78 0.25 320 / 0.7)",  // magenta
+    "oklch(0.78 0.25 320 / 0.7)",
+    "oklch(0.78 0.25 320 / 0.7)",
+    "oklch(0.85 0.22 80 / 0.8)",   // gold
+  ][bush.id - 1];
+
   return (
-    <section className={`relative overflow-hidden ${unlocked ? "row-active" : ""}`}>
+    <section className={`relative overflow-hidden theme-${theme} ${unlocked ? "row-active" : ""}`}>
       <div className="relative h-[380px] room-stage">
+
         {/* 3D structural shell */}
         <div className="room-3d">
           <div className="wall-back" />
@@ -448,7 +465,7 @@ function FarmRow({
                   {/* Bush */}
                   <div className="relative flex flex-col items-center cursor-pointer select-none" onClick={(e) => unlocked && handleClick(e, i)}>
                     <div className="floor-shadow" style={{ bottom: -2 }} />
-                    <div className={`bush-shape ${hit ? "hit" : ""}`}>
+                    <div className={`bush-shape ${hit ? "hit" : ""}`} style={{ ["--glow" as never]: berryGlow } as React.CSSProperties}>
                       <span className="berry" style={{ top: 22, left: 30 }} />
                       <span className="berry" style={{ top: 34, right: 24 }} />
                       <span className="berry" style={{ top: 62, left: 56 }} />
@@ -488,17 +505,32 @@ function FarmRow({
         </div>
 
         {!unlocked && (
-          <div className="absolute inset-0 z-30 flex items-center justify-center" style={{ background: "rgba(8,6,12,0.5)", backdropFilter: "blur(6px)" }}>
-            <button
-              onClick={() => onUnlock(bush)}
-              disabled={!affordable}
-              className={`hud-btn ${affordable ? "gold" : ""}`}
-              style={{ padding: "0.7rem 1.2rem", fontSize: 13 }}
-            >
-              🔓 Hire {bush.farmer} · {fmtSol(bush.cost)} SOL
-            </button>
+          <div className={`locked-gate ${shattering ? "shattering" : ""}`} style={{ ["--gate-h" as never]: "380px" } as React.CSSProperties}>
+            <div className="scanline" />
+            <div className="holo-terminal">
+              <div className="lock-icon">🔒</div>
+              <div style={{ fontSize: 10, letterSpacing: "0.18em", opacity: 0.75, marginBottom: 4 }}>
+                SECTOR {String(bush.id).padStart(2, "0")} · {bush.rarity}
+              </div>
+              <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 10, textShadow: "0 0 8px oklch(0.78 0.22 175 / 0.8)" }}>
+                {bush.name}
+              </div>
+              <button
+                onClick={() => {
+                  if (!affordable) { onUnlock(bush); return; }
+                  setShattering(true);
+                  setTimeout(() => { onUnlock(bush); setShattering(false); }, 550);
+                }}
+                disabled={!affordable}
+                className={`hud-btn ${affordable ? "gold" : ""}`}
+                style={{ padding: "0.6rem 1.1rem", fontSize: 12 }}
+              >
+                🔓 HIRE {bush.farmer.toUpperCase()} · {fmtSol(bush.cost)} SOL
+              </button>
+            </div>
           </div>
         )}
+
       </div>
 
       <div className="px-4 py-2 flex items-center justify-between gap-3 flex-wrap" style={{ background: "rgba(8,6,12,0.55)", backdropFilter: "blur(8px)", borderTop: "1px solid oklch(0.6 0.18 175 / 0.25)" }}>
