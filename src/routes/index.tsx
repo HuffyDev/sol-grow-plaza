@@ -352,12 +352,9 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
 }
 
 function SurfaceLayer({
-  atSurface, carrying, pendingSol, canCollect, onCollect,
-  elevatorOp, canAffordOp, onHireOp, opCost,
+  atSurface, carrying, pendingSol,
 }: {
   atSurface: boolean; carrying: boolean; pendingSol: number;
-  canCollect: boolean; onCollect: () => void;
-  elevatorOp: boolean; canAffordOp: boolean; onHireOp: () => void; opCost: number;
 }) {
   const transporterLeft = atSurface && pendingSol > 0 ? "calc(100% - 260px)" : "150px";
   const surfacePileScale = Math.min(1.3, Math.max(0.25, Math.log10(1 + pendingSol * 10000) * 0.3));
@@ -397,7 +394,7 @@ function SurfaceLayer({
         </svg>
       </div>
 
-      {/* Surface SOL pile — grows as pendingSol accumulates, stays claimable */}
+      {/* Surface SOL pile — grows as pendingSol accumulates */}
       {pendingSol > 0 && (
         <div
           className="surface-pile"
@@ -410,30 +407,6 @@ function SurfaceLayer({
           <span className="coin" style={{ left: 44, bottom: 18 }} />
           <span className="coin" style={{ left: 32, bottom: 34 }} />
         </div>
-      )}
-
-      {/* Manual COLLECT button — shows whenever there's pending SOL at surface */}
-      {canCollect && (
-        <button onClick={onCollect} className="elevator-collect-btn">
-          <span className="ec-coin">◆</span>
-          <span className="ec-label">COLLECT</span>
-          <span className="ec-amt">{fmtSol(pendingSol)} SOL</span>
-        </button>
-      )}
-
-      {/* Hire Elevator Operator (auto-collect) */}
-      {!elevatorOp && (
-        <button
-          onClick={onHireOp}
-          disabled={!canAffordOp}
-          className={`hud-btn ${canAffordOp ? "gold" : ""}`}
-          style={{ position: "absolute", top: 8, left: 130, fontSize: 11, padding: "5px 9px", zIndex: 7 }}
-        >
-          🛗 Hire Operator · {opCost} SOL
-        </button>
-      )}
-      {elevatorOp && (
-        <div className="elevator-op-badge">🛗 OPERATOR · AUTO</div>
       )}
 
       {/* Surface Transporter (wheels SOL from elevator → depot) */}
