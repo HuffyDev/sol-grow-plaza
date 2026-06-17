@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import mineBg from "@/assets/mine-bg.png.asset.json";
 import farmer1 from "@/assets/farmers/farmer-2.png.asset.json";
 import farmer2 from "@/assets/farmers/farmer-3.png.asset.json";
 import farmer3 from "@/assets/farmers/farmer-4.png.asset.json";
