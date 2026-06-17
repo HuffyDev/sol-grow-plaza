@@ -539,12 +539,9 @@ function MineShaft({
   const swinging = (picking || autoSwing) && unlocked;
   const hue = (index * 47) % 360;
 
-  // Layout anchors (px from left edge of shaft cavity)
-  const pileLeft = 28;       // SOL crystal pile
-  const loaderRest = 90;     // loader stands next to pile
-  const loaderToCart = 6;    // loader pushes cart to elevator entry
-  const cartRest = 130;      // mini cart sits next to pile
-  const cartToElevator = 8;  // cart docks at left edge for pickup
+  // Two-position oscillation for the loader + its cart
+  const loaderLeft = loaderAtPile ? "14%" : "calc(43% - 30px)"; // at pile vs behind miner (miner is at right:57%)
+  const cartLeftPct = loaderAtPile ? "20%" : "calc(43% - 8px)";
 
   return (
     <div className="mine-shaft" style={{ height: SHAFT_H }}>
@@ -554,7 +551,7 @@ function MineShaft({
         {/* SOL crystal pile (purple, scales with --pile) */}
         <div
           className={`sol-pile ${pickup ? "pickup" : ""}`}
-          style={{ left: pileLeft, ["--pile" as never]: pileLevel } as React.CSSProperties}
+          style={{ left: 28, ["--pile" as never]: pileLevel } as React.CSSProperties}
         >
           <span className="coin" style={{ left: 8,  bottom: 0 }} />
           <span className="coin" style={{ left: 32, bottom: 0 }} />
@@ -564,25 +561,26 @@ function MineShaft({
           <span className="coin" style={{ left: 32, bottom: 34 }} />
         </div>
 
-        {/* Loader miner (walks pile→elevator on pickup) */}
+        {/* Loader miner — oscillates pile ↔ behind miner */}
         <div
-          className={`loader-mini ${loaderWalking ? "walking" : ""}`}
-          style={{ left: loaderWalking ? loaderToCart : loaderRest }}
+          className="loader-mini walking"
+          style={{ left: loaderLeft }}
         >
           <div className="lm-body" />
           <div className="lm-head" />
         </div>
 
-        {/* Mini hauler cart next to pile */}
+        {/* Mini hauler cart — travels with loader */}
         <div
-          className={`loader-cart ${pickup && loaderWalking ? "" : pileLevel < 0.05 ? "hidden" : ""}`}
-          style={{ left: loaderWalking ? cartToElevator : cartRest }}
+          className="loader-cart"
+          style={{ left: cartLeftPct }}
         >
           <div className="lc-box" />
-          <div className="lc-load" />
+          <div className={`lc-load ${loaderAtPile ? "empty" : "full"}`} />
           <div className="lc-wheel l" />
           <div className="lc-wheel r" />
         </div>
+
 
         {/* Ore wall (right) — click target */}
         <div className="ore-wall" onClick={handleClick} style={{ cursor: unlocked ? "pointer" : "default" }}>
