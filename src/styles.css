@@ -264,55 +264,42 @@
   pointer-events: none;
 }
 
-/* ============ EXCHANGE DEPOT (cartoon steel watch-tower shack) ============ */
+/* ============ EXCHANGE DEPOT (small grey kiosk with yellow arrow button) ============ */
 .exchange-depot {
   position: absolute; right: 32px; bottom: -2px;
-  width: 140px; height: 178px;
+  width: 110px; height: 150px;
   z-index: 4;
   font-family: ui-monospace, "JetBrains Mono", monospace;
 }
-/* main tall tower body (stacked steel blocks) */
-.exchange-depot .ed-base {
-  position: absolute; left: 14px; right: 14px; bottom: 0; height: 152px;
-  background:
-    /* yellow band near top */
-    linear-gradient(180deg, transparent 0 18px, oklch(0.88 0.20 88) 18px 24px, transparent 24px 26px),
-    /* black bar under yellow */
-    linear-gradient(180deg, transparent 0 26px, oklch(0.08 0.04 240) 26px 30px, transparent 30px),
-    /* horizontal step lines */
-    linear-gradient(180deg,
-      oklch(0.78 0.02 240) 0 30px,
-      oklch(0.55 0.03 240) 30px 70px,
-      oklch(0.78 0.02 240) 70px 80px,
-      oklch(0.50 0.03 240) 80px 110px,
-      oklch(0.78 0.02 240) 110px 120px,
-      oklch(0.45 0.03 240) 120px 100%);
-  border: 3px solid oklch(0.08 0.04 240);
-  border-radius: 4px 4px 0 0;
-  box-shadow:
-    inset 2px 0 0 oklch(0.92 0.02 240 / 0.5),
-    inset -3px 0 0 oklch(0 0 0 / 0.35),
-    0 6px 12px rgba(0,0,0,0.55);
+.exchange-depot .ed-kiosk {
+  position: absolute; left: 10px; right: 10px; bottom: 0; top: 18px;
 }
-/* stacked top cap (slightly wider — the "crown" of the tower) */
-.exchange-depot .ed-roof {
-  position: absolute; left: 0; right: 0; top: 0; height: 30px;
+/* flat slab roof */
+.exchange-depot .ed-roof2 {
+  position: absolute; left: -8px; right: -8px; top: 0; height: 14px;
+  background: linear-gradient(180deg, #cdd2da 0 8px, #0a0a14 8px 11px, #9aa0aa 11px 14px);
+  border: 3px solid #0a0a14;
+  border-radius: 3px;
+  box-shadow: 0 3px 0 rgba(0,0,0,0.35);
+}
+/* main grey body */
+.exchange-depot .ed-body {
+  position: absolute; left: 0; right: 0; top: 14px; bottom: 0;
   background:
     linear-gradient(180deg,
-      oklch(0.78 0.02 240) 0 6px,
-      oklch(0.88 0.20 88) 6px 12px,         /* yellow stripe */
-      oklch(0.08 0.04 240) 12px 14px,
-      oklch(0.62 0.03 240) 14px 30px);
-  border: 3px solid oklch(0.08 0.04 240);
-  border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+      #b7bdc7 0 28%,
+      #a0a6b0 28% 64%,
+      #8a909a 64% 100%);
+  border: 3px solid #0a0a14;
+  border-top: none;
+  box-shadow: inset -3px 0 0 rgba(0,0,0,0.18);
 }
-/* small LED screen above the door */
+/* little green LED screen / window in the body */
 .exchange-depot .ed-screen {
-  position: absolute; left: 22px; right: 22px; top: 56px; height: 22px;
+  position: absolute; left: 16px; right: 16px; top: 14px; height: 22px;
   border-radius: 2px;
   background: linear-gradient(180deg, oklch(0.40 0.20 145), oklch(0.20 0.12 145));
-  border: 2px solid oklch(0.08 0.04 240);
+  border: 2px solid #0a0a14;
   box-shadow:
     inset 0 0 6px oklch(0.75 0.25 145 / 0.55),
     0 0 10px oklch(0.6 0.22 145 / 0.45);
@@ -326,73 +313,43 @@
   0%, 100% { filter: brightness(1); }
   50%      { filter: brightness(1.25); }
 }
-/* big dark doorway at the bottom (matches reference) */
-.exchange-depot .ed-door {
-  position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
-  width: 56px; height: 64px;
-  background: linear-gradient(180deg, oklch(0.12 0.03 240) 0%, oklch(0.04 0.02 240) 100%);
-  border: 3px solid oklch(0.08 0.04 240);
-  border-bottom: none;
-  border-radius: 3px 3px 0 0;
+/* big yellow down-arrow button on the front of the kiosk */
+.exchange-depot .ed-arrow-btn {
+  position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%);
+  width: 44px; height: 44px;
+  background: linear-gradient(180deg, #f7d654 0%, #e8b820 100%);
+  border: 3px solid #0a0a14;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 900; color: #0a0a14;
   box-shadow:
-    inset 0 0 12px oklch(0 0 0 / 0.85),
-    inset 0 4px 0 oklch(0.30 0.03 240);
-}
-/* doorway frame trim */
-.exchange-depot .ed-door::before {
-  content: ""; position: absolute; left: -7px; right: -7px; bottom: -3px; height: 8px;
-  background: oklch(0.88 0.20 88);
-  border: 2.5px solid oklch(0.08 0.04 240);
-  border-radius: 2px;
-}
-/* antenna on the roof */
-.exchange-depot .ed-antenna {
-  position: absolute; left: 50%; top: -16px;
-  width: 2.5px; height: 22px;
-  background: oklch(0.10 0.04 240);
-  transform: translateX(-50%);
-}
-.exchange-depot .ed-antenna::after {
-  content: ""; position: absolute; left: 50%; top: -6px; transform: translateX(-50%);
-  width: 8px; height: 8px; border-radius: 50%;
-  background: oklch(0.85 0.28 25);
-  box-shadow: 0 0 10px oklch(0.85 0.28 25 / 0.95);
-  animation: live-blink 1.4s ease-in-out infinite;
-}
-/* side ladder/panel — small ladder rungs on right edge */
-.exchange-depot .ed-panel {
-  position: absolute; right: 3px; top: 44px;
-  width: 10px; height: 90px;
-  background:
-    repeating-linear-gradient(0deg,
-      oklch(0.10 0.04 240) 0 2px,
-      transparent 2px 14px);
-  border-left: 2px solid oklch(0.10 0.04 240);
-  border-right: 2px solid oklch(0.10 0.04 240);
+    inset 0 -3px 0 rgba(0,0,0,0.25),
+    0 3px 0 rgba(0,0,0,0.4);
 }
 .exchange-depot .ed-tag {
   position: absolute; left: 50%; transform: translateX(-50%);
   bottom: -18px;
   padding: 2px 8px;
   font-size: 9px; letter-spacing: 0.22em;
-  color: oklch(0.10 0.04 240);
-  background: oklch(0.88 0.20 88);
-  border: 2px solid oklch(0.08 0.04 240);
+  color: #0a0a14;
+  background: #f2c93b;
+  border: 2px solid #0a0a14;
   border-radius: 3px;
   font-weight: 900;
   white-space: nowrap;
 }
 
-/* ============ PULLEY / HEADFRAME above elevator opening ============ */
+
+/* ============ HEADFRAME SHACK above elevator opening ============ */
 .pulley-frame {
-  position: absolute; left: 10px; top: 26px;
-  width: 130px; height: 188px;
+  position: absolute; left: -8px; top: -22px;
+  width: 168px; height: 240px;
   pointer-events: none;
   z-index: 6;
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.45));
 }
 .pulley-frame svg { width: 100%; height: 100%; overflow: visible; }
-.pulley-wheel { transform-origin: 60px 22px; transform-box: fill-box; animation: pulley-spin 3.2s linear infinite; }
-@keyframes pulley-spin { to { transform: rotate(360deg); } }
+
 
 /* ============ CARTOON MINER NPC (shared look across .transporter / .loader-mini / .hut-person) ============ */
 /* Surface transporter character (mini sprite, slides between elevator and terminal) */
@@ -516,25 +473,23 @@
 }
 .elevator-cart .car-box {
   position: absolute; inset: 0;
-  border-radius: 3px;
-  /* steel cab with yellow stripes top and bottom */
+  border-radius: 14px;
   background:
     linear-gradient(180deg,
-      oklch(0.88 0.20 88) 0 6px,           /* top yellow band */
-      oklch(0.10 0.04 240) 6px 9px,        /* black bar */
-      oklch(0.62 0.04 240) 9px 22%,        /* steel highlight */
-      oklch(0.42 0.04 240) 22% 78%,        /* steel body */
-      oklch(0.62 0.04 240) 78% calc(100% - 9px),
-      oklch(0.10 0.04 240) calc(100% - 9px) calc(100% - 6px),
-      oklch(0.88 0.20 88) calc(100% - 6px) 100%);
-  border: 2.5px solid oklch(0.08 0.04 240);
+      #cdd2da 0 6px,
+      #0a0a14 6px 9px,
+      #b7bdc7 9px 18%,
+      #9aa0aa 18% 82%,
+      #8a909a 82% calc(100% - 9px),
+      #0a0a14 calc(100% - 9px) calc(100% - 6px),
+      #cdd2da calc(100% - 6px) 100%);
+  border: 3px solid #0a0a14;
   box-shadow:
-    inset 0 0 0 2px oklch(0.78 0.04 240 / 0.4),
-    inset -4px 0 6px oklch(0 0 0 / 0.4),
+    inset 2px 0 0 rgba(255,255,255,0.25),
+    inset -3px 0 6px rgba(0,0,0,0.4),
     0 4px 10px rgba(0,0,0,0.7);
-  /* corner-cut octagonal silhouette */
-  clip-path: polygon(8% 0, 92% 0, 100% 12%, 100% 88%, 92% 100%, 8% 100%, 0 88%, 0 12%);
 }
+
 .elevator-cart .car-window {
   /* porthole window in middle of cab */
   position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
