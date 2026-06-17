@@ -336,6 +336,7 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
           </div>
           <div className="flex items-center gap-2">
             <span className="hud-pill"><span className="lbl">WALLET</span><span className="val">{wallet.slice(0,4)}…{wallet.slice(-4)}</span></span>
+            <button onClick={() => setShowLeaderboard(true)} className="hud-btn">🏆 Leaderboard</button>
             <button onClick={reset} className="hud-btn">Reset</button>
             <button onClick={onLogout} className="hud-btn">Logout</button>
           </div>
