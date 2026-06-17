@@ -576,25 +576,24 @@
   border-bottom: 2px solid rgba(0,0,0,0.55);
 }
 .mine-shaft .shaft-cavity::after {
-  /* ground / floor of mine with rail tracks */
-  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 26px;
+  /* dirt floor + mine cart rail tracks (two steel rails on wooden ties) */
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 28px;
   background:
-    /* two parallel steel rails */
-    linear-gradient(90deg, transparent 0, transparent 100%) ,
-    /* wooden ties */
+    /* upper steel rail */
+    linear-gradient(180deg, transparent 6px, oklch(0.70 0.02 240) 6px 9px, transparent 9px),
+    /* lower steel rail */
+    linear-gradient(180deg, transparent 16px, oklch(0.70 0.02 240) 16px 19px, transparent 19px),
+    /* wooden ties (between the rails) */
     repeating-linear-gradient(90deg,
-      oklch(0.30 0.06 45) 0 14px,
-      oklch(0.20 0.05 40) 14px 16px,
-      transparent 16px 26px),
+      oklch(0.32 0.07 45) 0 16px,
+      oklch(0.18 0.05 40) 16px 22px),
     /* dirt floor */
     linear-gradient(180deg, oklch(0.28 0.05 45), oklch(0.16 0.03 40));
-  background-position: 0 14px, 0 16px, 0 0;
-  background-repeat: no-repeat, repeat-x, repeat;
-  background-size: 100% 100%, 26px 8px, 100% 100%;
+  background-size: 100% 100%, 100% 100%, 22px 14px, 100% 100%;
+  background-position: 0 0, 0 0, 0 8px, 0 0;
+  background-repeat: no-repeat, no-repeat, repeat-x, repeat;
   border-top: 2px solid rgba(0,0,0,0.55);
-  box-shadow:
-    inset 0 7px 0 -5px oklch(0.55 0.04 240),   /* upper rail */
-    inset 0 14px 0 -12px oklch(0.55 0.04 240); /* lower rail */
+  box-shadow: inset 0 1px 0 oklch(0.40 0.06 45);
 }
 
 /* Connector tunnel between shaft and elevator (visual notch on left) */
