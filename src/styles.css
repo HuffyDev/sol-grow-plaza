@@ -231,25 +231,27 @@
 /* ============ SURFACE LAYER (grass + station) ============ */
 .surface-strip {
   position: relative;
-  height: 140px;
+  height: 200px;
   background:
     linear-gradient(180deg,
       oklch(0.78 0.16 220) 0%,
-      oklch(0.86 0.10 220) 38%,
-      oklch(0.62 0.18 145) 40%,
-      oklch(0.48 0.16 145) 56%,
-      oklch(0.36 0.10 70) 58%,
-      oklch(0.30 0.08 60) 100%);
+      oklch(0.86 0.10 220) 32%,
+      oklch(0.62 0.18 145) 34%,
+      oklch(0.52 0.18 145) 50%,
+      oklch(0.40 0.14 130) 78%,
+      oklch(0.30 0.08 60) 88%,
+      oklch(0.24 0.06 50) 100%);
   border-bottom: 4px solid oklch(0.20 0.05 40);
   box-shadow: 0 8px 18px rgba(0,0,0,0.45);
   overflow: hidden;
 }
 .surface-strip::before {
-  /* grass blades */
+  /* grass blades — taller band */
   content: "";
-  position: absolute; left: 0; right: 0; top: 52px; height: 14px;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='14'><g fill='%231e7a3a'><polygon points='2,14 6,4 10,14'/><polygon points='12,14 16,6 20,14'/><polygon points='22,14 26,2 30,14'/><polygon points='32,14 36,6 40,14'/></g></svg>");
+  position: absolute; left: 0; right: 0; top: 60px; height: 30px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='30'><g fill='%231e7a3a'><polygon points='2,30 6,4 10,30'/><polygon points='12,30 16,10 20,30'/><polygon points='22,30 26,2 30,30'/><polygon points='32,30 36,8 40,30'/></g><g fill='%23166030' opacity='0.85'><polygon points='4,30 7,14 12,30'/><polygon points='18,30 22,16 26,30'/><polygon points='30,30 34,14 38,30'/></g></svg>");
   background-repeat: repeat-x;
+  background-size: 44px 30px;
 }
 .surface-strip::after {
   /* clouds */
