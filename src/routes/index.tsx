@@ -173,7 +173,26 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
   const [pickingRow, setPickingRow] = useState<number | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const [autoTick, setAutoTick] = useState(0);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const flId = useRef(0);
+
+  const leaderboard = useMemo(() => {
+    if (!showLeaderboard || typeof window === "undefined") return [];
+    const rows: { wallet: string; level: number; sol: number; earned: number }[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k || !k.startsWith(STORAGE_PREFIX)) continue;
+      try {
+        const s = JSON.parse(localStorage.getItem(k) || "{}") as Partial<SaveState>;
+        const w = k.slice(STORAGE_PREFIX.length);
+        const level = Math.max(...(s.unlocked && s.unlocked.length ? s.unlocked : [1]));
+        rows.push({ wallet: w, level, sol: s.sol ?? 0, earned: s.totalEarned ?? 0 });
+      } catch { /* skip */ }
+    }
+    rows.sort((a, b) => b.level - a.level || b.earned - a.earned);
+    return rows;
+  }, [showLeaderboard]);
+
 
   useEffect(() => { saveState(wallet, state); }, [wallet, state]);
 
