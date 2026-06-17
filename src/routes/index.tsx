@@ -403,14 +403,49 @@ function FarmRow({
           <div className="fan-blades" />
         </div>
 
-        {/* Wall props */}
-        <div className="ac-unit" style={{ top: 70, right: "6%" }} />
-        <div className="ac-unit" style={{ top: 78, left: "6%", width: 70, height: 30 }} />
+        {/* Wall props — animated exhaust vents */}
+        <div className="ac-unit" style={{ top: 70, right: "6%" }}>
+          <div className="ac-fan"><div className="ac-fan-blades" /><div className="ac-fan-hub" /></div>
+        </div>
+        <div className="ac-unit" style={{ top: 78, left: "6%", width: 70, height: 30 }}>
+          <div className="ac-fan"><div className="ac-fan-blades" style={{ width: 52, height: 52 }} /><div className="ac-fan-hub" /></div>
+        </div>
 
-        {/* Floor crates */}
-        <div className="crate" style={{ bottom: 28, left: 28 }} />
-        <div className="crate" style={{ bottom: 32, right: 36, transform: "scale(0.85)" }} />
-        <div className="crate" style={{ bottom: 70, left: 18, transform: "scale(0.7)" }} />
+        {/* Floor props — tiered by theme */}
+        {theme <= 2 ? (
+          <>
+            <div className="crate" style={{ bottom: 28, left: 28 }} />
+            <div className="crate" style={{ bottom: 32, right: 36, transform: "scale(0.85)" }} />
+            <div className="crate" style={{ bottom: 70, left: 18, transform: "scale(0.7)" }} />
+          </>
+        ) : theme === 3 ? (
+          <>
+            <div className="barrel" style={{ bottom: 24, left: 26 }}><div className="barrel-hazard">☠</div></div>
+            <div className="barrel" style={{ bottom: 28, right: 32, transform: "scale(0.9)" }}><div className="barrel-hazard">☠</div></div>
+            <div className="barrel" style={{ bottom: 66, left: 16, transform: "scale(0.75)" }}><div className="barrel-hazard">☠</div></div>
+          </>
+        ) : theme === 4 ? (
+          <>
+            <div className="battery" style={{ bottom: 24, left: 30 }}><div className="battery-glow" /></div>
+            <div className="battery" style={{ bottom: 28, right: 34, transform: "scale(0.9)" }}><div className="battery-glow" /></div>
+            <div className="battery" style={{ bottom: 64, left: 20, transform: "scale(0.75)" }}><div className="battery-glow" /></div>
+          </>
+        ) : (
+          <>
+            <div className="server-rack" style={{ bottom: 20, left: 24 }}>
+              <div className="rack-slot"><span className="rack-led" style={{ color: "oklch(0.8 0.18 80)" }} /></div>
+              <div className="rack-slot"><span className="rack-led" style={{ color: "oklch(0.75 0.22 145)" }} /></div>
+              <div className="rack-slot"><span className="rack-led" style={{ color: "oklch(0.8 0.18 80)", animationDelay: "0.3s" }} /></div>
+              <div className="rack-slot"><span className="rack-led" style={{ color: "oklch(0.75 0.22 145)", animationDelay: "0.6s" }} /></div>
+            </div>
+            <div className="server-rack" style={{ bottom: 24, right: 28 }}>
+              <div className="rack-slot"><span className="rack-led" style={{ color: "oklch(0.8 0.18 80)" }} /></div>
+              <div className="rack-slot"><span className="rack-led" style={{ color: "oklch(0.75 0.22 145)" }} /></div>
+              <div className="rack-slot"><span className="rack-led" style={{ color: "oklch(0.8 0.18 80)", animationDelay: "0.3s" }} /></div>
+              <div className="rack-slot"><span className="rack-led" style={{ color: "oklch(0.75 0.22 145)", animationDelay: "0.6s" }} /></div>
+            </div>
+          </>
+        )}
 
         {/* Row header chips — HUD */}
         <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
@@ -534,8 +569,11 @@ function FarmRow({
       </div>
 
       <div className="px-4 py-2 flex items-center justify-between gap-3 flex-wrap" style={{ background: "rgba(8,6,12,0.55)", backdropFilter: "blur(8px)", borderTop: "1px solid oklch(0.6 0.18 175 / 0.25)" }}>
-        <span className="hud-pill" style={{ textTransform: "none", letterSpacing: 0 }}>
-          <span style={{ fontStyle: "italic", color: "oklch(0.75 0.04 175)" }}>"{bush.tagline}"</span>
+        <span className="terminal-log">
+          <span className="log-prefix">LOG</span>
+          <span className="log-bracket">[</span>
+          <span className="log-text">{bush.tagline}</span>
+          <span className="log-bracket">]</span>
         </span>
         <div className="flex items-center gap-2">
           <span className="hud-pill gold"><span className="lbl">PER HIT</span><span className="val">{fmtSol(bush.perClick)}</span>SOL</span>
