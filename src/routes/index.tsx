@@ -310,6 +310,8 @@ function FarmRow({
   const [chips, setChips] = useState<{ id: number; x: number; y: number; cx: string; cy: string; cr: string }[]>([]);
   const [autoPops, setAutoPops] = useState<{ id: number; i: number; text: string }[]>([]);
   const [autoSwingI, setAutoSwingI] = useState<number | null>(null);
+  const [shattering, setShattering] = useState(false);
+
   const chipId = useRef(0);
   const popId = useRef(0);
 
