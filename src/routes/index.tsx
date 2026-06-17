@@ -285,10 +285,14 @@ function Stat({ label, value, accent = false }: { label: string; value: string; 
 
 function FarmRow({
   bush, index, unlocked, affordable, picking, floaters, onHarvest, onUnlock,
+  hasManager, managerCost, canAffordManager, onHireManager, isLast,
 }: {
   bush: Bush; index: number; unlocked: boolean; affordable: boolean; picking: boolean;
   floaters: Floater[]; onHarvest: (b: Bush, e: React.MouseEvent) => void; onUnlock: (b: Bush) => void;
+  hasManager: boolean; managerCost: number; canAffordManager: boolean;
+  onHireManager: (b: Bush) => void; isLast: boolean;
 }) {
+
   const lightColors = ["#ffd166", "#ff6fb5", "#5cd9ff", "#9bff6a", "#ff8a5b"];
   const tone = lightColors[index % lightColors.length];
 
