@@ -241,7 +241,6 @@ function FarmRow({
   bush: Bush; index: number; unlocked: boolean; affordable: boolean; picking: boolean;
   floaters: Floater[]; onHarvest: (b: Bush, e: React.MouseEvent) => void; onUnlock: (b: Bush) => void;
 }) {
-  const bushCount = 3;
   const lightColors = ["#ffd166", "#ff6fb5", "#5cd9ff", "#9bff6a", "#ff8a5b"];
   const tone = lightColors[index % lightColors.length];
 
