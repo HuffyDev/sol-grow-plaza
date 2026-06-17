@@ -68,9 +68,15 @@ function loadState(wallet: string): SaveState {
     const raw = localStorage.getItem(STORAGE_PREFIX + wallet);
     if (!raw) return defaultState();
     const p = JSON.parse(raw) as Partial<SaveState>;
-    return { ...defaultState(), ...p, unlocked: p.unlocked && p.unlocked.length ? p.unlocked : [1] };
+    return {
+      ...defaultState(),
+      ...p,
+      unlocked: p.unlocked && p.unlocked.length ? p.unlocked : [1],
+      managers: p.managers ?? [],
+    };
   } catch { return defaultState(); }
 }
+
 function saveState(wallet: string, s: SaveState) {
   localStorage.setItem(STORAGE_PREFIX + wallet, JSON.stringify(s));
 }
