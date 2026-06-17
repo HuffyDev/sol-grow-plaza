@@ -473,10 +473,29 @@ function FarmRow({
       </div>
 
 
-      <div className="px-4 py-2 bg-background/70 border-t border-border flex items-center justify-between text-xs font-mono">
-        <span className="text-muted-foreground italic">"{bush.tagline}"</span>
-        <span className="text-accent">{fmtSol(bush.perClick)} SOL / click</span>
+      <div className="px-4 py-2 bg-background/80 border-t border-border flex items-center justify-between gap-3 text-xs font-mono flex-wrap">
+        <span className="text-muted-foreground italic truncate">"{bush.tagline}"</span>
+        <div className="flex items-center gap-2">
+          <span className="text-accent">{fmtSol(bush.perClick)} SOL / click</span>
+          {unlocked && (
+            hasManager ? (
+              <span className="px-2 py-1 rounded border border-primary text-primary bg-primary/10">
+                👔 MANAGER · auto +{fmtSol(bush.perClick)}/s
+              </span>
+            ) : (
+              <button
+                onClick={() => onHireManager(bush)}
+                disabled={!canAffordManager}
+                className={`px-2 py-1 rounded border ${canAffordManager ? "border-accent text-accent hover:bg-accent/10" : "border-border text-muted-foreground cursor-not-allowed"}`}
+                title="Hires a manager who auto-clicks this bush once per second."
+              >
+                👔 Hire manager · {fmtSol(managerCost)} SOL
+              </button>
+            )
+          )}
+        </div>
       </div>
+
     </section>
   );
 }
