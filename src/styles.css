@@ -264,46 +264,61 @@
   pointer-events: none;
 }
 
-/* ============ EXCHANGE DEPOT (cyberpunk trading outpost) ============ */
+/* ============ EXCHANGE DEPOT (cartoon steel watch-tower shack) ============ */
 .exchange-depot {
-  position: absolute; right: 28px; bottom: 4px;
-  width: 220px; height: 156px;
+  position: absolute; right: 32px; bottom: -2px;
+  width: 140px; height: 178px;
   z-index: 4;
   font-family: ui-monospace, "JetBrains Mono", monospace;
 }
-/* main building block (low-poly slab) */
+/* main tall tower body (stacked steel blocks) */
 .exchange-depot .ed-base {
-  position: absolute; left: 16px; right: 16px; bottom: 0; height: 124px;
+  position: absolute; left: 14px; right: 14px; bottom: 0; height: 152px;
   background:
-    linear-gradient(180deg, oklch(0.22 0.06 295) 0%, oklch(0.12 0.04 295) 70%, oklch(0.08 0.03 295) 100%);
-  border: 2px solid oklch(0.78 0.22 320 / 0.85);
-  border-radius: 4px;
+    /* yellow band near top */
+    linear-gradient(180deg, transparent 0 18px, oklch(0.88 0.20 88) 18px 24px, transparent 24px 26px),
+    /* black bar under yellow */
+    linear-gradient(180deg, transparent 0 26px, oklch(0.08 0.04 240) 26px 30px, transparent 30px),
+    /* horizontal step lines */
+    linear-gradient(180deg,
+      oklch(0.78 0.02 240) 0 30px,
+      oklch(0.55 0.03 240) 30px 70px,
+      oklch(0.78 0.02 240) 70px 80px,
+      oklch(0.50 0.03 240) 80px 110px,
+      oklch(0.78 0.02 240) 110px 120px,
+      oklch(0.45 0.03 240) 120px 100%);
+  border: 3px solid oklch(0.08 0.04 240);
+  border-radius: 4px 4px 0 0;
   box-shadow:
-    0 0 26px oklch(0.7 0.25 320 / 0.55),
-    inset 0 0 18px oklch(0.55 0.22 320 / 0.35),
-    0 8px 14px rgba(0,0,0,0.55);
-  clip-path: polygon(0 18%, 12% 0, 88% 0, 100% 18%, 100% 100%, 0 100%);
+    inset 2px 0 0 oklch(0.92 0.02 240 / 0.5),
+    inset -3px 0 0 oklch(0 0 0 / 0.35),
+    0 6px 12px rgba(0,0,0,0.55);
 }
-/* angled neon roof */
+/* stacked top cap (slightly wider — the "crown" of the tower) */
 .exchange-depot .ed-roof {
-  position: absolute; left: 0; right: 0; top: 4px; height: 30px;
+  position: absolute; left: 0; right: 0; top: 0; height: 30px;
   background:
-    linear-gradient(180deg, oklch(0.65 0.28 320), oklch(0.35 0.2 305));
-  clip-path: polygon(10% 100%, 28% 0, 72% 0, 90% 100%);
-  box-shadow: 0 0 18px oklch(0.78 0.28 320 / 0.7);
+    linear-gradient(180deg,
+      oklch(0.78 0.02 240) 0 6px,
+      oklch(0.88 0.20 88) 6px 12px,         /* yellow stripe */
+      oklch(0.08 0.04 240) 12px 14px,
+      oklch(0.62 0.03 240) 14px 30px);
+  border: 3px solid oklch(0.08 0.04 240);
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.5);
 }
-/* glowing screen */
+/* small LED screen above the door */
 .exchange-depot .ed-screen {
-  position: absolute; left: 32px; right: 32px; top: 40px; height: 26px;
-  border-radius: 3px;
-  background: linear-gradient(180deg, oklch(0.45 0.22 145), oklch(0.22 0.12 145));
-  border: 1px solid oklch(0.6 0.22 145);
+  position: absolute; left: 22px; right: 22px; top: 56px; height: 22px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, oklch(0.40 0.20 145), oklch(0.20 0.12 145));
+  border: 2px solid oklch(0.08 0.04 240);
   box-shadow:
-    inset 0 0 8px oklch(0.75 0.25 145 / 0.6),
-    0 0 12px oklch(0.6 0.22 145 / 0.6);
+    inset 0 0 6px oklch(0.75 0.25 145 / 0.55),
+    0 0 10px oklch(0.6 0.22 145 / 0.45);
   display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 800; color: oklch(0.95 0.22 145);
-  text-shadow: 0 0 8px oklch(0.8 0.25 145 / 0.9);
+  font-size: 10px; font-weight: 900; color: oklch(0.95 0.22 145);
+  text-shadow: 0 0 6px oklch(0.8 0.25 145 / 0.85);
   letter-spacing: 0.1em;
   animation: ed-flicker 2.4s ease-in-out infinite;
 }
@@ -311,21 +326,30 @@
   0%, 100% { filter: brightness(1); }
   50%      { filter: brightness(1.25); }
 }
-/* door slot */
+/* big dark doorway at the bottom (matches reference) */
 .exchange-depot .ed-door {
   position: absolute; left: 50%; bottom: 0; transform: translateX(-50%);
-  width: 22px; height: 30px;
-  background: linear-gradient(180deg, oklch(0.18 0.08 295), oklch(0.06 0.04 295));
-  border: 1px solid oklch(0.65 0.22 320 / 0.7);
+  width: 56px; height: 64px;
+  background: linear-gradient(180deg, oklch(0.12 0.03 240) 0%, oklch(0.04 0.02 240) 100%);
+  border: 3px solid oklch(0.08 0.04 240);
   border-bottom: none;
-  border-radius: 11px 11px 0 0;
-  box-shadow: inset 0 0 6px oklch(0.55 0.22 320 / 0.6);
+  border-radius: 3px 3px 0 0;
+  box-shadow:
+    inset 0 0 12px oklch(0 0 0 / 0.85),
+    inset 0 4px 0 oklch(0.30 0.03 240);
 }
-/* antenna */
+/* doorway frame trim */
+.exchange-depot .ed-door::before {
+  content: ""; position: absolute; left: -7px; right: -7px; bottom: -3px; height: 8px;
+  background: oklch(0.88 0.20 88);
+  border: 2.5px solid oklch(0.08 0.04 240);
+  border-radius: 2px;
+}
+/* antenna on the roof */
 .exchange-depot .ed-antenna {
-  position: absolute; left: 50%; top: -14px;
-  width: 2px; height: 22px;
-  background: oklch(0.6 0.04 295);
+  position: absolute; left: 50%; top: -16px;
+  width: 2.5px; height: 22px;
+  background: oklch(0.10 0.04 240);
   transform: translateX(-50%);
 }
 .exchange-depot .ed-antenna::after {
@@ -335,81 +359,121 @@
   box-shadow: 0 0 10px oklch(0.85 0.28 25 / 0.95);
   animation: live-blink 1.4s ease-in-out infinite;
 }
-/* solar panel side */
+/* side ladder/panel — small ladder rungs on right edge */
 .exchange-depot .ed-panel {
-  position: absolute; right: 4px; top: 28px;
-  width: 18px; height: 30px;
+  position: absolute; right: 3px; top: 44px;
+  width: 10px; height: 90px;
   background:
-    repeating-linear-gradient(0deg, oklch(0.4 0.18 240) 0 4px, oklch(0.22 0.12 240) 4px 5px);
-  border: 1px solid oklch(0.55 0.18 240);
-  transform: skewY(-12deg);
-  box-shadow: 0 0 8px oklch(0.6 0.2 240 / 0.5);
+    repeating-linear-gradient(0deg,
+      oklch(0.10 0.04 240) 0 2px,
+      transparent 2px 14px);
+  border-left: 2px solid oklch(0.10 0.04 240);
+  border-right: 2px solid oklch(0.10 0.04 240);
 }
 .exchange-depot .ed-tag {
   position: absolute; left: 50%; transform: translateX(-50%);
-  bottom: -16px;
+  bottom: -18px;
   padding: 2px 8px;
   font-size: 9px; letter-spacing: 0.22em;
-  color: oklch(0.92 0.18 320);
-  background: rgba(10,8,14,0.7);
-  border: 1px solid oklch(0.75 0.22 320 / 0.7);
-  border-radius: 4px;
-  text-shadow: 0 0 6px oklch(0.78 0.22 320 / 0.8);
+  color: oklch(0.10 0.04 240);
+  background: oklch(0.88 0.20 88);
+  border: 2px solid oklch(0.08 0.04 240);
+  border-radius: 3px;
+  font-weight: 900;
   white-space: nowrap;
 }
 
 /* ============ PULLEY / HEADFRAME above elevator opening ============ */
 .pulley-frame {
   position: absolute; left: 10px; top: 26px;
-  width: 106px; height: 174px;
+  width: 130px; height: 188px;
   pointer-events: none;
   z-index: 6;
 }
 .pulley-frame svg { width: 100%; height: 100%; overflow: visible; }
-.pulley-wheel { transform-origin: 53px 24px; animation: pulley-spin 3.2s linear infinite; }
+.pulley-wheel { transform-origin: 60px 22px; transform-box: fill-box; animation: pulley-spin 3.2s linear infinite; }
 @keyframes pulley-spin { to { transform: rotate(360deg); } }
 
+/* ============ CARTOON MINER NPC (shared look across .transporter / .loader-mini / .hut-person) ============ */
 /* Surface transporter character (mini sprite, slides between elevator and terminal) */
 .transporter {
-  position: absolute; top: 118px;
-  width: 56px; height: 64px;
+  position: absolute; top: 110px;
+  width: 56px; height: 72px;
   transition: left 0.9s cubic-bezier(0.5, 0, 0.5, 1);
   z-index: 5;
 }
+/* BODY = blue overalls block */
 .transporter .body {
-  position: absolute; bottom: 0; left: 8px;
-  width: 40px; height: 50px;
-  background: linear-gradient(180deg, oklch(0.55 0.15 25), oklch(0.35 0.12 25));
-  border: 2px solid oklch(0.15 0.04 25);
+  position: absolute; bottom: 0; left: 10px;
+  width: 36px; height: 40px;
+  background: linear-gradient(180deg, oklch(0.55 0.18 245), oklch(0.40 0.18 245));
+  border: 2.5px solid oklch(0.10 0.04 240);
   border-radius: 6px 6px 4px 4px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.4);
 }
+/* orange shirt/bib patch over the overalls */
+.transporter .body::before {
+  content: ""; position: absolute; inset: 4px 6px 18px 6px;
+  background: linear-gradient(180deg, oklch(0.72 0.20 55), oklch(0.58 0.22 50));
+  border: 2px solid oklch(0.10 0.04 240);
+  border-radius: 3px;
+}
+/* boots */
+.transporter .body::after {
+  content: ""; position: absolute; left: -2px; right: -2px; bottom: -6px; height: 8px;
+  background:
+    linear-gradient(90deg, oklch(0.18 0.04 40) 0 38%, transparent 38% 62%, oklch(0.18 0.04 40) 62% 100%);
+}
+/* HEAD = round skin face + orange hard hat */
 .transporter .head {
-  position: absolute; top: 0; left: 14px;
+  position: absolute; top: 12px; left: 14px;
   width: 28px; height: 28px;
   border-radius: 50%;
-  background: oklch(0.78 0.08 60);
-  border: 2px solid oklch(0.15 0.04 25);
-  box-shadow: 0 0 0 2px oklch(0.85 0.18 80) inset;
+  background:
+    radial-gradient(circle at 50% 65%, oklch(0.78 0.10 55) 0 13px, transparent 14px),
+    radial-gradient(circle at 35% 60%, oklch(0.20 0.04 30) 0 1.6px, transparent 2px),
+    radial-gradient(circle at 65% 60%, oklch(0.20 0.04 30) 0 1.6px, transparent 2px),
+    oklch(0.78 0.10 55);
+  border: 2.5px solid oklch(0.10 0.04 30);
+  box-shadow: 0 2px 0 rgba(0,0,0,0.3);
 }
+/* HARD HAT dome */
+.transporter .head::before {
+  content: ""; position: absolute; left: -4px; right: -4px; top: -10px; height: 16px;
+  background:
+    linear-gradient(180deg, oklch(0.72 0.22 50), oklch(0.55 0.22 45));
+  border: 2.5px solid oklch(0.10 0.04 30);
+  border-radius: 18px 18px 4px 4px / 14px 14px 4px 4px;
+  box-shadow: inset 0 2px 0 oklch(0.92 0.20 80 / 0.6);
+}
+/* yellow stripe across the hat */
+.transporter .head::after {
+  content: ""; position: absolute; left: -2px; right: -2px; top: -3px; height: 4px;
+  background: oklch(0.88 0.20 88);
+  border-top: 2px solid oklch(0.10 0.04 30);
+  border-bottom: 2px solid oklch(0.10 0.04 30);
+}
+/* hand-cart trailing the surface transporter */
 .transporter .cart {
-  position: absolute; bottom: 6px; left: -22px;
-  width: 28px; height: 22px;
-  background: oklch(0.4 0.06 60);
-  border: 2px solid oklch(0.15 0.04 25);
+  position: absolute; bottom: 6px; left: -28px;
+  width: 32px; height: 22px;
+  background: linear-gradient(180deg, oklch(0.55 0.05 40), oklch(0.32 0.04 40));
+  border: 2.5px solid oklch(0.10 0.04 30);
   border-radius: 3px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 .transporter .cart::before {
-  /* coin pile in cart */
-  content: ""; position: absolute; left: 3px; right: 3px; top: -6px; height: 10px;
-  background: radial-gradient(circle at 50% 70%, oklch(0.92 0.22 80) 0 5px, transparent 6px),
-              radial-gradient(circle at 30% 70%, oklch(0.85 0.2 80) 0 4px, transparent 5px),
-              radial-gradient(circle at 70% 70%, oklch(0.85 0.2 80) 0 4px, transparent 5px);
+  /* purple crystal pile in cart */
+  content: ""; position: absolute; left: 3px; right: 3px; top: -8px; height: 12px;
+  background: radial-gradient(circle at 25% 70%, oklch(0.72 0.28 320) 0 4px, transparent 5px),
+              radial-gradient(circle at 55% 60%, oklch(0.80 0.30 305) 0 5px, transparent 6px),
+              radial-gradient(circle at 80% 70%, oklch(0.70 0.28 320) 0 4px, transparent 5px);
+  filter: drop-shadow(0 0 6px oklch(0.7 0.3 320 / 0.7));
 }
-.transporter.carrying .cart { opacity: 1; }
-.transporter.empty .cart { opacity: 0.3; }
+.transporter.carrying .cart::before { opacity: 1; }
+.transporter.empty .cart::before { opacity: 0.2; }
 .transporter.walking .body { animation: walk-bob 0.4s ease-in-out infinite; }
+.transporter.walking .head { animation: walk-bob 0.4s ease-in-out infinite; }
 @keyframes walk-bob {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-3px); }
@@ -452,39 +516,56 @@
 }
 .elevator-cart .car-box {
   position: absolute; inset: 0;
-  border-radius: 4px 4px 6px 6px;
+  border-radius: 3px;
+  /* steel cab with yellow stripes top and bottom */
   background:
-    linear-gradient(180deg, oklch(0.55 0.18 80) 0%, oklch(0.42 0.16 70) 60%, oklch(0.28 0.12 60) 100%);
-  border: 2px solid oklch(0.12 0.04 40);
+    linear-gradient(180deg,
+      oklch(0.88 0.20 88) 0 6px,           /* top yellow band */
+      oklch(0.10 0.04 240) 6px 9px,        /* black bar */
+      oklch(0.62 0.04 240) 9px 22%,        /* steel highlight */
+      oklch(0.42 0.04 240) 22% 78%,        /* steel body */
+      oklch(0.62 0.04 240) 78% calc(100% - 9px),
+      oklch(0.10 0.04 240) calc(100% - 9px) calc(100% - 6px),
+      oklch(0.88 0.20 88) calc(100% - 6px) 100%);
+  border: 2.5px solid oklch(0.08 0.04 240);
   box-shadow:
-    inset 0 0 0 2px oklch(0.78 0.2 80 / 0.6),
-    inset 0 -6px 0 oklch(0 0 0 / 0.35),
+    inset 0 0 0 2px oklch(0.78 0.04 240 / 0.4),
+    inset -4px 0 6px oklch(0 0 0 / 0.4),
     0 4px 10px rgba(0,0,0,0.7);
+  /* corner-cut octagonal silhouette */
+  clip-path: polygon(8% 0, 92% 0, 100% 12%, 100% 88%, 92% 100%, 8% 100%, 0 88%, 0 12%);
 }
 .elevator-cart .car-window {
-  position: absolute; left: 10px; right: 10px; top: 8px; height: 22px;
-  border-radius: 3px;
-  background: linear-gradient(180deg, oklch(0.78 0.16 220), oklch(0.5 0.14 220));
-  border: 1px solid oklch(0.12 0.04 40);
-  box-shadow: inset 0 0 6px oklch(0.85 0.18 220 / 0.6);
+  /* porthole window in middle of cab */
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+  width: 36px; height: 30px;
+  border-radius: 6px;
+  background:
+    radial-gradient(circle at 35% 35%, oklch(0.95 0.05 220) 0 2px, transparent 3px),
+    linear-gradient(180deg, oklch(0.50 0.10 240) 0%, oklch(0.18 0.06 240) 100%);
+  border: 2.5px solid oklch(0.08 0.04 240);
+  box-shadow:
+    inset 0 0 6px oklch(0 0 0 / 0.7),
+    0 0 0 2px oklch(0.78 0.04 240 / 0.45);
 }
 .elevator-cart .car-coins {
-  position: absolute; left: 6px; right: 6px; bottom: 6px; height: 18px;
+  position: absolute; left: 8px; right: 8px; bottom: 14px; height: 12px;
   background:
-    radial-gradient(circle at 20% 60%, oklch(0.92 0.22 80) 0 5px, transparent 6px),
-    radial-gradient(circle at 50% 70%, oklch(0.95 0.22 80) 0 6px, transparent 7px),
-    radial-gradient(circle at 80% 60%, oklch(0.92 0.22 80) 0 5px, transparent 6px),
-    radial-gradient(circle at 35% 40%, oklch(0.88 0.2 80) 0 4px, transparent 5px),
-    radial-gradient(circle at 65% 40%, oklch(0.88 0.2 80) 0 4px, transparent 5px);
-  filter: drop-shadow(0 0 6px oklch(0.8 0.22 80 / 0.8));
+    radial-gradient(circle at 20% 60%, oklch(0.72 0.28 320) 0 4px, transparent 5px),
+    radial-gradient(circle at 50% 70%, oklch(0.80 0.30 305) 0 5px, transparent 6px),
+    radial-gradient(circle at 80% 60%, oklch(0.72 0.28 320) 0 4px, transparent 5px),
+    radial-gradient(circle at 35% 40%, oklch(0.78 0.28 320) 0 3px, transparent 4px),
+    radial-gradient(circle at 65% 40%, oklch(0.78 0.28 320) 0 3px, transparent 4px);
+  filter: drop-shadow(0 0 6px oklch(0.7 0.30 320 / 0.85));
   opacity: 0;
   transition: opacity 0.4s;
+  z-index: 2;
 }
 .elevator-cart.loaded .car-coins { opacity: 1; }
 .elevator-cart .cable {
   position: absolute; left: 50%; top: -2000px; bottom: 100%;
-  width: 3px; transform: translateX(-50%);
-  background: oklch(0.4 0.04 40);
+  width: 4px; transform: translateX(-50%);
+  background: linear-gradient(180deg, oklch(0.55 0.04 40), oklch(0.30 0.04 40));
   box-shadow: 0 0 4px rgba(0,0,0,0.6);
 }
 
@@ -520,11 +601,24 @@
   border-bottom: 2px solid rgba(0,0,0,0.55);
 }
 .mine-shaft .shaft-cavity::after {
-  /* ground / floor of mine */
-  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 18px;
+  /* dirt floor + mine cart rail tracks (two steel rails on wooden ties) */
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 28px;
   background:
+    /* upper steel rail */
+    linear-gradient(180deg, transparent 6px, oklch(0.70 0.02 240) 6px 9px, transparent 9px),
+    /* lower steel rail */
+    linear-gradient(180deg, transparent 16px, oklch(0.70 0.02 240) 16px 19px, transparent 19px),
+    /* wooden ties (between the rails) */
+    repeating-linear-gradient(90deg,
+      oklch(0.32 0.07 45) 0 16px,
+      oklch(0.18 0.05 40) 16px 22px),
+    /* dirt floor */
     linear-gradient(180deg, oklch(0.28 0.05 45), oklch(0.16 0.03 40));
+  background-size: 100% 100%, 100% 100%, 22px 14px, 100% 100%;
+  background-position: 0 0, 0 0, 0 8px, 0 0;
+  background-repeat: no-repeat, no-repeat, repeat-x, repeat;
   border-top: 2px solid rgba(0,0,0,0.55);
+  box-shadow: inset 0 1px 0 oklch(0.40 0.06 45);
 }
 
 /* Connector tunnel between shaft and elevator (visual notch on left) */
@@ -577,58 +671,99 @@
   border-radius: 1px;
 }
 
-/* Loader miner (smaller silhouette near pile, pushes cart on pickup) */
+/* Loader miner — cute cartoon (hard hat, blue overalls, orange shirt) */
 .loader-mini {
-  position: absolute; bottom: 22px; z-index: 5;
-  width: 42px; height: 70px;
-  transition: left 0.5s cubic-bezier(0.5, 0, 0.5, 1);
+  position: absolute; bottom: 30px; z-index: 5;
+  width: 42px; height: 64px;
+  transition: left 0.55s cubic-bezier(0.5, 0, 0.5, 1);
 }
 .loader-mini .lm-body {
   position: absolute; bottom: 0; left: 6px;
-  width: 30px; height: 44px;
-  background: linear-gradient(180deg, oklch(0.45 0.16 235), oklch(0.25 0.12 235));
-  border: 2px solid oklch(0.10 0.04 235);
-  border-radius: 4px 4px 2px 2px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.5);
+  width: 30px; height: 38px;
+  background: linear-gradient(180deg, oklch(0.55 0.18 245), oklch(0.40 0.18 245));
+  border: 2.5px solid oklch(0.10 0.04 240);
+  border-radius: 5px 5px 3px 3px;
+  box-shadow: 0 3px 5px rgba(0,0,0,0.5);
+}
+.loader-mini .lm-body::before {
+  /* orange shirt patch */
+  content: ""; position: absolute; inset: 4px 5px 16px 5px;
+  background: linear-gradient(180deg, oklch(0.72 0.20 55), oklch(0.58 0.22 50));
+  border: 2px solid oklch(0.10 0.04 240);
+  border-radius: 2px;
+}
+.loader-mini .lm-body::after {
+  /* boots */
+  content: ""; position: absolute; left: -2px; right: -2px; bottom: -5px; height: 7px;
+  background: linear-gradient(90deg, oklch(0.18 0.04 40) 0 38%, transparent 38% 62%, oklch(0.18 0.04 40) 62% 100%);
 }
 .loader-mini .lm-head {
-  position: absolute; top: 0; left: 10px;
+  position: absolute; top: 8px; left: 10px;
   width: 22px; height: 22px; border-radius: 50%;
-  background: oklch(0.78 0.06 60);
-  border: 2px solid oklch(0.10 0.04 235);
-  box-shadow: inset 0 -8px 0 oklch(0.92 0.18 80);
+  background:
+    radial-gradient(circle at 35% 60%, oklch(0.20 0.04 30) 0 1.3px, transparent 1.8px),
+    radial-gradient(circle at 65% 60%, oklch(0.20 0.04 30) 0 1.3px, transparent 1.8px),
+    oklch(0.78 0.10 55);
+  border: 2.5px solid oklch(0.10 0.04 30);
+}
+.loader-mini .lm-head::before {
+  /* hard hat dome */
+  content: ""; position: absolute; left: -4px; right: -4px; top: -8px; height: 13px;
+  background: linear-gradient(180deg, oklch(0.72 0.22 50), oklch(0.55 0.22 45));
+  border: 2.5px solid oklch(0.10 0.04 30);
+  border-radius: 15px 15px 3px 3px / 12px 12px 3px 3px;
+  box-shadow: inset 0 2px 0 oklch(0.92 0.20 80 / 0.55);
+}
+.loader-mini .lm-head::after {
+  /* yellow stripe across hat */
+  content: ""; position: absolute; left: -2px; right: -2px; top: -2px; height: 3px;
+  background: oklch(0.88 0.20 88);
+  border-top: 1.5px solid oklch(0.10 0.04 30);
+  border-bottom: 1.5px solid oklch(0.10 0.04 30);
 }
 .loader-mini.walking .lm-body { animation: walk-bob 0.4s ease-in-out infinite; }
-/* tiny mine cart */
+.loader-mini.walking .lm-head { animation: walk-bob 0.4s ease-in-out infinite; }
+
+/* Mine cart — riding on the rails */
 .loader-cart {
-  position: absolute; bottom: 22px;
-  width: 46px; height: 28px;
+  position: absolute; bottom: 28px;
+  width: 50px; height: 26px;
   z-index: 5;
   transition: left 0.55s cubic-bezier(0.5, 0, 0.5, 1), opacity 0.3s;
 }
 .loader-cart .lc-box {
   position: absolute; inset: 0;
-  background: linear-gradient(180deg, oklch(0.40 0.05 60), oklch(0.20 0.04 60));
-  border: 2px solid oklch(0.10 0.02 40);
+  background:
+    linear-gradient(180deg, oklch(0.55 0.05 40) 0 4px, oklch(0.38 0.05 40) 4px 100%);
+  border: 2.5px solid oklch(0.08 0.04 30);
   border-radius: 2px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.55);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.55), inset 0 -3px 0 oklch(0 0 0 / 0.4);
+}
+.loader-cart .lc-box::before {
+  /* wooden plank stripes */
+  content: ""; position: absolute; left: 3px; right: 3px; top: 6px; bottom: 4px;
+  background: repeating-linear-gradient(0deg,
+    oklch(0.48 0.06 45) 0 4px,
+    oklch(0.32 0.05 40) 4px 5px);
+  border-radius: 1px;
 }
 .loader-cart .lc-load {
-  position: absolute; left: 4px; right: 4px; top: -8px; height: 12px;
+  position: absolute; left: 4px; right: 4px; top: -10px; height: 14px;
   background:
-    radial-gradient(circle at 25% 70%, oklch(0.72 0.28 320) 0 4px, transparent 5px),
-    radial-gradient(circle at 55% 60%, oklch(0.78 0.3 305) 0 5px, transparent 6px),
-    radial-gradient(circle at 80% 70%, oklch(0.7 0.28 320) 0 4px, transparent 5px);
+    radial-gradient(circle at 22% 70%, oklch(0.72 0.28 320) 0 4px, transparent 5px),
+    radial-gradient(circle at 50% 55%, oklch(0.82 0.30 305) 0 5px, transparent 6px),
+    radial-gradient(circle at 78% 70%, oklch(0.72 0.28 320) 0 4px, transparent 5px),
+    radial-gradient(circle at 35% 40%, oklch(0.78 0.28 320) 0 3px, transparent 4px);
   filter: drop-shadow(0 0 6px oklch(0.7 0.3 320 / 0.8));
 }
 .loader-cart .lc-wheel {
-  position: absolute; bottom: -6px; width: 8px; height: 8px;
+  position: absolute; bottom: -6px; width: 10px; height: 10px;
   border-radius: 50%;
-  background: oklch(0.15 0.02 40);
-  border: 1px solid oklch(0.45 0.04 40);
+  background: radial-gradient(circle at 35% 35%, oklch(0.50 0.04 40) 0 2px, oklch(0.12 0.02 40) 3px);
+  border: 1.5px solid oklch(0.04 0 0);
 }
-.loader-cart .lc-wheel.l { left: 6px; }
-.loader-cart .lc-wheel.r { right: 6px; }
+.loader-cart .lc-wheel.l { left: 4px; }
+.loader-cart .lc-wheel.r { right: 4px; }
 .loader-cart.hidden { opacity: 0; }
 
 /* Ore wall on right side of shaft (purple Solana crystal) — wider, closer to miner */
@@ -798,30 +933,50 @@
   z-index: 20;
 }
 
-/* ============ Hut occupant inside exchange-depot ============ */
+/* ============ Hut occupant — cute miner standing inside the doorway ============ */
 .exchange-depot .hut-person {
   position: absolute;
   left: 50%;
-  bottom: 32px;
+  bottom: 6px;
   transform: translateX(-50%);
-  width: 28px; height: 40px;
+  width: 30px; height: 52px;
   z-index: 3;
   pointer-events: none;
   animation: hut-person-bob 2.4s ease-in-out infinite;
 }
 .exchange-depot .hut-person .hp-head {
-  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-  width: 16px; height: 16px; border-radius: 50%;
-  background: oklch(0.78 0.08 60);
-  border: 1.5px solid oklch(0.10 0.04 295);
-  box-shadow: inset 0 -5px 0 oklch(0.92 0.18 320 / 0.7);
+  position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  width: 18px; height: 18px; border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 60%, oklch(0.20 0.04 30) 0 1.1px, transparent 1.6px),
+    radial-gradient(circle at 65% 60%, oklch(0.20 0.04 30) 0 1.1px, transparent 1.6px),
+    oklch(0.78 0.10 55);
+  border: 2px solid oklch(0.06 0.02 30);
+}
+.exchange-depot .hut-person .hp-head::before {
+  content: ""; position: absolute; left: -3px; right: -3px; top: -7px; height: 11px;
+  background: linear-gradient(180deg, oklch(0.72 0.22 50), oklch(0.55 0.22 45));
+  border: 2px solid oklch(0.06 0.02 30);
+  border-radius: 12px 12px 3px 3px;
+}
+.exchange-depot .hut-person .hp-head::after {
+  content: ""; position: absolute; left: -1px; right: -1px; top: -1px; height: 3px;
+  background: oklch(0.88 0.20 88);
+  border-top: 1px solid oklch(0.06 0.02 30);
+  border-bottom: 1px solid oklch(0.06 0.02 30);
 }
 .exchange-depot .hut-person .hp-body {
   position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-  width: 22px; height: 22px;
-  background: linear-gradient(180deg, oklch(0.55 0.22 320), oklch(0.30 0.18 305));
-  border: 1.5px solid oklch(0.10 0.04 295);
+  width: 24px; height: 28px;
+  background: linear-gradient(180deg, oklch(0.55 0.18 245), oklch(0.40 0.18 245));
+  border: 2px solid oklch(0.06 0.02 30);
   border-radius: 4px 4px 2px 2px;
+}
+.exchange-depot .hut-person .hp-body::before {
+  content: ""; position: absolute; inset: 3px 4px 12px 4px;
+  background: linear-gradient(180deg, oklch(0.72 0.20 55), oklch(0.58 0.22 50));
+  border: 1.5px solid oklch(0.06 0.02 30);
+  border-radius: 2px;
 }
 @keyframes hut-person-bob {
   0%, 100% { transform: translate(-50%, 0); }

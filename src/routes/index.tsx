@@ -381,24 +381,37 @@ function SurfaceLayer({
   const transporterLeft = atSurface && carrying ? "calc(100% - 260px)" : "150px";
   return (
     <div className="surface-strip">
-      {/* Pulley/headframe over the elevator opening */}
+      {/* Steel headframe over the elevator opening — yellow-and-grey cartoon style */}
       <div className="pulley-frame">
-        <svg viewBox="0 0 106 174">
-          <polygon points="12,170 46,30 60,30 24,170" fill="#5a3a22" stroke="#1a0e06" strokeWidth="2" />
-          <polygon points="94,170 60,30 46,30 82,170" fill="#6b4528" stroke="#1a0e06" strokeWidth="2" />
-          <line x1="20" y1="120" x2="86" y2="120" stroke="#3a2614" strokeWidth="4" />
-          <line x1="24" y1="80"  x2="82" y2="80"  stroke="#3a2614" strokeWidth="4" />
-          <rect x="38" y="22" width="30" height="8" fill="#3a2614" stroke="#1a0e06" strokeWidth="1.5" />
+        <svg viewBox="0 0 120 174">
+          {/* main steel tower (two stacked blocks) */}
+          <rect x="22" y="44" width="76" height="36" fill="#9aa0aa" stroke="#0a0a14" strokeWidth="3" rx="2" />
+          <rect x="14" y="78" width="92" height="40" fill="#7d8492" stroke="#0a0a14" strokeWidth="3" rx="2" />
+          <rect x="6"  y="116" width="108" height="42" fill="#6c7280" stroke="#0a0a14" strokeWidth="3" rx="2" />
+          {/* yellow stripes */}
+          <rect x="22" y="50" width="76" height="6" fill="#f2c93b" stroke="#0a0a14" strokeWidth="2" />
+          <rect x="14" y="84" width="92" height="6" fill="#f2c93b" stroke="#0a0a14" strokeWidth="2" />
+          <rect x="6"  y="150" width="108" height="6" fill="#f2c93b" stroke="#0a0a14" strokeWidth="2" />
+          {/* dark elevator opening (the doorway) */}
+          <rect x="42" y="124" width="36" height="36" fill="#1a1f2a" stroke="#0a0a14" strokeWidth="2.5" rx="1" />
+          <rect x="44" y="126" width="32" height="3"  fill="#3a4250" />
+          {/* window with porthole */}
+          <rect x="46" y="92" width="28" height="20" fill="#1a1f2a" stroke="#0a0a14" strokeWidth="2" rx="1" />
+          <rect x="48" y="94" width="24" height="3"  fill="#3a4250" />
+          {/* small spinning pulley wheel up top */}
+          <rect x="50" y="28" width="20" height="18" fill="#5a626e" stroke="#0a0a14" strokeWidth="2" rx="1" />
           <g className="pulley-wheel">
-            <circle cx="53" cy="24" r="14" fill="#2d2d35" stroke="#0a0a0e" strokeWidth="2" />
-            <circle cx="53" cy="24" r="9"  fill="none" stroke="#6a6a78" strokeWidth="1.5" />
-            <line x1="53" y1="10" x2="53" y2="38" stroke="#6a6a78" strokeWidth="1.5" />
-            <line x1="39" y1="24" x2="67" y2="24" stroke="#6a6a78" strokeWidth="1.5" />
-            <circle cx="53" cy="24" r="3"  fill="#e0b94a" />
+            <circle cx="60" cy="22" r="10" fill="#2d2d35" stroke="#0a0a14" strokeWidth="2" />
+            <circle cx="60" cy="22" r="6"  fill="none" stroke="#9aa0aa" strokeWidth="1.5" />
+            <line x1="60" y1="14" x2="60" y2="30" stroke="#9aa0aa" strokeWidth="1.5" />
+            <line x1="52" y1="22" x2="68" y2="22" stroke="#9aa0aa" strokeWidth="1.5" />
+            <circle cx="60" cy="22" r="2.5" fill="#f2c93b" />
           </g>
-          <line x1="53" y1="38" x2="53" y2="174" stroke="#1a0e06" strokeWidth="2.5" />
-          <rect x="32" y="44" width="42" height="14" rx="2" fill="#0a0a0e" stroke="#e0b94a" strokeWidth="1" />
-          <text x="53" y="54" textAnchor="middle" fontFamily="ui-monospace,monospace" fontSize="8" fontWeight="800" fill="#e0b94a">⚠ LIFT</text>
+          {/* cable into the shaft */}
+          <line x1="60" y1="30" x2="60" y2="174" stroke="#0a0a14" strokeWidth="2.5" />
+          {/* LEVEL placard */}
+          <rect x="32" y="62" width="56" height="14" rx="2" fill="#f2c93b" stroke="#0a0a14" strokeWidth="2" />
+          <text x="60" y="72" textAnchor="middle" fontFamily="ui-monospace,monospace" fontSize="9" fontWeight="900" fill="#0a0a14">LIFT</text>
         </svg>
       </div>
 
@@ -540,8 +553,8 @@ function MineShaft({
   const hue = (index * 47) % 360;
 
   // Two-position oscillation for the loader + its cart
-  const loaderLeft = loaderAtPile ? "14%" : "calc(43% - 30px)"; // at pile vs behind miner (miner is at right:57%)
-  const cartLeftPct = loaderAtPile ? "20%" : "calc(43% - 8px)";
+  const loaderLeft = loaderAtPile ? "10%" : "calc(43% - 80px)"; // at pile vs stopping BEFORE the miner
+  const cartLeftPct = loaderAtPile ? "18%" : "calc(43% - 60px)";
 
   return (
     <div className="mine-shaft" style={{ height: SHAFT_H }}>
