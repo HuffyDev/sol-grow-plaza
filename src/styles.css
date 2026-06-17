@@ -1240,3 +1240,34 @@
   border-top: 1px solid oklch(0.4 0.1 175 / 0.3); padding-top: 10px;
 }
 .mc-blink { color: oklch(0.78 0.22 80); animation: mc-caret-blink 1.4s steps(1) infinite; }
+
+/* Bounty / CA block */
+.mc-bounty {
+  margin-top: 24px;
+  padding: 14px 18px;
+  background: rgba(8, 6, 4, 0.65);
+  border: 1px solid oklch(0.65 0.22 80 / 0.5);
+  border-radius: 4px;
+  box-shadow:
+    0 0 12px oklch(0.6 0.2 80 / 0.35),
+    inset 0 0 14px oklch(0.5 0.18 80 / 0.12);
+  text-align: center;
+  animation: mc-flicker 6s infinite;
+}
+.mc-bounty-title {
+  font-size: 11px; font-weight: 900; letter-spacing: 3px;
+  color: oklch(0.88 0.18 80);
+  text-shadow: 0 0 8px oklch(0.7 0.22 80 / 0.8);
+  margin-bottom: 6px;
+}
+.mc-bounty-text {
+  font-size: 12px; letter-spacing: 1px;
+  color: oklch(0.82 0.06 80);
+  margin-bottom: 8px;
+}
+.mc-contract {
+  font-size: 10px; letter-spacing: 0.5px;
+  color: oklch(0.6 0.04 80);
+  word-break: break-all;
+  font-family: ui-monospace, "JetBrains Mono", monospace;
+}
