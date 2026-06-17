@@ -193,7 +193,11 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
         if (dir !== cartDir) setCartDir(dir);
         const stop = stops[next];
         if (stop === -1) {
-          // arrived at surface — drop off cart, but keep pendingSol claimable
+          // arrived at surface — auto-collect all pending SOL
+          setState((s) => {
+            if (s.pendingSol <= 0) return s;
+            return { ...s, sol: s.sol + s.pendingSol, pendingSol: 0 };
+          });
           setCartLoaded(false);
         } else {
           // arrived at a floor — pick up (visual)
@@ -205,7 +209,7 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
       });
     }, 1300);
     return () => clearInterval(t);
-  }, [cartDir, stops, state.elevatorOp]);
+  }, [cartDir, stops]);
 
   const cartStop = stops[cartIdx];
   // Position cart inside elevator-shaft (which starts at top: SURFACE_H, fills below)
