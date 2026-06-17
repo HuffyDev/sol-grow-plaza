@@ -301,6 +301,7 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
           atSurface={cartStop === -1}
           carrying={cartLoaded && cartStop === -1}
           pendingSol={state.pendingSol}
+          level={Math.max(...state.unlocked)}
         />
 
         {/* ELEVATOR SHAFT — spans from below surface to bottom */}
