@@ -576,11 +576,25 @@
   border-bottom: 2px solid rgba(0,0,0,0.55);
 }
 .mine-shaft .shaft-cavity::after {
-  /* ground / floor of mine */
-  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 18px;
+  /* ground / floor of mine with rail tracks */
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 26px;
   background:
+    /* two parallel steel rails */
+    linear-gradient(90deg, transparent 0, transparent 100%) ,
+    /* wooden ties */
+    repeating-linear-gradient(90deg,
+      oklch(0.30 0.06 45) 0 14px,
+      oklch(0.20 0.05 40) 14px 16px,
+      transparent 16px 26px),
+    /* dirt floor */
     linear-gradient(180deg, oklch(0.28 0.05 45), oklch(0.16 0.03 40));
+  background-position: 0 14px, 0 16px, 0 0;
+  background-repeat: no-repeat, repeat-x, repeat;
+  background-size: 100% 100%, 26px 8px, 100% 100%;
   border-top: 2px solid rgba(0,0,0,0.55);
+  box-shadow:
+    inset 0 7px 0 -5px oklch(0.55 0.04 240),   /* upper rail */
+    inset 0 14px 0 -12px oklch(0.55 0.04 240); /* lower rail */
 }
 
 /* Connector tunnel between shaft and elevator (visual notch on left) */
