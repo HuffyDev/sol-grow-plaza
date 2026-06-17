@@ -336,52 +336,58 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
 }
 
 function SurfaceLayer({ atSurface, carrying }: { atSurface: boolean; carrying: boolean }) {
-  // Transporter slides from elevator-top (left) to exchange terminal (right) when carrying.
-  // Resting position above elevator shaft; walks right when carrying SOL.
-  const transporterLeft = atSurface && carrying ? "calc(100% - 200px)" : "60px";
+  const transporterLeft = atSurface && carrying ? "calc(100% - 240px)" : "130px";
   return (
     <div className="surface-strip">
-      {/* Elevator-top opening cap */}
-      <div style={{
-        position: "absolute", left: 16, top: 60, width: 94, height: 80,
-        background: "linear-gradient(180deg, oklch(0.10 0.02 40), oklch(0.04 0.01 40))",
-        border: "3px solid oklch(0.45 0.06 40)",
-        borderBottom: "none",
-        borderRadius: "8px 8px 0 0",
-        boxShadow: "inset 0 0 14px rgba(0,0,0,0.85), 0 4px 10px rgba(0,0,0,0.5)",
-        zIndex: 3,
-      }}>
-        {/* "ELEVATOR" sign */}
-        <div style={{
-          position: "absolute", top: -22, left: "50%", transform: "translateX(-50%)",
-          padding: "2px 8px",
-          fontFamily: "ui-monospace, JetBrains Mono, monospace",
-          fontSize: 9, letterSpacing: "0.18em",
-          color: "oklch(0.92 0.18 80)",
-          background: "rgba(10,8,14,0.7)",
-          border: "1px solid oklch(0.8 0.2 80 / 0.7)",
-          borderRadius: 4,
-          textShadow: "0 0 6px oklch(0.8 0.22 80 / 0.8)",
-          whiteSpace: "nowrap",
-        }}>↕ LIFT</div>
+      {/* Pulley/headframe over the elevator opening */}
+      <div className="pulley-frame">
+        <svg viewBox="0 0 106 174">
+          {/* legs */}
+          <polygon points="12,170 46,30 60,30 24,170" fill="#5a3a22" stroke="#1a0e06" strokeWidth="2" />
+          <polygon points="94,170 60,30 46,30 82,170" fill="#6b4528" stroke="#1a0e06" strokeWidth="2" />
+          {/* cross braces */}
+          <line x1="20" y1="120" x2="86" y2="120" stroke="#3a2614" strokeWidth="4" />
+          <line x1="24" y1="80"  x2="82" y2="80"  stroke="#3a2614" strokeWidth="4" />
+          {/* top platform */}
+          <rect x="38" y="22" width="30" height="8" fill="#3a2614" stroke="#1a0e06" strokeWidth="1.5" />
+          {/* pulley wheel */}
+          <g className="pulley-wheel">
+            <circle cx="53" cy="24" r="14" fill="#2d2d35" stroke="#0a0a0e" strokeWidth="2" />
+            <circle cx="53" cy="24" r="9"  fill="none" stroke="#6a6a78" strokeWidth="1.5" />
+            <line x1="53" y1="10" x2="53" y2="38" stroke="#6a6a78" strokeWidth="1.5" />
+            <line x1="39" y1="24" x2="67" y2="24" stroke="#6a6a78" strokeWidth="1.5" />
+            <circle cx="53" cy="24" r="3"  fill="#e0b94a" />
+          </g>
+          {/* cable to shaft */}
+          <line x1="53" y1="38" x2="53" y2="174" stroke="#1a0e06" strokeWidth="2.5" />
+          {/* warning placard */}
+          <rect x="32" y="44" width="42" height="14" rx="2" fill="#0a0a0e" stroke="#e0b94a" strokeWidth="1" />
+          <text x="53" y="54" textAnchor="middle" fontFamily="ui-monospace,monospace" fontSize="8" fontWeight="800" fill="#e0b94a">⚠ LIFT</text>
+        </svg>
       </div>
 
-      {/* Surface Transporter */}
+      {/* Surface Transporter (wheels SOL from elevator → depot) */}
       <div className={`transporter ${carrying ? "carrying walking" : "empty"}`} style={{ left: transporterLeft }}>
         <div className="cart" />
         <div className="body" />
         <div className="head" />
       </div>
 
-      {/* Exchange Terminal */}
-      <div className="exchange-terminal">
-        <div className="et-screen">SOL ⇄ $</div>
-        <div className="et-label">EXCHANGE</div>
+      {/* Cyberpunk Exchange Depot */}
+      <div className="exchange-depot">
+        <div className="ed-antenna" />
+        <div className="ed-roof" />
+        <div className="ed-base">
+          <div className="ed-screen">SOL ⇄ $</div>
+          <div className="ed-door" />
+          <div className="ed-panel" />
+        </div>
+        <div className="ed-tag">EXCHANGE</div>
       </div>
 
       {/* Surface label */}
       <div style={{
-        position: "absolute", top: 12, left: 130,
+        position: "absolute", top: 12, left: 180,
         fontFamily: "ui-monospace, JetBrains Mono, monospace",
         fontSize: 11, letterSpacing: "0.2em",
         color: "oklch(0.20 0.05 220)",
@@ -390,6 +396,7 @@ function SurfaceLayer({ atSurface, carrying }: { atSurface: boolean; carrying: b
     </div>
   );
 }
+
 
 function MineShaft({
   bush, index, unlocked, affordable, picking, floaters, onHarvest, onUnlock,
@@ -404,24 +411,39 @@ function MineShaft({
   const [autoPops, setAutoPops] = useState<{ id: number; text: string }[]>([]);
   const [autoSwing, setAutoSwing] = useState(false);
   const [shattering, setShattering] = useState(false);
+  const [pileLevel, setPileLevel] = useState(0); // 0..1+, scales the crystal pile
+  const [loaderWalking, setLoaderWalking] = useState(false);
 
   const chipId = useRef(0);
   const popId = useRef(0);
   const portrait = bush.portraits[0];
 
-  // Auto-mine visual tick — pickaxe swing + popup
+  const bumpPile = () => setPileLevel((p) => Math.min(1.3, p + 0.18));
+
+  // Auto-mine visual tick — pickaxe swing + popup + pile grows
   useEffect(() => {
     if (!hasManager || !unlocked || autoTick === 0) return;
     const id = ++popId.current;
     setAutoPops((p) => [...p, { id, text: `+${fmtSol(bush.perClick)}` }]);
     setAutoSwing(true);
+    bumpPile();
     setTimeout(() => setAutoPops((p) => p.filter((x) => x.id !== id)), 850);
     setTimeout(() => setAutoSwing(false), 450);
   }, [autoTick, hasManager, unlocked, bush.perClick]);
 
+  // Elevator arrives → loader runs the pile to the cart, pile resets
+  useEffect(() => {
+    if (!pickup || pileLevel === 0) return;
+    setLoaderWalking(true);
+    const t1 = setTimeout(() => setPileLevel(0), 280);
+    const t2 = setTimeout(() => setLoaderWalking(false), 900);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [pickup, pileLevel]);
+
   const handleClick = (e: React.MouseEvent) => {
     if (!unlocked) return;
     onHarvest(bush, e);
+    bumpPile();
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const cx = e.clientX - rect.left;
     const cy = e.clientY - rect.top;
@@ -443,22 +465,52 @@ function MineShaft({
   const swinging = (picking || autoSwing) && unlocked;
   const hue = (index * 47) % 360;
 
+  // Layout anchors (px from left edge of shaft cavity)
+  const pileLeft = 28;       // SOL crystal pile
+  const loaderRest = 90;     // loader stands next to pile
+  const loaderToCart = 6;    // loader pushes cart to elevator entry
+  const cartRest = 130;      // mini cart sits next to pile
+  const cartToElevator = 8;  // cart docks at left edge for pickup
+
   return (
     <div className="mine-shaft" style={{ height: SHAFT_H }}>
       <div className="tunnel-link" />
       <div className="shaft-cavity">
 
-        {/* SOL pile (left, by elevator entry) */}
-        <div className={`sol-pile ${pickup ? "pickup" : ""}`}>
+        {/* SOL crystal pile (purple, scales with --pile) */}
+        <div
+          className={`sol-pile ${pickup ? "pickup" : ""}`}
+          style={{ left: pileLeft, ["--pile" as never]: pileLevel } as React.CSSProperties}
+        >
           <span className="coin" style={{ left: 8,  bottom: 0 }} />
-          <span className="coin" style={{ left: 30, bottom: 0 }} />
-          <span className="coin" style={{ left: 52, bottom: 0 }} />
-          <span className="coin" style={{ left: 18, bottom: 18 }} />
-          <span className="coin" style={{ left: 40, bottom: 18 }} />
-          <span className="coin" style={{ left: 28, bottom: 34 }} />
+          <span className="coin" style={{ left: 32, bottom: 0 }} />
+          <span className="coin" style={{ left: 56, bottom: 0 }} />
+          <span className="coin" style={{ left: 20, bottom: 18 }} />
+          <span className="coin" style={{ left: 44, bottom: 18 }} />
+          <span className="coin" style={{ left: 32, bottom: 34 }} />
         </div>
 
-        {/* Ore wall (right) — also the click target */}
+        {/* Loader miner (walks pile→elevator on pickup) */}
+        <div
+          className={`loader-mini ${loaderWalking ? "walking" : ""}`}
+          style={{ left: loaderWalking ? loaderToCart : loaderRest }}
+        >
+          <div className="lm-body" />
+          <div className="lm-head" />
+        </div>
+
+        {/* Mini hauler cart next to pile */}
+        <div
+          className={`loader-cart ${pickup && loaderWalking ? "" : pileLevel < 0.05 ? "hidden" : ""}`}
+          style={{ left: loaderWalking ? cartToElevator : cartRest }}
+        >
+          <div className="lc-box" />
+          <div className="lc-load" />
+          <div className="lc-wheel l" />
+          <div className="lc-wheel r" />
+        </div>
+
+        {/* Ore wall (right) — click target */}
         <div className="ore-wall" onClick={handleClick} style={{ cursor: unlocked ? "pointer" : "default" }}>
           {chips.map((c) => (
             <span
@@ -484,8 +536,8 @@ function MineShaft({
           ))}
         </div>
 
-        {/* Miner sprite (center, facing ore wall) */}
-        <div className="absolute flex flex-col items-center" style={{ left: "42%", bottom: 18, transform: "translateX(-50%)", zIndex: 5 }}>
+        {/* Miner sprite — pressed up against the ore wall */}
+        <div className="absolute flex flex-col items-center" style={{ right: "57%", bottom: 18, zIndex: 5 }}>
           <div className={`farmer-stage char-sprite ${swinging ? "farmer-swing" : ""}`}>
             <div className="floor-shadow" />
             <img src={portrait} alt={bush.farmer} className="farmer-head" draggable={false} />
@@ -510,6 +562,7 @@ function MineShaft({
           </div>
           <span className="name-tag">{bush.farmer}{hasManager ? " · 👔" : ""}</span>
         </div>
+
 
         {/* Control panel (right edge) */}
         <div className="shaft-panel">
