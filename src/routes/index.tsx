@@ -55,12 +55,14 @@ function fmtSol(n: number) {
 
 type SaveState = {
   sol: number;
+  pendingSol: number;
   totalEarned: number;
   totalClicks: number;
   unlocked: number[];
   managers: number[];
+  elevatorOp: boolean;
 };
-const defaultState = (): SaveState => ({ sol: 0, totalEarned: 0, totalClicks: 0, unlocked: [1], managers: [] });
+const defaultState = (): SaveState => ({ sol: 0, pendingSol: 0, totalEarned: 0, totalClicks: 0, unlocked: [1], managers: [], elevatorOp: false });
 
 function loadState(wallet: string): SaveState {
   try {
@@ -127,8 +129,8 @@ function Landing({ onLogin }: { onLogin: (w: string) => void }) {
 
 type Floater = { id: number; x: number; y: number; text: string };
 
-const SURFACE_H = 140;
-const SHAFT_H = 200;
+const SURFACE_H = 200;
+const SHAFT_H = 240;
 const CART_H = 64;
 
 function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
@@ -141,7 +143,7 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
 
   useEffect(() => { saveState(wallet, state); }, [wallet, state]);
 
-  // Auto-harvest from hired managers (1 swing/sec each)
+  // Auto-harvest from hired managers (1 swing/sec each) → goes to PENDING (must collect at elevator)
   useEffect(() => {
     if (state.managers.length === 0) return;
     const t = setInterval(() => {
@@ -152,7 +154,7 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
           if (b && s.unlocked.includes(id)) gained += b.perClick;
         }
         if (gained === 0) return s;
-        return { ...s, sol: s.sol + gained, totalEarned: s.totalEarned + gained };
+        return { ...s, pendingSol: s.pendingSol + gained, totalEarned: s.totalEarned + gained };
       });
       setAutoTick((n) => n + 1);
     }, 1000);
@@ -170,6 +172,15 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
   const [cartLoaded, setCartLoaded] = useState(false);
   const [pickupFloor, setPickupFloor] = useState<number | null>(null);
 
+  const collectFromElevator = () => {
+    setState((s) => {
+      if (s.pendingSol <= 0) return s;
+      return { ...s, sol: s.sol + s.pendingSol, pendingSol: 0 };
+    });
+    setCartLoaded(false);
+    showToast("Collected from elevator!");
+  };
+
   useEffect(() => {
     const t = setInterval(() => {
       setCartIdx((idx) => {
@@ -180,10 +191,14 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
         if (dir !== cartDir) setCartDir(dir);
         const stop = stops[next];
         if (stop === -1) {
-          // arrived at surface — dump
-          setCartLoaded(false);
+          // arrived at surface — auto-collect ONLY if elevator operator hired
+          if (state.elevatorOp) {
+            setState((s) => s.pendingSol > 0 ? { ...s, sol: s.sol + s.pendingSol, pendingSol: 0 } : s);
+            setCartLoaded(false);
+          }
+          // otherwise: leave cart loaded; wait for manual COLLECT click
         } else {
-          // arrived at a floor — pick up
+          // arrived at a floor — pick up (visual)
           setPickupFloor(stop);
           setCartLoaded(true);
           setTimeout(() => setPickupFloor((p) => (p === stop ? null : p)), 500);
@@ -192,7 +207,7 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
       });
     }, 1300);
     return () => clearInterval(t);
-  }, [cartDir, stops]);
+  }, [cartDir, stops, state.elevatorOp]);
 
   const cartStop = stops[cartIdx];
   // Position cart inside elevator-shaft (which starts at top: SURFACE_H, fills below)
@@ -215,16 +230,24 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
     setTimeout(() => setFloaters((f) => f.filter((p) => p.id !== id)), 1100);
     setPickingRow(bush.id);
     setTimeout(() => setPickingRow((p) => (p === bush.id ? null : p)), 450);
-    setState((s) => ({ ...s, sol: s.sol + bush.perClick, totalEarned: s.totalEarned + bush.perClick, totalClicks: s.totalClicks + 1 }));
+    setState((s) => ({ ...s, pendingSol: s.pendingSol + bush.perClick, totalEarned: s.totalEarned + bush.perClick, totalClicks: s.totalClicks + 1 }));
   };
 
   const unlock = (bush: Bush) => {
     if (state.unlocked.includes(bush.id)) return;
     const prev = BUSHES.find((b) => b.id === bush.id - 1);
     if (prev && !state.unlocked.includes(prev.id)) { showToast(`Unlock ${prev.name} first.`); return; }
-    if (state.sol < bush.cost) { showToast(`Need ${fmtSol(bush.cost - state.sol)} more SOL.`); return; }
+    if (state.sol < bush.cost) { showToast(`Need ${fmtSol(bush.cost - state.sol)} more SOL (collect from elevator first).`); return; }
     setState((s) => ({ ...s, sol: s.sol - bush.cost, unlocked: [...s.unlocked, bush.id] }));
     showToast(`Hired ${bush.farmer}!`);
+  };
+
+  const ELEVATOR_OP_COST = 20;
+  const hireElevatorOp = () => {
+    if (state.elevatorOp) return;
+    if (state.sol < ELEVATOR_OP_COST) { showToast(`Need ${fmtSol(ELEVATOR_OP_COST - state.sol)} more SOL.`); return; }
+    setState((s) => ({ ...s, sol: s.sol - ELEVATOR_OP_COST, elevatorOp: true }));
+    showToast("Elevator operator hired — auto-collecting!");
   };
 
   const managerCost = (b: Bush) => Math.max(0.001, Math.max(b.cost, b.perClick * 60) * 8);
@@ -264,10 +287,12 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
           </div>
           <div className="flex-1 flex items-center gap-2 flex-wrap">
             <span className="bal-frame"><span className="live-dot" /><span className="lbl">BAL</span><span className="val">{fmtSol(state.sol)}</span><span className="unit">SOL</span></span>
+            <span className="hud-pill gold"><span className="live-dot" /><span className="lbl">PENDING</span><span className="val">{fmtSol(state.pendingSol)}</span></span>
             <span className="hud-pill"><span className="lbl">EARNED</span><span className="val">{fmtSol(state.totalEarned)}</span></span>
             <span className="hud-pill"><span className="lbl">SWINGS</span><span className="val">{state.totalClicks.toLocaleString()}</span></span>
             <span className="hud-pill magenta"><span className="lbl">MINERS</span><span className="val">{state.unlocked.length}/10</span></span>
             <span className="hud-pill"><span className="live-dot" /><span className="lbl">AUTO</span><span className="val">{fmtSol(autoPerSec)}</span>SOL/s</span>
+            {state.elevatorOp && <span className="hud-pill" style={{ borderColor: "oklch(0.8 0.22 145 / 0.7)" }}>🛗 OP</span>}
           </div>
           <div className="flex items-center gap-2">
             <span className="hud-pill"><span className="lbl">WALLET</span><span className="val">{wallet.slice(0,4)}…{wallet.slice(-4)}</span></span>
@@ -285,7 +310,17 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
       {/* Cave canvas */}
       <main className="cave-bg relative w-full" style={{ minHeight: totalH }}>
         {/* SURFACE */}
-        <SurfaceLayer atSurface={cartStop === -1} carrying={cartLoaded && cartStop === -1} />
+        <SurfaceLayer
+          atSurface={cartStop === -1}
+          carrying={cartLoaded && cartStop === -1}
+          pendingSol={state.pendingSol}
+          canCollect={cartStop === -1 && cartLoaded && state.pendingSol > 0}
+          onCollect={collectFromElevator}
+          elevatorOp={state.elevatorOp}
+          canAffordOp={state.sol >= ELEVATOR_OP_COST}
+          onHireOp={hireElevatorOp}
+          opCost={ELEVATOR_OP_COST}
+        />
 
         {/* ELEVATOR SHAFT — spans from below surface to bottom */}
         <div className="elevator-shaft" style={{ height: BUSHES.length * SHAFT_H }}>
@@ -335,22 +370,25 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
   );
 }
 
-function SurfaceLayer({ atSurface, carrying }: { atSurface: boolean; carrying: boolean }) {
-  const transporterLeft = atSurface && carrying ? "calc(100% - 240px)" : "130px";
+function SurfaceLayer({
+  atSurface, carrying, pendingSol, canCollect, onCollect,
+  elevatorOp, canAffordOp, onHireOp, opCost,
+}: {
+  atSurface: boolean; carrying: boolean; pendingSol: number;
+  canCollect: boolean; onCollect: () => void;
+  elevatorOp: boolean; canAffordOp: boolean; onHireOp: () => void; opCost: number;
+}) {
+  const transporterLeft = atSurface && carrying ? "calc(100% - 260px)" : "150px";
   return (
     <div className="surface-strip">
       {/* Pulley/headframe over the elevator opening */}
       <div className="pulley-frame">
         <svg viewBox="0 0 106 174">
-          {/* legs */}
           <polygon points="12,170 46,30 60,30 24,170" fill="#5a3a22" stroke="#1a0e06" strokeWidth="2" />
           <polygon points="94,170 60,30 46,30 82,170" fill="#6b4528" stroke="#1a0e06" strokeWidth="2" />
-          {/* cross braces */}
           <line x1="20" y1="120" x2="86" y2="120" stroke="#3a2614" strokeWidth="4" />
           <line x1="24" y1="80"  x2="82" y2="80"  stroke="#3a2614" strokeWidth="4" />
-          {/* top platform */}
           <rect x="38" y="22" width="30" height="8" fill="#3a2614" stroke="#1a0e06" strokeWidth="1.5" />
-          {/* pulley wheel */}
           <g className="pulley-wheel">
             <circle cx="53" cy="24" r="14" fill="#2d2d35" stroke="#0a0a0e" strokeWidth="2" />
             <circle cx="53" cy="24" r="9"  fill="none" stroke="#6a6a78" strokeWidth="1.5" />
@@ -358,13 +396,35 @@ function SurfaceLayer({ atSurface, carrying }: { atSurface: boolean; carrying: b
             <line x1="39" y1="24" x2="67" y2="24" stroke="#6a6a78" strokeWidth="1.5" />
             <circle cx="53" cy="24" r="3"  fill="#e0b94a" />
           </g>
-          {/* cable to shaft */}
           <line x1="53" y1="38" x2="53" y2="174" stroke="#1a0e06" strokeWidth="2.5" />
-          {/* warning placard */}
           <rect x="32" y="44" width="42" height="14" rx="2" fill="#0a0a0e" stroke="#e0b94a" strokeWidth="1" />
           <text x="53" y="54" textAnchor="middle" fontFamily="ui-monospace,monospace" fontSize="8" fontWeight="800" fill="#e0b94a">⚠ LIFT</text>
         </svg>
       </div>
+
+      {/* Manual COLLECT button — floats near the pulley when cart is loaded at surface */}
+      {canCollect && (
+        <button onClick={onCollect} className="elevator-collect-btn">
+          <span className="ec-coin">◆</span>
+          <span className="ec-label">COLLECT</span>
+          <span className="ec-amt">{fmtSol(pendingSol)} SOL</span>
+        </button>
+      )}
+
+      {/* Hire Elevator Operator (auto-collect) */}
+      {!elevatorOp && (
+        <button
+          onClick={onHireOp}
+          disabled={!canAffordOp}
+          className={`hud-btn ${canAffordOp ? "gold" : ""}`}
+          style={{ position: "absolute", top: 8, left: 130, fontSize: 11, padding: "5px 9px", zIndex: 7 }}
+        >
+          🛗 Hire Operator · {opCost} SOL
+        </button>
+      )}
+      {elevatorOp && (
+        <div className="elevator-op-badge">🛗 OPERATOR · AUTO</div>
+      )}
 
       {/* Surface Transporter (wheels SOL from elevator → depot) */}
       <div className={`transporter ${carrying ? "carrying walking" : "empty"}`} style={{ left: transporterLeft }}>
@@ -379,11 +439,17 @@ function SurfaceLayer({ atSurface, carrying }: { atSurface: boolean; carrying: b
         <div className="ed-roof" />
         <div className="ed-base">
           <div className="ed-screen">SOL ⇄ $</div>
+          {/* Little person silhouette inside the hut window */}
+          <div className="hut-person">
+            <div className="hp-head" />
+            <div className="hp-body" />
+          </div>
           <div className="ed-door" />
           <div className="ed-panel" />
         </div>
         <div className="ed-tag">EXCHANGE</div>
       </div>
+
 
       {/* Surface label */}
       <div style={{
@@ -412,7 +478,7 @@ function MineShaft({
   const [autoSwing, setAutoSwing] = useState(false);
   const [shattering, setShattering] = useState(false);
   const [pileLevel, setPileLevel] = useState(0); // 0..1+, scales the crystal pile
-  const [loaderWalking, setLoaderWalking] = useState(false);
+  // (loader oscillates continuously via loaderAtPile below)
 
   const chipId = useRef(0);
   const popId = useRef(0);
@@ -431,13 +497,21 @@ function MineShaft({
     setTimeout(() => setAutoSwing(false), 450);
   }, [autoTick, hasManager, unlocked, bush.perClick]);
 
-  // Elevator arrives → loader runs the pile to the cart, pile resets
+  // Loader continuously oscillates: behind miner → pile → back, while shaft is active
+  const [loaderAtPile, setLoaderAtPile] = useState(false);
+  useEffect(() => {
+    if (!unlocked) return;
+    const t = setInterval(() => {
+      setLoaderAtPile((v) => !v);
+    }, 1500);
+    return () => clearInterval(t);
+  }, [unlocked]);
+
+  // Elevator arrives → pile resets (cart hauls it away)
   useEffect(() => {
     if (!pickup || pileLevel === 0) return;
-    setLoaderWalking(true);
     const t1 = setTimeout(() => setPileLevel(0), 280);
-    const t2 = setTimeout(() => setLoaderWalking(false), 900);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
+    return () => { clearTimeout(t1); };
   }, [pickup, pileLevel]);
 
   const handleClick = (e: React.MouseEvent) => {
@@ -465,12 +539,9 @@ function MineShaft({
   const swinging = (picking || autoSwing) && unlocked;
   const hue = (index * 47) % 360;
 
-  // Layout anchors (px from left edge of shaft cavity)
-  const pileLeft = 28;       // SOL crystal pile
-  const loaderRest = 90;     // loader stands next to pile
-  const loaderToCart = 6;    // loader pushes cart to elevator entry
-  const cartRest = 130;      // mini cart sits next to pile
-  const cartToElevator = 8;  // cart docks at left edge for pickup
+  // Two-position oscillation for the loader + its cart
+  const loaderLeft = loaderAtPile ? "14%" : "calc(43% - 30px)"; // at pile vs behind miner (miner is at right:57%)
+  const cartLeftPct = loaderAtPile ? "20%" : "calc(43% - 8px)";
 
   return (
     <div className="mine-shaft" style={{ height: SHAFT_H }}>
@@ -480,7 +551,7 @@ function MineShaft({
         {/* SOL crystal pile (purple, scales with --pile) */}
         <div
           className={`sol-pile ${pickup ? "pickup" : ""}`}
-          style={{ left: pileLeft, ["--pile" as never]: pileLevel } as React.CSSProperties}
+          style={{ left: 28, ["--pile" as never]: pileLevel } as React.CSSProperties}
         >
           <span className="coin" style={{ left: 8,  bottom: 0 }} />
           <span className="coin" style={{ left: 32, bottom: 0 }} />
@@ -490,25 +561,26 @@ function MineShaft({
           <span className="coin" style={{ left: 32, bottom: 34 }} />
         </div>
 
-        {/* Loader miner (walks pile→elevator on pickup) */}
+        {/* Loader miner — oscillates pile ↔ behind miner */}
         <div
-          className={`loader-mini ${loaderWalking ? "walking" : ""}`}
-          style={{ left: loaderWalking ? loaderToCart : loaderRest }}
+          className="loader-mini walking"
+          style={{ left: loaderLeft }}
         >
           <div className="lm-body" />
           <div className="lm-head" />
         </div>
 
-        {/* Mini hauler cart next to pile */}
+        {/* Mini hauler cart — travels with loader */}
         <div
-          className={`loader-cart ${pickup && loaderWalking ? "" : pileLevel < 0.05 ? "hidden" : ""}`}
-          style={{ left: loaderWalking ? cartToElevator : cartRest }}
+          className="loader-cart"
+          style={{ left: cartLeftPct }}
         >
           <div className="lc-box" />
-          <div className="lc-load" />
+          <div className={`lc-load ${loaderAtPile ? "empty" : "full"}`} />
           <div className="lc-wheel l" />
           <div className="lc-wheel r" />
         </div>
+
 
         {/* Ore wall (right) — click target */}
         <div className="ore-wall" onClick={handleClick} style={{ cursor: unlocked ? "pointer" : "default" }}>

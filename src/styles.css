@@ -231,25 +231,27 @@
 /* ============ SURFACE LAYER (grass + station) ============ */
 .surface-strip {
   position: relative;
-  height: 140px;
+  height: 200px;
   background:
     linear-gradient(180deg,
       oklch(0.78 0.16 220) 0%,
-      oklch(0.86 0.10 220) 38%,
-      oklch(0.62 0.18 145) 40%,
-      oklch(0.48 0.16 145) 56%,
-      oklch(0.36 0.10 70) 58%,
-      oklch(0.30 0.08 60) 100%);
+      oklch(0.86 0.10 220) 32%,
+      oklch(0.62 0.18 145) 34%,
+      oklch(0.52 0.18 145) 50%,
+      oklch(0.40 0.14 130) 78%,
+      oklch(0.30 0.08 60) 88%,
+      oklch(0.24 0.06 50) 100%);
   border-bottom: 4px solid oklch(0.20 0.05 40);
   box-shadow: 0 8px 18px rgba(0,0,0,0.45);
   overflow: hidden;
 }
 .surface-strip::before {
-  /* grass blades */
+  /* grass blades — taller band */
   content: "";
-  position: absolute; left: 0; right: 0; top: 52px; height: 14px;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='14'><g fill='%231e7a3a'><polygon points='2,14 6,4 10,14'/><polygon points='12,14 16,6 20,14'/><polygon points='22,14 26,2 30,14'/><polygon points='32,14 36,6 40,14'/></g></svg>");
+  position: absolute; left: 0; right: 0; top: 60px; height: 30px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='30'><g fill='%231e7a3a'><polygon points='2,30 6,4 10,30'/><polygon points='12,30 16,10 20,30'/><polygon points='22,30 26,2 30,30'/><polygon points='32,30 36,8 40,30'/></g><g fill='%23166030' opacity='0.85'><polygon points='4,30 7,14 12,30'/><polygon points='18,30 22,16 26,30'/><polygon points='30,30 34,14 38,30'/></g></svg>");
   background-repeat: repeat-x;
+  background-size: 44px 30px;
 }
 .surface-strip::after {
   /* clouds */
@@ -265,13 +267,13 @@
 /* ============ EXCHANGE DEPOT (cyberpunk trading outpost) ============ */
 .exchange-depot {
   position: absolute; right: 28px; bottom: 4px;
-  width: 180px; height: 116px;
+  width: 220px; height: 156px;
   z-index: 4;
   font-family: ui-monospace, "JetBrains Mono", monospace;
 }
 /* main building block (low-poly slab) */
 .exchange-depot .ed-base {
-  position: absolute; left: 16px; right: 16px; bottom: 0; height: 86px;
+  position: absolute; left: 16px; right: 16px; bottom: 0; height: 124px;
   background:
     linear-gradient(180deg, oklch(0.22 0.06 295) 0%, oklch(0.12 0.04 295) 70%, oklch(0.08 0.03 295) 100%);
   border: 2px solid oklch(0.78 0.22 320 / 0.85);
@@ -358,7 +360,7 @@
 
 /* ============ PULLEY / HEADFRAME above elevator opening ============ */
 .pulley-frame {
-  position: absolute; left: 10px; top: -34px;
+  position: absolute; left: 10px; top: 26px;
   width: 106px; height: 174px;
   pointer-events: none;
   z-index: 6;
@@ -369,7 +371,7 @@
 
 /* Surface transporter character (mini sprite, slides between elevator and terminal) */
 .transporter {
-  position: absolute; top: 70px;
+  position: absolute; top: 118px;
   width: 56px; height: 64px;
   transition: left 0.9s cubic-bezier(0.5, 0, 0.5, 1);
   z-index: 5;
@@ -417,7 +419,7 @@
 .elevator-shaft {
   position: absolute;
   left: 24px;
-  top: 140px;  /* below surface */
+  top: 200px;  /* below surface */
   bottom: 0;
   width: 78px;
   background:
@@ -489,7 +491,7 @@
 /* ============ MINE SHAFT (per level) ============ */
 .mine-shaft {
   position: relative;
-  height: 200px;
+  height: 240px;
   /* The shaft is a carved opening inside the cave; pull left to start past elevator */
   padding-left: 130px;  /* clear the elevator column + frame */
   padding-right: 24px;
@@ -795,3 +797,88 @@
   display: block;
   z-index: 20;
 }
+
+/* ============ Hut occupant inside exchange-depot ============ */
+.exchange-depot .hut-person {
+  position: absolute;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%);
+  width: 28px; height: 40px;
+  z-index: 3;
+  pointer-events: none;
+  animation: hut-person-bob 2.4s ease-in-out infinite;
+}
+.exchange-depot .hut-person .hp-head {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 16px; height: 16px; border-radius: 50%;
+  background: oklch(0.78 0.08 60);
+  border: 1.5px solid oklch(0.10 0.04 295);
+  box-shadow: inset 0 -5px 0 oklch(0.92 0.18 320 / 0.7);
+}
+.exchange-depot .hut-person .hp-body {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 22px; height: 22px;
+  background: linear-gradient(180deg, oklch(0.55 0.22 320), oklch(0.30 0.18 305));
+  border: 1.5px solid oklch(0.10 0.04 295);
+  border-radius: 4px 4px 2px 2px;
+}
+@keyframes hut-person-bob {
+  0%, 100% { transform: translate(-50%, 0); }
+  50%      { transform: translate(-50%, -3px); }
+}
+
+/* ============ Manual elevator COLLECT button (floats above the cart at surface) ============ */
+.elevator-collect-btn {
+  position: absolute;
+  left: 12px; top: 140px;
+  z-index: 14;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 12px;
+  background: linear-gradient(180deg, oklch(0.55 0.24 145), oklch(0.32 0.20 145));
+  color: oklch(0.98 0.05 145);
+  border: 2px solid oklch(0.85 0.22 145);
+  border-radius: 8px;
+  font-family: ui-monospace, "JetBrains Mono", monospace;
+  font-size: 11px; font-weight: 900; letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow:
+    0 0 18px oklch(0.7 0.25 145 / 0.85),
+    0 0 36px oklch(0.6 0.22 145 / 0.55),
+    inset 0 0 8px oklch(0.95 0.2 145 / 0.4);
+  text-shadow: 0 0 6px oklch(0.95 0.2 145 / 0.9);
+  animation: collect-pulse 1.1s ease-in-out infinite;
+}
+.elevator-collect-btn:hover { filter: brightness(1.15); transform: scale(1.04); }
+.elevator-collect-btn .ec-coin {
+  font-size: 14px; color: oklch(0.92 0.28 320);
+  text-shadow: 0 0 8px oklch(0.78 0.28 320 / 0.95);
+}
+.elevator-collect-btn .ec-amt {
+  background: rgba(0,0,0,0.35);
+  padding: 2px 6px; border-radius: 4px;
+  border: 1px solid oklch(0.85 0.22 145 / 0.6);
+}
+@keyframes collect-pulse {
+  0%, 100% { box-shadow: 0 0 18px oklch(0.7 0.25 145 / 0.85), 0 0 36px oklch(0.6 0.22 145 / 0.55), inset 0 0 8px oklch(0.95 0.2 145 / 0.4); }
+  50%      { box-shadow: 0 0 28px oklch(0.85 0.28 145 / 1),    0 0 56px oklch(0.7 0.24 145 / 0.7),  inset 0 0 12px oklch(1 0.22 145 / 0.55); }
+}
+
+.elevator-op-badge {
+  position: absolute; top: 8px; left: 130px;
+  z-index: 7;
+  padding: 4px 8px;
+  background: rgba(10,8,14,0.7);
+  border: 1px solid oklch(0.8 0.22 145 / 0.7);
+  border-radius: 4px;
+  color: oklch(0.92 0.22 145);
+  font-family: ui-monospace, "JetBrains Mono", monospace;
+  font-size: 10px; letter-spacing: 0.2em; font-weight: 800;
+  text-shadow: 0 0 6px oklch(0.78 0.22 145 / 0.8);
+  box-shadow: 0 0 12px oklch(0.7 0.22 145 / 0.45);
+}
+
+/* Loader cart visual fill state */
+.loader-cart .lc-load.empty { opacity: 0.25; filter: grayscale(0.6); }
+.loader-cart .lc-load.full  { opacity: 1; }
