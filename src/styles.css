@@ -646,20 +646,6 @@
   border-radius: 1px;
 }
 
-/* Loader miner (smaller silhouette near pile, pushes cart on pickup) */
-.loader-mini {
-  position: absolute; bottom: 22px; z-index: 5;
-  width: 42px; height: 70px;
-  transition: left 0.5s cubic-bezier(0.5, 0, 0.5, 1);
-}
-.loader-mini .lm-body {
-  position: absolute; bottom: 0; left: 6px;
-  width: 30px; height: 44px;
-  background: linear-gradient(180deg, oklch(0.45 0.16 235), oklch(0.25 0.12 235));
-  border: 2px solid oklch(0.10 0.04 235);
-  border-radius: 4px 4px 2px 2px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.5);
-}
 /* Loader miner — cute cartoon (hard hat, blue overalls, orange shirt) */
 .loader-mini {
   position: absolute; bottom: 30px; z-index: 5;
