@@ -37,9 +37,9 @@ const BUSHES: Bush[] = [
   { id: 5,  name: "Krabby Cavern",     farmer: "Sponge Miner",          portraits: [farmer5.url], cost: 3,      perClick: 0.07,   rarity: "Uncommon",  tagline: "Spatula in one hand, SOL in the other." },
   { id: 6,  name: "Cented Lode",       farmer: "Cented",                portraits: [farmer6.url], cost: 15,     perClick: 0.28,   rarity: "Rare",      tagline: "Cented sniffs out the alpha vein." },
   { id: 7,  name: "Kimchi Quarry",     farmer: "Kimchi",                portraits: [farmer7.url], cost: 90,     perClick: 1.1,    rarity: "Rare",      tagline: "Jet-set mining, no jet lag." },
-  { id: 8,  name: "Cupsey Pit",        farmer: "Cupsey",                portraits: [farmer8.url], cost: 500,    perClick: 5,      rarity: "Epic",      tagline: "Salutes every bag he mines." },
-  { id: 9,  name: "Twin Towers Vein",  farmer: "Ansem × Fazebanks",     portraits: [farmer9a.url, farmer9b.url], cost: 3000, perClick: 22,  rarity: "Legendary", tagline: "Two whales, one shaft." },
-  { id: 10, name: "MAGA Mother Lode",  farmer: "DONALD TRUMP",          portraits: [trumpImg],    cost: 20000,  perClick: 120,    rarity: "FINAL BOSS", tagline: "The biggest, most tremendous SOL mine." },
+  { id: 8,  name: "Cupsey Pit",        farmer: "Cupsey",                portraits: [farmer8.url], cost: 1500,   perClick: 1.8,    rarity: "Epic",      tagline: "Salutes every bag he mines." },
+  { id: 9,  name: "Twin Towers Vein",  farmer: "Ansem × Fazebanks",     portraits: [farmer9a.url, farmer9b.url], cost: 14000, perClick: 7,  rarity: "Legendary", tagline: "Two whales, one shaft." },
+  { id: 10, name: "MAGA Mother Lode",  farmer: "DONALD TRUMP",          portraits: [trumpImg],    cost: 120000, perClick: 28,     rarity: "FINAL BOSS", tagline: "The biggest, most tremendous SOL mine." },
 ];
 
 const STORAGE_PREFIX = "solfarm:v1:";
