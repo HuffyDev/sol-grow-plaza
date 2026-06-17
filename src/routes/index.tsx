@@ -143,7 +143,7 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
 
   useEffect(() => { saveState(wallet, state); }, [wallet, state]);
 
-  // Auto-harvest from hired managers (1 swing/sec each)
+  // Auto-harvest from hired managers (1 swing/sec each) → goes to PENDING (must collect at elevator)
   useEffect(() => {
     if (state.managers.length === 0) return;
     const t = setInterval(() => {
@@ -154,7 +154,7 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
           if (b && s.unlocked.includes(id)) gained += b.perClick;
         }
         if (gained === 0) return s;
-        return { ...s, sol: s.sol + gained, totalEarned: s.totalEarned + gained };
+        return { ...s, pendingSol: s.pendingSol + gained, totalEarned: s.totalEarned + gained };
       });
       setAutoTick((n) => n + 1);
     }, 1000);
@@ -172,6 +172,15 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
   const [cartLoaded, setCartLoaded] = useState(false);
   const [pickupFloor, setPickupFloor] = useState<number | null>(null);
 
+  const collectFromElevator = () => {
+    setState((s) => {
+      if (s.pendingSol <= 0) return s;
+      return { ...s, sol: s.sol + s.pendingSol, pendingSol: 0 };
+    });
+    setCartLoaded(false);
+    showToast("Collected from elevator!");
+  };
+
   useEffect(() => {
     const t = setInterval(() => {
       setCartIdx((idx) => {
@@ -182,10 +191,14 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
         if (dir !== cartDir) setCartDir(dir);
         const stop = stops[next];
         if (stop === -1) {
-          // arrived at surface — dump
-          setCartLoaded(false);
+          // arrived at surface — auto-collect ONLY if elevator operator hired
+          if (state.elevatorOp) {
+            setState((s) => s.pendingSol > 0 ? { ...s, sol: s.sol + s.pendingSol, pendingSol: 0 } : s);
+            setCartLoaded(false);
+          }
+          // otherwise: leave cart loaded; wait for manual COLLECT click
         } else {
-          // arrived at a floor — pick up
+          // arrived at a floor — pick up (visual)
           setPickupFloor(stop);
           setCartLoaded(true);
           setTimeout(() => setPickupFloor((p) => (p === stop ? null : p)), 500);
@@ -194,7 +207,7 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
       });
     }, 1300);
     return () => clearInterval(t);
-  }, [cartDir, stops]);
+  }, [cartDir, stops, state.elevatorOp]);
 
   const cartStop = stops[cartIdx];
   // Position cart inside elevator-shaft (which starts at top: SURFACE_H, fills below)
