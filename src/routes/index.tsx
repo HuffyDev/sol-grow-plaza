@@ -310,7 +310,17 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
       {/* Cave canvas */}
       <main className="cave-bg relative w-full" style={{ minHeight: totalH }}>
         {/* SURFACE */}
-        <SurfaceLayer atSurface={cartStop === -1} carrying={cartLoaded && cartStop === -1} />
+        <SurfaceLayer
+          atSurface={cartStop === -1}
+          carrying={cartLoaded && cartStop === -1}
+          pendingSol={state.pendingSol}
+          canCollect={cartStop === -1 && cartLoaded && state.pendingSol > 0}
+          onCollect={collectFromElevator}
+          elevatorOp={state.elevatorOp}
+          canAffordOp={state.sol >= ELEVATOR_OP_COST}
+          onHireOp={hireElevatorOp}
+          opCost={ELEVATOR_OP_COST}
+        />
 
         {/* ELEVATOR SHAFT — spans from below surface to bottom */}
         <div className="elevator-shaft" style={{ height: BUSHES.length * SHAFT_H }}>
