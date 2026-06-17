@@ -353,45 +353,43 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
 }
 
 function SurfaceLayer({
-  atSurface, carrying, pendingSol,
+  atSurface, carrying, pendingSol, level,
 }: {
-  atSurface: boolean; carrying: boolean; pendingSol: number;
+  atSurface: boolean; carrying: boolean; pendingSol: number; level: number;
 }) {
   const transporterLeft = atSurface && pendingSol > 0 ? "calc(100% - 260px)" : "150px";
   const surfacePileScale = Math.min(1.3, Math.max(0.25, Math.log10(1 + pendingSol * 10000) * 0.3));
   return (
     <div className="surface-strip">
-      {/* Steel headframe over the elevator opening — yellow-and-grey cartoon style */}
+      {/* Headframe shack above the elevator — matches reference: stacked grey tower
+          with yellow trim bands, big dark doorway, and blue LEVEL placard on top. */}
       <div className="pulley-frame">
-        <svg viewBox="0 0 120 174">
-          {/* main steel tower (two stacked blocks) */}
-          <rect x="22" y="44" width="76" height="36" fill="#9aa0aa" stroke="#0a0a14" strokeWidth="3" rx="2" />
-          <rect x="14" y="78" width="92" height="40" fill="#7d8492" stroke="#0a0a14" strokeWidth="3" rx="2" />
-          <rect x="6"  y="116" width="108" height="42" fill="#6c7280" stroke="#0a0a14" strokeWidth="3" rx="2" />
-          {/* yellow stripes */}
-          <rect x="22" y="50" width="76" height="6" fill="#f2c93b" stroke="#0a0a14" strokeWidth="2" />
-          <rect x="14" y="84" width="92" height="6" fill="#f2c93b" stroke="#0a0a14" strokeWidth="2" />
-          <rect x="6"  y="150" width="108" height="6" fill="#f2c93b" stroke="#0a0a14" strokeWidth="2" />
-          {/* dark elevator opening (the doorway) */}
-          <rect x="42" y="124" width="36" height="36" fill="#1a1f2a" stroke="#0a0a14" strokeWidth="2.5" rx="1" />
-          <rect x="44" y="126" width="32" height="3"  fill="#3a4250" />
-          {/* window with porthole */}
-          <rect x="46" y="92" width="28" height="20" fill="#1a1f2a" stroke="#0a0a14" strokeWidth="2" rx="1" />
-          <rect x="48" y="94" width="24" height="3"  fill="#3a4250" />
-          {/* small spinning pulley wheel up top */}
-          <rect x="50" y="28" width="20" height="18" fill="#5a626e" stroke="#0a0a14" strokeWidth="2" rx="1" />
-          <g className="pulley-wheel">
-            <circle cx="60" cy="22" r="10" fill="#2d2d35" stroke="#0a0a14" strokeWidth="2" />
-            <circle cx="60" cy="22" r="6"  fill="none" stroke="#9aa0aa" strokeWidth="1.5" />
-            <line x1="60" y1="14" x2="60" y2="30" stroke="#9aa0aa" strokeWidth="1.5" />
-            <line x1="52" y1="22" x2="68" y2="22" stroke="#9aa0aa" strokeWidth="1.5" />
-            <circle cx="60" cy="22" r="2.5" fill="#f2c93b" />
-          </g>
-          {/* cable into the shaft */}
-          <line x1="60" y1="30" x2="60" y2="174" stroke="#0a0a14" strokeWidth="2.5" />
-          {/* LEVEL placard */}
-          <rect x="32" y="62" width="56" height="14" rx="2" fill="#f2c93b" stroke="#0a0a14" strokeWidth="2" />
-          <text x="60" y="72" textAnchor="middle" fontFamily="ui-monospace,monospace" fontSize="9" fontWeight="900" fill="#0a0a14">LIFT</text>
+        <svg viewBox="0 0 140 230">
+          {/* roof platform with railings */}
+          <rect x="6"  y="36" width="128" height="10" fill="#cdd2da" stroke="#0a0a14" strokeWidth="3" />
+          <rect x="6"  y="46" width="128" height="6"  fill="#f2c93b" stroke="#0a0a14" strokeWidth="2.5" />
+          <line x1="20"  y1="20" x2="20"  y2="36" stroke="#0a0a14" strokeWidth="3" />
+          <line x1="120" y1="20" x2="120" y2="36" stroke="#0a0a14" strokeWidth="3" />
+          <line x1="20"  y1="20" x2="120" y2="20" stroke="#0a0a14" strokeWidth="3" />
+          <line x1="20"  y1="28" x2="120" y2="28" stroke="#0a0a14" strokeWidth="2" />
+          {/* main tower body — three steel blocks separated by yellow bands */}
+          <rect x="14" y="52"  width="112" height="44" fill="#b7bdc7" stroke="#0a0a14" strokeWidth="3" />
+          <rect x="14" y="96"  width="112" height="6"  fill="#f2c93b" stroke="#0a0a14" strokeWidth="2.5" />
+          <rect x="14" y="102" width="112" height="44" fill="#a0a6b0" stroke="#0a0a14" strokeWidth="3" />
+          <rect x="14" y="146" width="112" height="6"  fill="#f2c93b" stroke="#0a0a14" strokeWidth="2.5" />
+          <rect x="14" y="152" width="112" height="62" fill="#8a909a" stroke="#0a0a14" strokeWidth="3" />
+          <rect x="14" y="214" width="112" height="6"  fill="#f2c93b" stroke="#0a0a14" strokeWidth="2.5" />
+          {/* big dark doorway opening (the elevator entrance) */}
+          <rect x="44" y="160" width="52" height="54" fill="#3a4250" stroke="#0a0a14" strokeWidth="3" rx="2" />
+          <rect x="48" y="164" width="44" height="6"  fill="#5a6270" />
+          {/* blue LEVEL placard front-and-center near the top */}
+          <rect x="40" y="58"  width="60" height="38" rx="6" fill="#0a0a14" />
+          <rect x="42" y="60"  width="56" height="34" rx="5"
+                fill="#5aa9f0" stroke="#0a0a14" strokeWidth="2" />
+          <text x="70" y="74" textAnchor="middle" fontFamily="ui-monospace,monospace"
+                fontSize="9" fontWeight="900" fill="#0a0a14">LEVEL</text>
+          <text x="70" y="89" textAnchor="middle" fontFamily="ui-monospace,monospace"
+                fontSize="14" fontWeight="900" fill="#0a0a14">{level}</text>
         </svg>
       </div>
 
@@ -417,25 +415,26 @@ function SurfaceLayer({
         <div className="head" />
       </div>
 
-      {/* Cyberpunk Exchange Depot */}
+      {/* Small kiosk-style exchange depot — matches the small left-side
+          structure in the reference (grey hut with a yellow down-arrow button). */}
       <div className="exchange-depot">
-        <div className="ed-antenna" />
-        <div className="ed-roof" />
-        <div className="ed-base">
-          <div className="ed-screen">SOL ⇄ $</div>
-          {/* Little person silhouette inside the hut window */}
-          <div className="hut-person">
-            <div className="hp-head" />
-            <div className="hp-body" />
+        <div className="ed-kiosk">
+          <div className="ed-roof2" />
+          <div className="ed-body">
+            <div className="ed-screen">SOL ⇄ $</div>
+            <div className="hut-person">
+              <div className="hp-head" />
+              <div className="hp-body" />
+            </div>
           </div>
-          <div className="ed-door" />
-          <div className="ed-panel" />
+          <div className="ed-arrow-btn">↓</div>
         </div>
         <div className="ed-tag">EXCHANGE</div>
       </div>
     </div>
   );
 }
+
 
 
 function MineShaft({
