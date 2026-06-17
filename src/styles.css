@@ -336,7 +336,7 @@
   border-radius: 2px;
 }
 
-/* Crate prop */
+/* Crate prop — tier 1-2 basic wooden */
 .crate {
   position:absolute; width:54px; height:54px;
   background:
@@ -350,6 +350,137 @@
 }
 .crate::before { left:50%; top:0; bottom:0; width:2px; transform:translateX(-50%); }
 .crate::after  { top:50%; left:0; right:0; height:2px; transform:translateY(-50%); }
+
+/* Barrel prop — tier 3 steel */
+.barrel {
+  position:absolute; width:48px; height:64px;
+  background:
+    linear-gradient(180deg, oklch(0.55 0.02 220), oklch(0.35 0.02 220));
+  border: 2px solid oklch(0.7 0.05 220);
+  border-radius: 6px 6px 10px 10px;
+  box-shadow:
+    0 8px 14px rgba(0,0,0,0.6),
+    inset 0 0 0 1px oklch(0.8 0.08 220 / 0.3),
+    inset 0 4px 8px oklch(0.85 0.1 200 / 0.15);
+  z-index: 7;
+}
+.barrel::before, .barrel::after {
+  content:""; position:absolute; left:4px; right:4px; height:4px;
+  background: oklch(0.45 0.03 220);
+  border-radius: 2px;
+  box-shadow: 0 1px 0 oklch(0.3 0.02 220);
+}
+.barrel::before { top: 14px; }
+.barrel::after  { top: 34px; }
+.barrel .barrel-hazard {
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width: 28px; height: 28px; border-radius: 50%;
+  background: oklch(0.7 0.18 80 / 0.25);
+  border: 2px solid oklch(0.8 0.15 80 / 0.5);
+  display:flex; align-items:center; justify-content:center;
+  font-size: 10px; color: oklch(0.85 0.15 80);
+}
+
+/* Battery / plasma canister — tier 4 toxic */
+.battery {
+  position:absolute; width:42px; height:58px;
+  background:
+    linear-gradient(180deg, oklch(0.22 0.04 310), oklch(0.12 0.03 310));
+  border: 2px solid oklch(0.6 0.15 320);
+  border-radius: 4px 4px 8px 8px;
+  box-shadow:
+    0 0 18px oklch(0.65 0.25 320 / 0.55),
+    0 8px 14px rgba(0,0,0,0.6),
+    inset 0 0 10px oklch(0.55 0.2 320 / 0.25);
+  z-index: 7;
+}
+.battery::before {
+  content:""; position:absolute; left:50%; top:-6px; transform:translateX(-50%);
+  width: 16px; height: 8px;
+  background: oklch(0.5 0.1 320);
+  border-radius: 2px 2px 0 0;
+}
+.battery::after {
+  content:""; position:absolute; inset: 6px 5px;
+  background:
+    repeating-linear-gradient(0deg, oklch(0.55 0.2 145 / 0.4) 0 3px, transparent 3px 8px);
+  border-radius: 2px;
+}
+.battery .battery-glow {
+  position:absolute; left:50%; bottom:6px; transform:translateX(-50%);
+  width: 28px; height: 10px;
+  background: oklch(0.7 0.25 145 / 0.6);
+  border-radius: 2px;
+  box-shadow: 0 0 12px oklch(0.7 0.25 145 / 0.8);
+  animation: battery-pulse 2s ease-in-out infinite;
+}
+@keyframes battery-pulse {
+  0%, 100% { opacity: 0.6; box-shadow: 0 0 8px oklch(0.7 0.25 145 / 0.6); }
+  50%      { opacity: 1;   box-shadow: 0 0 18px oklch(0.75 0.28 145 / 0.9); }
+}
+
+/* Server rack — tier 5 gold vault */
+.server-rack {
+  position:absolute; width:56px; height:68px;
+  background:
+    linear-gradient(180deg, oklch(0.28 0.04 70), oklch(0.14 0.03 60));
+  border: 2px solid oklch(0.7 0.12 70);
+  border-radius: 4px;
+  box-shadow:
+    0 8px 16px rgba(0,0,0,0.65),
+    inset 0 0 0 1px oklch(0.85 0.1 80 / 0.25);
+  z-index: 7;
+  display:flex; flex-direction:column; gap:3px; padding:5px 4px;
+}
+.server-rack .rack-slot {
+  flex:1; border-radius: 2px;
+  background: oklch(0.18 0.03 70);
+  border: 1px solid oklch(0.4 0.05 70);
+  position:relative;
+}
+.server-rack .rack-led {
+  position:absolute; right:4px; top:50%; transform:translateY(-50%);
+  width: 5px; height: 5px; border-radius: 50%;
+  box-shadow: 0 0 6px currentColor;
+  animation: led-blink 1.5s ease-in-out infinite;
+}
+.server-rack .rack-led:nth-child(2) { animation-delay: 0.3s; }
+.server-rack .rack-led:nth-child(3) { animation-delay: 0.6s; }
+@keyframes led-blink {
+  0%, 100% { opacity: 0.3; }
+  50%      { opacity: 1; }
+}
+
+/* ===== TERMINAL LOG ===== */
+.terminal-log {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: oklch(0.12 0.03 175 / 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid oklch(0.6 0.15 175 / 0.5);
+  box-shadow:
+    0 0 0 1px oklch(0 0 0 / 0.35) inset,
+    0 0 12px oklch(0.55 0.15 175 / 0.25);
+  font-family: ui-monospace, "JetBrains Mono", "Fira Code", monospace;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: oklch(0.85 0.08 175);
+  white-space: nowrap;
+}
+.terminal-log .log-prefix {
+  color: oklch(0.55 0.12 145);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.terminal-log .log-bracket {
+  color: oklch(0.5 0.08 175);
+}
+.terminal-log .log-text {
+  color: oklch(0.82 0.06 175);
+  font-style: italic;
+}
 
 /* Ceiling fan */
 .fan-wrap { position:absolute; top:48px; width:80px; height:80px; transform: translateX(-50%); z-index: 7; }
