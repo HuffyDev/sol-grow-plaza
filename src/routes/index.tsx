@@ -497,13 +497,21 @@ function MineShaft({
     setTimeout(() => setAutoSwing(false), 450);
   }, [autoTick, hasManager, unlocked, bush.perClick]);
 
-  // Elevator arrives → loader runs the pile to the cart, pile resets
+  // Loader continuously oscillates: behind miner → pile → back, while shaft is active
+  const [loaderAtPile, setLoaderAtPile] = useState(false);
+  useEffect(() => {
+    if (!unlocked) return;
+    const t = setInterval(() => {
+      setLoaderAtPile((v) => !v);
+    }, 1500);
+    return () => clearInterval(t);
+  }, [unlocked]);
+
+  // Elevator arrives → pile resets (cart hauls it away)
   useEffect(() => {
     if (!pickup || pileLevel === 0) return;
-    setLoaderWalking(true);
     const t1 = setTimeout(() => setPileLevel(0), 280);
-    const t2 = setTimeout(() => setLoaderWalking(false), 900);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
+    return () => { clearTimeout(t1); };
   }, [pickup, pileLevel]);
 
   const handleClick = (e: React.MouseEvent) => {
