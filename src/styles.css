@@ -322,18 +322,50 @@
   z-index: 5;
 }
 
-/* Wall-mounted AC unit */
+/* Wall-mounted AC unit / exhaust vent */
 .ac-unit {
   position:absolute; width:90px; height:34px; border-radius: 4px;
-  background: linear-gradient(180deg, oklch(0.92 0.01 200), oklch(0.78 0.01 200));
-  border: 1px solid rgba(0,0,0,0.3);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.6);
+  background: linear-gradient(180deg, oklch(0.12 0.01 200), oklch(0.06 0.01 200));
+  border: 2px solid oklch(0.45 0.02 200);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.6), inset 0 0 8px rgba(0,0,0,0.6);
   z-index: 7;
+  overflow: hidden;
 }
 .ac-unit::before {
-  content:""; position:absolute; inset: 6px 8px;
-  background: repeating-linear-gradient(0deg, rgba(0,0,0,0.4) 0 2px, transparent 2px 4px);
+  content:""; position:absolute; inset: 4px 6px;
+  background: repeating-linear-gradient(0deg, oklch(0.18 0.01 200) 0 3px, transparent 3px 6px);
   border-radius: 2px;
+  opacity: 0.6;
+}
+/* Spinning fan inside vent */
+.ac-fan {
+  position:absolute; inset: 4px 6px;
+  display:flex; align-items:center; justify-content:center;
+}
+.ac-fan-blades {
+  width: 72px; height: 72px;
+  position: relative;
+  animation: ac-spin 2.5s linear infinite;
+}
+.ac-fan-blades::before, .ac-fan-blades::after {
+  content:""; position:absolute; left:50%; top:50%;
+  width: 72px; height: 5px;
+  background: linear-gradient(90deg, oklch(0.25 0.01 200), oklch(0.12 0.01 200), oklch(0.25 0.01 200));
+  border-radius: 3px;
+  transform-origin: center;
+  transform: translate(-50%, -50%) rotate(0deg);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+.ac-fan-blades::after { transform: translate(-50%, -50%) rotate(90deg); }
+.ac-fan-hub {
+  position:absolute; left:50%; top:50%; transform: translate(-50%, -50%);
+  width: 10px; height: 10px; border-radius: 50%;
+  background: oklch(0.35 0.02 200);
+  box-shadow: 0 0 4px rgba(0,0,0,0.5);
+  z-index: 2;
+}
+@keyframes ac-spin {
+  to { transform: rotate(360deg); }
 }
 
 /* Crate prop — tier 1-2 basic wooden */
