@@ -478,7 +478,7 @@ function MineShaft({
   const [autoSwing, setAutoSwing] = useState(false);
   const [shattering, setShattering] = useState(false);
   const [pileLevel, setPileLevel] = useState(0); // 0..1+, scales the crystal pile
-  const [loaderWalking, setLoaderWalking] = useState(false);
+  // (loader oscillates continuously via loaderAtPile below)
 
   const chipId = useRef(0);
   const popId = useRef(0);
