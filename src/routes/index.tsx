@@ -149,7 +149,7 @@ function Landing({ onLogin }: { onLogin: (w: string) => void }) {
         <div className="mc-bounty">
           <div className="mc-bounty-title">◆ BOUNTY ACTIVE</div>
           <div className="mc-bounty-text">First 5 miners to complete the shaft will receive directed fees.</div>
-          <div className="mc-contract">CA: 3rDpybQCi67YoBZ3tK8sehzLQ5FJtX3NnQcBuDmwmine</div>
+          <div className="mc-contract">CA: FfyMV7Zw2VsTkjudR2Qrq5gv9jPn2GEfzmctNaJUpump</div>
         </div>
       </div>
 
