@@ -343,8 +343,11 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-2 mr-2">
             <span className="text-2xl">⛏</span>
-            <span className="font-black text-glow text-lg tracking-widest">SOL<span className="text-accent">MINE</span></span>
+            <span className="font-black text-glow text-lg tracking-widest">SOL FARM <span className="text-accent">TYCOON</span></span>
             <span className="hud-pill">CAVE SYSTEM</span>
+            <span className="hud-pill gold" style={timerExpired ? { borderColor: "oklch(0.7 0.25 25)", color: "oklch(0.85 0.25 25)" } : undefined}>
+              <span className="live-dot" /><span className="lbl">RUN</span><span className="val">{timerExpired ? "00:00" : timerText}</span>
+            </span>
           </div>
           <div className="flex-1 flex items-center gap-2 flex-wrap">
             <span className="bal-frame"><span className="live-dot" /><span className="lbl">BAL</span><span className="val">{fmtSol(state.sol)}</span><span className="unit">SOL</span></span>
