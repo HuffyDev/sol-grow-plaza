@@ -112,10 +112,10 @@ function Landing({ onLogin }: { onLogin: (w: string) => void }) {
         <div className="mc-boot-line">[ NET ] handshake :: solana-mainnet OK</div>
         <h1 className="mc-logo">
           <span className="mc-bracket">[</span>
-          Sol<span className="mc-logo-accent">MINE</span>
+          SOL FARM <span className="mc-logo-accent">TYCOON</span>
           <span className="mc-bracket">]</span>
         </h1>
-        <div className="mc-sub">// deep-shaft mining terminal · v2.6 · clearance required</div>
+        <div className="mc-sub">// deep-shaft farming terminal · v2.6 · clearance required</div>
       </div>
 
       {/* top-right status */}
@@ -190,8 +190,29 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
       } catch { /* skip */ }
     }
     rows.sort((a, b) => b.level - a.level || b.earned - a.earned);
-    return rows;
+    return rows.slice(0, 10);
   }, [showLeaderboard]);
+
+  // 30-minute run timer (per wallet)
+  const TIMER_KEY = `solfarm:timer:${wallet}`;
+  const [timerStart] = useState<number>(() => {
+    if (typeof window === "undefined") return Date.now();
+    const existing = localStorage.getItem(TIMER_KEY);
+    if (existing) return parseInt(existing, 10);
+    const now = Date.now();
+    localStorage.setItem(TIMER_KEY, String(now));
+    return now;
+  });
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const remainingMs = Math.max(0, timerStart + 30 * 60 * 1000 - now);
+  const mm = Math.floor(remainingMs / 60000);
+  const ss = Math.floor((remainingMs % 60000) / 1000);
+  const timerText = `${String(mm).padStart(2,"0")}:${String(ss).padStart(2,"0")}`;
+  const timerExpired = remainingMs === 0;
 
 
   useEffect(() => { saveState(wallet, state); }, [wallet, state]);
@@ -322,8 +343,11 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-2 mr-2">
             <span className="text-2xl">⛏</span>
-            <span className="font-black text-glow text-lg tracking-widest">SOL<span className="text-accent">MINE</span></span>
+            <span className="font-black text-glow text-lg tracking-widest">SOL FARM <span className="text-accent">TYCOON</span></span>
             <span className="hud-pill">CAVE SYSTEM</span>
+            <span className="hud-pill gold" style={timerExpired ? { borderColor: "oklch(0.7 0.25 25)", color: "oklch(0.85 0.25 25)" } : undefined}>
+              <span className="live-dot" /><span className="lbl">RUN</span><span className="val">{timerExpired ? "00:00" : timerText}</span>
+            </span>
           </div>
           <div className="flex-1 flex items-center gap-2 flex-wrap">
             <span className="bal-frame"><span className="live-dot" /><span className="lbl">BAL</span><span className="val">{fmtSol(state.sol)}</span><span className="unit">SOL</span></span>
