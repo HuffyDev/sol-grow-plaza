@@ -190,8 +190,29 @@ function Mine({ wallet, onLogout }: { wallet: string; onLogout: () => void }) {
       } catch { /* skip */ }
     }
     rows.sort((a, b) => b.level - a.level || b.earned - a.earned);
-    return rows;
+    return rows.slice(0, 10);
   }, [showLeaderboard]);
+
+  // 30-minute run timer (per wallet)
+  const TIMER_KEY = `solfarm:timer:${wallet}`;
+  const [timerStart] = useState<number>(() => {
+    if (typeof window === "undefined") return Date.now();
+    const existing = localStorage.getItem(TIMER_KEY);
+    if (existing) return parseInt(existing, 10);
+    const now = Date.now();
+    localStorage.setItem(TIMER_KEY, String(now));
+    return now;
+  });
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const remainingMs = Math.max(0, timerStart + 30 * 60 * 1000 - now);
+  const mm = Math.floor(remainingMs / 60000);
+  const ss = Math.floor((remainingMs % 60000) / 1000);
+  const timerText = `${String(mm).padStart(2,"0")}:${String(ss).padStart(2,"0")}`;
+  const timerExpired = remainingMs === 0;
 
 
   useEffect(() => { saveState(wallet, state); }, [wallet, state]);
