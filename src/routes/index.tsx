@@ -112,10 +112,10 @@ function Landing({ onLogin }: { onLogin: (w: string) => void }) {
         <div className="mc-boot-line">[ NET ] handshake :: solana-mainnet OK</div>
         <h1 className="mc-logo">
           <span className="mc-bracket">[</span>
-          Sol<span className="mc-logo-accent">MINE</span>
+          SOL FARM <span className="mc-logo-accent">TYCOON</span>
           <span className="mc-bracket">]</span>
         </h1>
-        <div className="mc-sub">// deep-shaft mining terminal · v2.6 · clearance required</div>
+        <div className="mc-sub">// deep-shaft farming terminal · v2.6 · clearance required</div>
       </div>
 
       {/* top-right status */}
